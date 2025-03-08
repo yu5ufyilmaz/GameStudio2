@@ -74,6 +74,8 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
+        
+        
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -82,6 +84,7 @@ namespace StarterAssets
         // player
         private float _speed;
         private float _animationBlend;
+        private float _animationBlendZ;
         private float _targetRotation = 0.0f;
         private float _rotationVelocity;
         private float _verticalVelocity;
@@ -93,6 +96,7 @@ namespace StarterAssets
 
         // animation IDs
         private int _animIDSpeed;
+        private int _animIDSpeedZ;
         private int _animIDGrounded;
         private int _animIDJump;
         private int _animIDFreeFall;
@@ -170,7 +174,8 @@ namespace StarterAssets
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed = Animator.StringToHash("Speed");
+            _animIDSpeed = Animator.StringToHash("Speed X");
+            _animIDSpeedZ = Animator.StringToHash("Speed Z");
             _animIDGrounded = Animator.StringToHash("Grounded");
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
@@ -215,10 +220,19 @@ namespace StarterAssets
 
 public void Move()
 {
+    Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
+    float speedX = localVelocity.x;
+    float speedZ = localVelocity.z;
+
     // Hedef hız: sprint veya normal hız
     float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
     if (_input.move == Vector2.zero)
         targetSpeed = 0.0f;
+     // Aiming halinde hızı azaltmaca
+    if (IsAiming)
+    {
+        targetSpeed *= 1f; 
+    }
 
     // Mevcut yatay hız
     float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
@@ -236,14 +250,15 @@ public void Move()
         _speed = targetSpeed;
     }
 
-    _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
-    if (_animationBlend < 0.01f) _animationBlend = 0f;
+    _animationBlend = Mathf.Lerp(_animationBlend, speedX, Time.deltaTime * SpeedChangeRate);
+    _animationBlendZ = Mathf.Lerp(_animationBlendZ, speedZ, Time.deltaTime * SpeedChangeRate);
+    if (Mathf.Abs(_animationBlend) < 0.01f) _animationBlend = 0f;
+    if (Mathf.Abs(_animationBlendZ) < 0.01f) _animationBlendZ = 0f;
 
     Vector3 targetDirection = Vector3.zero;
 
     if (!IsAiming)
     {
-        // Nişan alınmıyorsa, normalde kameraya göre rotasyon hesaplanıyor.
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
         if (inputDirection != Vector3.zero)
         {
@@ -252,33 +267,26 @@ public void Move()
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
-            // Hedef yön, güncellenmiş rotasyona göre hesaplanır
             targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
         }
     }
     else
     {
-        // Aiming modundayken, karakterin yönü ShootController tarafından mouse'a göre belirlendiğinden,
-        // hareket vektörünü karakterin forward ve right vektörlerine göre hesaplıyoruz.
-        // Böylece W tuşu, karakterin bakış yönünde (mouse yönünde) hareket sağlar.
         targetDirection = (transform.forward * _input.move.y) + (transform.right * _input.move.x);
         targetDirection = targetDirection.normalized;
     }
 
-    // Hareket uygulaması: Hedef yön * hız + gravity etkisi
     Vector3 moveVector = targetDirection * (_speed * Time.deltaTime) +
                          new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
     _controller.Move(moveVector);
 
-    // Animator güncellemeleri
     if (_hasAnimator)
     {
         _animator.SetFloat(_animIDSpeed, _animationBlend);
+        _animator.SetFloat(_animIDSpeedZ, _animationBlendZ);
         _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
     }
 }
-
-
 
         private void JumpAndGravity()
         {
