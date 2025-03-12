@@ -177,7 +177,7 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
             FindRoomsAutomatically(script);
         }
     }
-    
+    // OSMAAAAAANNNNNNNNNNNNNNNNNNNN
     void FindRoomsAutomatically(RoomTransparencyManager script)
     {
         script.rooms.Clear();
