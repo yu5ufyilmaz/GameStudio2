@@ -1,12 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI; // Optional for NavMeshAgent integration
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
     private enum EnemyState { Idle, Patrol, Attack }
     private EnemyState currentState = EnemyState.Idle;
-
+    
     [Header("Detection")]
     [SerializeField] private float detectionRange = 15f;
     [SerializeField] private float fieldOfView = 90f;
