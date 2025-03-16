@@ -1,303 +1,387 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.AI; // Optional for NavMeshAgent integration
-using UnityEngine.UI;
+using UnityEngine.AI;
+using System.Collections;
+using System.Collections.Generic;
 
 public class EnemyController : MonoBehaviour
 {
-    private enum EnemyState { Idle, Patrol, Attack }
+    // Referanslar
+    [Header("Referanslar")]
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private Animator animator;
+    [SerializeField] private NavMeshAgent navMeshAgent;
+    [SerializeField] private Transform weaponMuzzle;
+    [SerializeField] private GameObject bulletPrefab;
+
+    // Düşman Özellikleri
+    [Header("Düşman Özellikleri")]
+    [SerializeField] private float health = 100f;
+    [SerializeField] private float detectionRange = 10f;
+    [SerializeField] private float attackRange = 8f;
+    [SerializeField] private float fireRate = 1f;
+    [SerializeField] private float patrolSpeed = 2f;
+    [SerializeField] private float chaseSpeed = 6f;
+    [SerializeField] private float bulletSpeed = 20f;
+    [SerializeField] private float speedChangeRate = 10.0f;
+
+    // Devriye Noktaları
+    [Header("Devriye")]
+    [SerializeField] private Transform[] patrolPoints;
+    [SerializeField] private float waypointStopDistance = 0.5f;
+    [SerializeField] private float waitTime = 2f;
+
+    // Animator Parametreleri
+    private int _animIDSpeed;
+    private int _animIDFire;
+
+    // Durum Yönetimi
+    private enum EnemyState { Idle, Patrol, Chase, Attack }
     private EnemyState currentState = EnemyState.Idle;
     
-    [Header("Detection")]
-    [SerializeField] private float detectionRange = 15f;
-    [SerializeField] private float fieldOfView = 90f;
-    [SerializeField] private Transform eyePosition;
-    [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private LayerMask obstacleLayer;
-
-    [Header("Movement")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float runSpeed = 4f;
-    [SerializeField] private float idleDuration = 2f;
-    [SerializeField] private float patrolDuration = 3f;
-    private Vector3 patrolDirection;
-    private float stateTimer;
-    private Vector3 lastPosition;
-    private float currentSpeed;
-
-    [Header("Combat")]
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Transform muzzlePoint;
-    [SerializeField] private float bulletSpeed = 15f;
-    [SerializeField] private float shootCooldown = 1.5f;
-    private bool canShoot = true;
-
-    [Header("Animation")]
-    [SerializeField] private float animationBlendSpeed = 8.0f;
-    [SerializeField] private AudioClip[] footstepAudioClips;
-    [SerializeField] private AudioClip landingAudioClip;
-    [SerializeField] private float footstepAudioVolume = 0.5f;
-
-    // Animation Parameters - similar to ThirdPersonController
-    private static readonly int Speed = Animator.StringToHash("Speed");
-    private static readonly int MotionSpeed = Animator.StringToHash("MotionSpeed");
-    private static readonly int Grounded = Animator.StringToHash("Grounded");
-    private static readonly int IsShooting = Animator.StringToHash("isShooting");
-
-    private Transform player;
-    private Animator animator;
-    private AudioSource audioSource;
-    private float animationBlend;
-    private float targetRotation = 0.0f;
-    private float speedChangeRate = 10.0f;
+    // Özel Değişkenler
+    private int currentPatrolIndex = 0;
+    private bool canFire = true;
+    private bool isWaiting = false;
+    private float distanceToPlayer;
+    private Vector3 lastKnownPlayerPosition;
+    private bool playerVisible = false;
+    private float _targetSpeed;
+    private float _currentSpeed;
+    private float _animationBlend;
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        animator = GetComponent<Animator>();
-        audioSource = GetComponent<AudioSource>();
-        
-        if (!audioSource)
-            audioSource = gameObject.AddComponent<AudioSource>();
+        // Eğer player referansı verilmediyse, tag ile bulma
+        if (playerTransform == null)
+        {
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                playerTransform = player.transform;
+            }
+        }
 
-        if (eyePosition == null)
-            eyePosition = transform;
+        // Eğer NavMeshAgent referansı verilmediyse, kendinden alma
+        if (navMeshAgent == null)
+        {
+            navMeshAgent = GetComponent<NavMeshAgent>();
+        }
 
-        lastPosition = transform.position;
-        animator.SetBool(Grounded, true);
+        // Eğer Animator referansı verilmediyse, kendinden alma
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
 
-        StartCoroutine(UpdateState());
+        // Animator parametrelerini ayarla
+        AssignAnimationIDs();
+
+        // Başlangıç durumu
+        ChangeState(EnemyState.Patrol);
+    }
+
+    private void AssignAnimationIDs()
+    {
+        _animIDSpeed = Animator.StringToHash("Speed");
+        _animIDFire = Animator.StringToHash("Fire");
     }
 
     private void Update()
     {
-        // Calculate movement speed for animations
-        Vector3 currentPosition = transform.position;
-        float moveDistance = Vector3.Distance(lastPosition, currentPosition);
-        currentSpeed = moveDistance / Time.deltaTime;
-        lastPosition = currentPosition;
+        if (playerTransform == null)
+            return;
 
-        // Update animation parameters
-        UpdateAnimation();
+        // Oyuncuya olan mesafeyi hesaplama
+        distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        
+        // Oyuncuyu görüş kontrolü
+        CheckPlayerVisibility();
 
-        // Handle state behavior
+        // Durum makinesi
         switch (currentState)
         {
             case EnemyState.Idle:
-                // Idle animation is handled by setting speed to 0
+                UpdateIdleState();
                 break;
-
             case EnemyState.Patrol:
-                transform.Translate(patrolDirection * moveSpeed * Time.deltaTime);
+                UpdatePatrolState();
                 break;
-
+            case EnemyState.Chase:
+                UpdateChaseState();
+                break;
             case EnemyState.Attack:
-                if (CanSeePlayer())
-                {
-                    // Look at player
-                    Vector3 lookDirection = player.position - transform.position;
-                    lookDirection.y = 0;
-                    transform.rotation = Quaternion.Slerp(
-                        transform.rotation,
-                        Quaternion.LookRotation(lookDirection),
-                        Time.deltaTime * 5f
-                    );
-
-                    // Shoot at player
-                    if (canShoot)
-                        StartCoroutine(Shoot());
-                }
-                else
-                {
-                    // Lost sight of player, go back to idle
-                    currentState = EnemyState.Idle;
-                    stateTimer = idleDuration;
-                }
+                UpdateAttackState();
                 break;
         }
 
-        // Check for player detection regardless of current state
-        if (currentState != EnemyState.Attack && CanSeePlayer())
-        {
-            currentState = EnemyState.Attack;
-        }
+        // Animasyon güncellemesi
+        UpdateAnimation();
     }
 
     private void UpdateAnimation()
     {
-        // Calculate target speed based on state
-        float targetSpeed = 0;
-
-        if (currentState == EnemyState.Patrol)
-            targetSpeed = moveSpeed;
-        else if (currentState == EnemyState.Attack)
-            targetSpeed = runSpeed;
-
-        // Normalize input direction
-        float inputMagnitude = 1f;
-
-        // Calculate animation blend similar to ThirdPersonController
-        float targetBlend;
-
-        if (currentState != EnemyState.Idle)
-            targetBlend = targetSpeed;
-        else
-            targetBlend = 0f;
-
-        // Apply smooth animation blending
-        if (animationBlend < targetBlend)
+        // Mevcut hızı hesapla
+        float currentHorizontalSpeed = new Vector3(navMeshAgent.velocity.x, 0f, navMeshAgent.velocity.z).magnitude;
+        
+        // Duruma göre hedef hızı ayarla
+        switch (currentState)
         {
-            animationBlend = Mathf.Lerp(animationBlend, targetBlend, Time.deltaTime * animationBlendSpeed);
-        }
-        else if (animationBlend > targetBlend)
-        {
-            animationBlend = Mathf.Lerp(animationBlend, targetBlend, Time.deltaTime * animationBlendSpeed);
+            case EnemyState.Idle:
+                _targetSpeed = 0f; // Idle = 0
+                break;
+            case EnemyState.Patrol:
+                _targetSpeed = 2f; // Walk = 2
+                break;
+            case EnemyState.Chase:
+                _targetSpeed = 6f; // Run = 6
+                break;
+            case EnemyState.Attack:
+                _targetSpeed = 0f; // Idle = 0
+                break;
         }
 
-        if (animationBlend < 0.01f)
-            animationBlend = 0f;
-
-        // Update animator parameters
-        animator.SetFloat(Speed, animationBlend);
-        animator.SetFloat(MotionSpeed, inputMagnitude);
-
-        // Rotate character to face movement direction
-        if (currentState == EnemyState.Patrol || currentState == EnemyState.Attack)
-        {
-            Vector3 movementDirection = (transform.position - lastPosition).normalized;
-            if (movementDirection != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(movementDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * speedChangeRate);
-            }
-        }
+        // Gerçek hızdan animasyon hızını hesapla (0-6 arasında)
+        float animSpeed = currentHorizontalSpeed;
+        // Eğer 0.1'den küçükse tamamen durduğunu varsay
+        if (currentHorizontalSpeed < 0.1f) animSpeed = 0f;
+        // 6'dan büyükse 6 ile sınırla
+        if (currentHorizontalSpeed > 6f) animSpeed = 6f;
+        
+        _animationBlend = Mathf.Lerp(_animationBlend, animSpeed, Time.deltaTime * speedChangeRate);
+        
+        // Animatör parametresini güncelle
+        animator.SetFloat(_animIDSpeed, _animationBlend);
     }
-    private IEnumerator UpdateState()
-    {
-        while (true)
-        {
-            // Don't change state if attacking
-            if (currentState != EnemyState.Attack)
-            {
-                stateTimer -= Time.deltaTime;
 
-                if (stateTimer <= 0)
+    private void CheckPlayerVisibility()
+    {
+        playerVisible = false;
+        
+        if (distanceToPlayer <= detectionRange)
+        {
+            // Oyuncuya yönelik bir ray (ışın) oluşturma
+            Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+            
+            // Ray ile görüş kontrolü
+            if (Physics.Raycast(transform.position + Vector3.up, directionToPlayer, out RaycastHit hit, detectionRange))
+            {
+                if (hit.transform == playerTransform)
                 {
-                    // Switch between idle and patrol
-                    if (currentState == EnemyState.Idle)
+                    playerVisible = true;
+                    lastKnownPlayerPosition = playerTransform.position;
+                    
+                    // Oyuncu görüldüğünde durum değişimi
+                    if (distanceToPlayer <= attackRange)
                     {
-                        currentState = EnemyState.Patrol;
-                        stateTimer = patrolDuration;
-                        // Choose random direction (left or right)
-                        patrolDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+                        if (currentState != EnemyState.Attack)
+                        {
+                            ChangeState(EnemyState.Attack);
+                        }
                     }
                     else
                     {
-                        currentState = EnemyState.Idle;
-                        stateTimer = idleDuration;
+                        if (currentState != EnemyState.Chase)
+                        {
+                            ChangeState(EnemyState.Chase);
+                        }
                     }
                 }
             }
-
-            yield return null;
         }
-    }
-
-    private bool CanSeePlayer()
-    {
-        if (player == null) {
-            Debug.Log("Player is null");
-            return false;
-        }
-
-        // Check if player is within range
-        Vector3 directionToPlayer = player.position - eyePosition.position;
-        float distanceToPlayer = directionToPlayer.magnitude;
-
-        if (distanceToPlayer > detectionRange) {
-            Debug.Log("Player outside detection range: " + distanceToPlayer);
-            return false;
-        }
-
-        // Check if player is within field of view
-        float angle = Vector3.Angle(transform.forward, directionToPlayer.normalized);
-        if (angle > fieldOfView / 2f) {
-            Debug.Log("Player outside field of view: " + angle);
-            return false;
-        }
-
-        // Check if there's no obstacle between enemy and player
-        if (Physics.Raycast(eyePosition.position, directionToPlayer.normalized, distanceToPlayer, obstacleLayer)) {
-            Debug.DrawRay(eyePosition.position, directionToPlayer.normalized, Color.red);
-            return false;
-        }
-
-        Debug.Log("Player detected!");
-        return true;
-    }
-    private IEnumerator Shoot()
-    {
-        canShoot = false;
-
-        if (bulletPrefab != null && muzzlePoint != null)
+        
+        // Oyuncu görünmüyorsa ve şu an kovalama veya saldırı durumunda isek
+        if (!playerVisible && (currentState == EnemyState.Chase || currentState == EnemyState.Attack))
         {
-            // Play shooting animation
-            animator.SetTrigger(IsShooting);
-
-            // Instantiate bullet
-            GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, muzzlePoint.rotation);
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
-
-            if (rb != null)
+            // Oyuncunun son görüldüğü konuma git
+            if (currentState == EnemyState.Attack)
             {
-                // Calculate direction to player with slight inaccuracy
-                Vector3 direction = (player.position - muzzlePoint.position).normalized;
-
-                // Add slight random spread
-                direction += new Vector3(
-                    Random.Range(-0.05f, 0.05f),
-                    Random.Range(-0.05f, 0.05f),
-                    Random.Range(-0.05f, 0.05f)
-                );
-
-                rb.linearVelocity = direction * bulletSpeed;
+                ChangeState(EnemyState.Chase);
+                navMeshAgent.SetDestination(lastKnownPlayerPosition);
+            }
+            
+            // Son konum yakınına geldiysek veya yol bulunamadıysa devriyeye geri dön
+            if (Vector3.Distance(transform.position, lastKnownPlayerPosition) < waypointStopDistance || 
+                !navMeshAgent.hasPath)
+            {
+                ChangeState(EnemyState.Patrol);
             }
         }
-
-        yield return new WaitForSeconds(shootCooldown);
-        canShoot = true;
     }
 
-    // Animation event methods (called by animation clips)
-    public void OnFootstep(AnimationEvent animationEvent)
+    private void UpdateIdleState()
     {
-        if (animationEvent.animatorClipInfo.weight > 0.5f && footstepAudioClips.Length > 0)
+        // Bekleme süresini kontrol et
+        if (!isWaiting)
         {
-            var index = Random.Range(0, footstepAudioClips.Length);
-            AudioSource.PlayClipAtPoint(footstepAudioClips[index], transform.position, footstepAudioVolume);
+            StartCoroutine(WaitAndTransition(waitTime, EnemyState.Patrol));
         }
     }
 
-    public void OnLand(AnimationEvent animationEvent)
+    private void UpdatePatrolState()
     {
-        if (animationEvent.animatorClipInfo.weight > 0.5f && landingAudioClip != null)
+        if (patrolPoints.Length == 0)
+            return;
+
+        // Eğer hedef noktaya yeterince yaklaştıysak
+        if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= waypointStopDistance)
         {
-            AudioSource.PlayClipAtPoint(landingAudioClip, transform.position, footstepAudioVolume);
+            if (!isWaiting)
+            {
+                StartCoroutine(WaitAndTransition(waitTime, EnemyState.Patrol));
+            }
         }
     }
 
+    private void UpdateChaseState()
+    {
+        if (playerVisible)
+        {
+            navMeshAgent.SetDestination(playerTransform.position);
+            
+            // Eğer oyuncu atak menzilinde ise
+            if (distanceToPlayer <= attackRange)
+            {
+                ChangeState(EnemyState.Attack);
+            }
+        }
+    }
+
+    private void UpdateAttackState()
+    {
+        if (playerVisible)
+        {
+            // Düşmanı oyuncuya doğru döndür
+            Vector3 direction = (playerTransform.position - transform.position).normalized;
+            direction.y = 0;
+            Quaternion lookRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+            
+            // Ateş etme
+            if (canFire)
+            {
+                StartCoroutine(FireRoutine());
+            }
+        }
+        else if (distanceToPlayer > attackRange)
+        {
+            ChangeState(EnemyState.Chase);
+        }
+    }
+
+    private void ChangeState(EnemyState newState)
+    {
+        // Önceki durum temizliği
+        if (currentState == EnemyState.Attack)
+        {
+            animator.SetBool(_animIDFire, false);
+        }
+
+        // Yeni durum ayarları
+        currentState = newState;
+        
+        switch (currentState)
+        {
+            case EnemyState.Idle:
+                navMeshAgent.isStopped = true;
+                break;
+                
+            case EnemyState.Patrol:
+                navMeshAgent.isStopped = false;
+                navMeshAgent.speed = patrolSpeed;
+                SetNextPatrolPoint();
+                break;
+                
+            case EnemyState.Chase:
+                navMeshAgent.isStopped = false;
+                navMeshAgent.speed = chaseSpeed;
+                if (playerTransform != null)
+                {
+                    navMeshAgent.SetDestination(playerTransform.position);
+                }
+                break;
+                
+            case EnemyState.Attack:
+                navMeshAgent.isStopped = true;
+                animator.SetBool(_animIDFire, true);
+                break;
+        }
+    }
+
+    private void SetNextPatrolPoint()
+    {
+        if (patrolPoints.Length == 0)
+            return;
+
+        currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+        navMeshAgent.SetDestination(patrolPoints[currentPatrolIndex].position);
+    }
+
+    private IEnumerator WaitAndTransition(float time, EnemyState nextState)
+    {
+        isWaiting = true;
+        yield return new WaitForSeconds(time);
+        
+        isWaiting = false;
+        
+        if (currentState == EnemyState.Idle || currentState == EnemyState.Patrol)
+        {
+            ChangeState(nextState);
+        }
+    }
+
+    private IEnumerator FireRoutine()
+    {
+        canFire = false;
+        
+        // Ateş etme animasyonu tetiklenir (animator'da Fire parametresi true yapıldı)
+        
+        // Mermi oluşturma
+        if (bulletPrefab != null && weaponMuzzle != null)
+        {
+            // Mermi oluşturma işlemi
+            GameObject bullet = Instantiate(bulletPrefab, weaponMuzzle.position, weaponMuzzle.rotation);
+            Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
+            
+            if (bulletRb != null)
+            {
+                bulletRb.linearVelocity = bullet.transform.forward * bulletSpeed;
+            }
+            
+            // Belirli süre sonra yok et
+            Destroy(bullet, 3f);
+        }
+        
+        // Ateş hızı kadar bekle
+        yield return new WaitForSeconds(1f / fireRate);
+        
+        canFire = true;
+    }
+
+    // Düşman hasar alma fonksiyonu
+    public void TakeDamage(float damageAmount)
+    {
+        health -= damageAmount;
+        
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        // Ölüm işlemleri burada yapılır
+        // Örneğin: Ölüm animasyonu oynatma, ragdoll etkinleştirme, vb.
+        Destroy(gameObject, 2f); // 2 saniye sonra yok et
+    }
+
+    // Gizmo ile görüş ve ateş menzillerini görselleştirme
     private void OnDrawGizmosSelected()
     {
-        // Draw detection range
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
-
-        // Draw field of view
+        
         Gizmos.color = Color.red;
-        Vector3 fovLine1 = Quaternion.AngleAxis(fieldOfView / 2f, Vector3.up) * transform.forward * detectionRange;
-        Vector3 fovLine2 = Quaternion.AngleAxis(-fieldOfView / 2f, Vector3.up) * transform.forward * detectionRange;
-
-        Gizmos.DrawRay(transform.position, fovLine1);
-        Gizmos.DrawRay(transform.position, fovLine2);
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
