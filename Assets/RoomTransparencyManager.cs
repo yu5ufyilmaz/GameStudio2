@@ -172,7 +172,7 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
         
         RoomTransparencyManager script = (RoomTransparencyManager)target;
         
-        if (GUILayout.Button("Collider'ları Kullanarak Odaları Otomatik Bul"))
+        if (GUILayout.Button("Find Colliders Automatically for Rooms"))
         {
             FindRoomsAutomatically(script);
         }

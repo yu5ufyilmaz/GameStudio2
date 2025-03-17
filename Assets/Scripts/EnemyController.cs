@@ -1,12 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI; // Optional for NavMeshAgent integration
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
     private enum EnemyState { Idle, Patrol, Attack }
     private EnemyState currentState = EnemyState.Idle;
-
+    
     [Header("Detection")]
     [SerializeField] private float detectionRange = 15f;
     [SerializeField] private float fieldOfView = 90f;
@@ -204,27 +205,36 @@ public class EnemyController : MonoBehaviour
 
     private bool CanSeePlayer()
     {
-        if (player == null) return false;
+        if (player == null) {
+            Debug.Log("Player is null");
+            return false;
+        }
 
         // Check if player is within range
         Vector3 directionToPlayer = player.position - eyePosition.position;
         float distanceToPlayer = directionToPlayer.magnitude;
 
-        if (distanceToPlayer > detectionRange)
+        if (distanceToPlayer > detectionRange) {
+            Debug.Log("Player outside detection range: " + distanceToPlayer);
             return false;
+        }
 
         // Check if player is within field of view
         float angle = Vector3.Angle(transform.forward, directionToPlayer.normalized);
-        if (angle > fieldOfView / 2f)
+        if (angle > fieldOfView / 2f) {
+            Debug.Log("Player outside field of view: " + angle);
             return false;
+        }
 
         // Check if there's no obstacle between enemy and player
-        if (Physics.Raycast(eyePosition.position, directionToPlayer.normalized, distanceToPlayer, obstacleLayer))
+        if (Physics.Raycast(eyePosition.position, directionToPlayer.normalized, distanceToPlayer, obstacleLayer)) {
+            Debug.DrawRay(eyePosition.position, directionToPlayer.normalized, Color.red);
             return false;
+        }
 
+        Debug.Log("Player detected!");
         return true;
     }
-
     private IEnumerator Shoot()
     {
         canShoot = false;
