@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -77,7 +78,10 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
-
+        [SerializeField] AnimationCurve dodgeCurve;
+        [SerializeField] AudioClip dodgeAuido;
+        bool isDodging;
+        float dodgeTimer;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -111,6 +115,7 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private ShootController _shootController;
 
         private const float _threshold = 0.01f;
 
@@ -143,7 +148,7 @@ namespace StarterAssets
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
+            _shootController = GetComponent<ShootController>();
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
@@ -154,8 +159,9 @@ namespace StarterAssets
 #endif
 
             AssignAnimationIDs();
-
-            // reset our timeouts on start
+            Keyframe dodge_lastFrame = dodgeCurve[dodgeCurve.length - 1];
+            dodgeTimer = dodge_lastFrame.time;
+            // re  set our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
         }
@@ -166,7 +172,9 @@ namespace StarterAssets
 
             JumpAndGravity();
             GroundedCheck();
+            //if (!isDodging) 
             Move();
+            Dodge();
         }
 
         private void LateUpdate()
@@ -271,6 +279,25 @@ namespace StarterAssets
 
                     targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
                 }
+                else
+                {
+                    Vector3 aimDirection = (transform.forward * _input.move.y) + (transform.right * _input.move.x);
+                    aimDirection = aimDirection.normalized;
+
+                    // Mevcut yön ile nişan alma yönü arasındaki açıyı hesapla
+                    float angle = Vector3.Angle(transform.forward, aimDirection);
+
+                    // Eğer açı 120 dereceden büyükse, karakteri döndür
+                    if (angle > 120f)
+                    {
+                        _targetRotation = Mathf.Atan2(aimDirection.x, aimDirection.z) * Mathf.Rad2Deg +
+                                          _mainCamera.transform.eulerAngles.y;
+                        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+                        transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                    }
+
+                    targetDirection = aimDirection;
+                }
             }
             else
             {
@@ -289,7 +316,36 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
         }
+        private void Dodge()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+                if (currentHorizontalSpeed > 0) StartCoroutine(DodgeRoutine());
+            }
+        }
 
+        IEnumerator DodgeRoutine()
+        {
+            _animator.SetTrigger("Dodge");
+            isDodging = true;
+            float timer = 0;
+            AudioSource.PlayClipAtPoint(dodgeAuido, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+            _controller.center = new Vector3(0f, 0.49f, 0f);
+            _controller.height = 0.9f;
+            while (timer < dodgeTimer)
+            {
+                _shootController.targetWeight = 0f;
+                float speed = dodgeCurve.Evaluate(timer);
+                Vector3 dir = (transform.forward * speed) + (Vector3.up * _verticalVelocity);
+                _controller.Move(dir * Time.deltaTime);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            isDodging = false;
+            _controller.center = new Vector3(0f, 0.98f, 0f);
+            _controller.height = 1.8f;
+        }
         private void JumpAndGravity()
         {
             if (Grounded)

@@ -3,6 +3,7 @@ using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.Animations.Rigging;
 
 public class ShootController : MonoBehaviour
 {
@@ -17,6 +18,12 @@ public class ShootController : MonoBehaviour
 
     // Ses bileşeni
     private AudioSource audioSource;
+
+    //Rig Parametleri
+    [Range(0, 1)]
+    public float HeadIKAmount = 0f;
+    [Range(0, 1)]
+    public float LeftHandIKAmount = 0f;
 
     // INPUT PARAMETRELERI
     private InputAction shootAction;
@@ -49,7 +56,7 @@ public class ShootController : MonoBehaviour
     [Header("Nişan Alma Nesnesi")]
     [SerializeField]
     private GameObject aimTargetInstance; // Oluşturulacak nesne
-
+    private Rig rig;
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -57,7 +64,7 @@ public class ShootController : MonoBehaviour
         mainCamera = Camera.main;
         thirdPersonController = GetComponent<ThirdPersonController>();
         audioSource = gameObject.AddComponent<AudioSource>();
-
+        rig = GameObject.Find("Rig 1").GetComponent<Rig>();
         shootAction = playerInput.actions["Shoot"];
         aimAction = playerInput.actions["Aim"];
 
@@ -78,32 +85,37 @@ public class ShootController : MonoBehaviour
     {
         if (isAiming)
         {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            aimImage.transform.position = mousePosition;
+            Aim();
+        }
+        IKWeight();
+    }
+    void Aim()
+    {
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        aimImage.transform.position = mousePosition;
 
-            Ray ray = mainCamera.ScreenPointToRay(mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+        Ray ray = mainCamera.ScreenPointToRay(mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            Vector3 targetPosition = hit.point;
+
+            // Nişan alma nesnesini güncelle
+            if (aimTargetInstance != null)
             {
-                Vector3 targetPosition = hit.point;
-
-                // Nişan alma nesnesini güncelle
-                if (aimTargetInstance != null)
-                {
-                    aimTargetInstance.transform.position = targetPosition;
-                }
-
-                // Karakterin nişan aldığı yöne bakmasını sağla
-                Vector3 direction = (targetPosition - transform.position).normalized;
-                direction.y = 0; // Y eksenini sıfırla, sadece X ve Z düzleminde döndür
-                if (direction != Vector3.zero)
-                {
-                    Quaternion lookRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
-                }
-
-                // Çizgi çizme
-                Debug.DrawLine(muzzlePoint.position, targetPosition, Color.red);
+                aimTargetInstance.transform.position = targetPosition;
             }
+
+            // Karakterin nişan aldığı yöne bakmasını sağla
+            Vector3 direction = (targetPosition - transform.position).normalized;
+            direction.y = 0; // Y eksenini sıfırla, sadece X ve Z düzleminde döndür
+            if (direction != Vector3.zero)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+            }
+
+            // Çizgi çizme
+            Debug.DrawLine(muzzlePoint.position, targetPosition, Color.red);
         }
     }
 
@@ -140,6 +152,12 @@ public class ShootController : MonoBehaviour
                 {
                     Vector3 targetPosition = hit.point;
                     Vector3 direction = (targetPosition - muzzlePoint.position).normalized;
+
+                    // Apply bullet spread
+                    direction += new Vector3(
+                        Random.Range(-bulletSpread, bulletSpread),
+                        Random.Range(-bulletSpread, bulletSpread),
+                        Random.Range(-bulletSpread, bulletSpread));
 
                     // Merminin yönünü ayarla
                     rb.linearVelocity = direction * bulletSpeed; // Doğru yöne ateş et
@@ -199,6 +217,14 @@ public class ShootController : MonoBehaviour
         yield return new WaitForSeconds(shootCooldown);
         canShoot = true;
     }
+    public float targetWeight = 0f;
+    private float weightChangeSpeed = 10f; // Ağırlığın değişim hızı
+
+    void IKWeight()
+    {
+        // Ağırlığı yavaşça hedef ağırlığa doğru değiştir
+        rig.weight = Mathf.Lerp(rig.weight, targetWeight, Time.deltaTime * weightChangeSpeed);
+    }
 
     private void OnAimPerformed(InputAction.CallbackContext context)
     {
@@ -208,6 +234,9 @@ public class ShootController : MonoBehaviour
         {
             thirdPersonController.IsAiming = true;
         }
+
+        // Nişan alındığında hedef ağırlığı 1'e ayarla
+        targetWeight = 1f;
         animator.SetBool(IsAiming, true);
     }
 
@@ -219,9 +248,11 @@ public class ShootController : MonoBehaviour
         {
             thirdPersonController.IsAiming = false;
         }
+
+        // Nişan alma sona erdiğinde hedef ağırlığı 0'a ayarla
+        targetWeight = 0f;
         animator.SetBool(IsAiming, false);
     }
-
     private void OnDestroy()
     {
         shootAction.performed -= OnShootPerformed;
