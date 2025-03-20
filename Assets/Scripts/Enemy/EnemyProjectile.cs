@@ -40,6 +40,11 @@ namespace StarterAssets
                     Debug.Log("Player hit with damage: " + Damage);
                 }
             }
+            else
+            {
+                // Mermiyi yok et
+                Debug.Log("Projectile not hit player");
+            }
             
             // Mermiyi yok et
             Destroy(gameObject);

@@ -394,7 +394,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         // Ölüm işlemleri burada yapılır
         // Örneğin: Ölüm animasyonu oynatma, ragdoll etkinleştirme, vb.

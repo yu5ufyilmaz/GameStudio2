@@ -1,0 +1,146 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.Pool;
+[CreateAssetMenu(fileName = "Gun", menuName = "Guns/Gun", order = 0)]
+public class GunScriptableObject : ScriptableObject
+{
+
+    public GunType Type;
+    public string Name;
+    public GameObject ModelPrefab;
+    public Vector3 SpawnPosition;
+    public Vector3 SpawnRotation;
+
+
+    public DamageConfigScriptableObject DamageConfig;
+    public ShootScriptableObject ShootConfig;
+    public TrailScriptableObject TrailConfig;
+
+    private MonoBehaviour ActiveMonoBehaviour;
+    private GameObject Model;
+    private float LastShootTime;
+    private ParticleSystem ShootSystem;
+    private ObjectPool<TrailRenderer> TrailPool;
+
+    [SerializeField]
+    private AudioClip shootSound;
+    [Range(0, 1)] public float shootAudioVolume = 0.5f;
+
+
+    public void Spawn(Transform Parent, MonoBehaviour ActiveMonoBehaviour)
+    {
+        this.ActiveMonoBehaviour = ActiveMonoBehaviour;
+        LastShootTime = 0;
+        TrailPool = new ObjectPool<TrailRenderer>(CreateTrail);
+
+        Model = Instantiate(ModelPrefab);
+        Model.transform.SetParent(Parent, false);
+        Model.transform.localPosition = SpawnPosition;
+        Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
+
+        ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
+    }
+
+
+    public void Shoot()
+    {
+        if (Time.time > ShootConfig.FireRate + LastShootTime)
+        {
+            LastShootTime = Time.time;
+            ShootSystem.Play();
+            PlayShootSound();
+            Vector3 shootDirection = ShootSystem.transform.forward
+            + new Vector3(
+                Random.Range(-ShootConfig.Spread.x, ShootConfig.Spread.x),
+                Random.Range(-ShootConfig.Spread.y, ShootConfig.Spread.y),
+                Random.Range(-ShootConfig.Spread.z, ShootConfig.Spread.z)
+                );
+            shootDirection.Normalize();
+            if (Physics.Raycast(ShootSystem.transform.position, shootDirection, out RaycastHit hit, float.MaxValue, ShootConfig.HitMask))
+            {
+                ActiveMonoBehaviour.StartCoroutine(
+                    PlayTrail(
+                        ShootSystem.transform.position, hit.point, hit
+                    )
+                );
+            }
+            else
+            {
+                ActiveMonoBehaviour.StartCoroutine(
+                    PlayTrail(
+                        ShootSystem.transform.position,
+                        ShootSystem.transform.position + (shootDirection * TrailConfig.MissDistance),
+                        new RaycastHit()
+                    )
+                );
+            }
+        }
+
+    }
+
+    private void PlayShootSound()
+    {
+        if (shootSound != null)
+        {
+            AudioSource.PlayClipAtPoint(shootSound, ShootSystem.transform.position, shootAudioVolume);
+        }
+    }
+    private IEnumerator PlayTrail(Vector3 StartPoint, Vector3 EndPoint, RaycastHit Hit)
+    {
+        TrailRenderer instance = TrailPool.Get();
+        instance.gameObject.SetActive(true);
+        instance.transform.position = StartPoint;
+        yield return null;
+
+        instance.emitting = true;
+
+        float distance = Vector3.Distance(StartPoint, EndPoint);
+        float remainingDistance = distance;
+        while (remainingDistance > 0)
+        {
+            instance.transform.position = Vector3.Lerp(
+                StartPoint,
+                EndPoint, Mathf.Clamp01(1 - (remainingDistance / distance))
+            );
+            remainingDistance -= TrailConfig.SimulationSpeed * Time.deltaTime;
+            yield return null;
+        }
+        instance.transform.position = EndPoint;
+
+        if (Hit.collider != null)
+        {
+            //ÖNEMLİ////
+            //Burada mermi çarpma efectini yapıcağız
+            // SurfaceManager.Instance.HandleImpact(Hit.transform.gameObject, EndPoint, Hit.normal,ImpacteType,0);
+            
+            if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
+            {
+                damageable.TakeDamage(DamageConfig.GetDamage(distance));
+            }
+        }
+
+        yield return new WaitForSeconds(TrailConfig.Duration);
+        yield return null;
+        instance.emitting = false;
+        instance.gameObject.SetActive(false);
+        TrailPool.Release(instance);
+    }
+    private TrailRenderer CreateTrail()
+    {
+        GameObject Instance = new GameObject("Bullet Trail");
+        TrailRenderer trail = Instance.AddComponent<TrailRenderer>();
+        trail.colorGradient = TrailConfig.Color;
+        trail.material = TrailConfig.Material;
+        trail.widthCurve = TrailConfig.WidthCurve;
+        trail.time = TrailConfig.Duration;
+        trail.minVertexDistance = TrailConfig.MinVertexDistance;
+
+        trail.emitting = false;
+        trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+        return trail;
+
+    }
+
+
+}

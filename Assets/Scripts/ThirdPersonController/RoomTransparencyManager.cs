@@ -1,51 +1,56 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class RoomTransparencyManager : MonoBehaviour
 {
     public Transform player;
-    
+    public LayerMask buildingLayer; // Bina katmanı
+    public string transparentLayerName = "TransparentWalls";
+
     [Range(0, 1)]
     public float transparencyAmount = 0.3f;
-    
+
     public List<Room> rooms = new List<Room>();
-    
+
     private Room currentRoom;
-    
+
     void Start()
     {
         if (player == null)
         {
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
-        
+
         foreach (Room room in rooms)
         {
             SetRoomWallsOpaque(room);
         }
     }
-    
+
     void Update()
     {
         Room newRoom = GetRoomContainingPlayer();
-        
+
         if (newRoom != currentRoom)
         {
             if (currentRoom != null)
             {
                 SetRoomWallsOpaque(currentRoom);
+
             }
-            
+
             if (newRoom != null)
             {
                 SetRoomWallsTransparent(newRoom);
+
             }
-            
+
             currentRoom = newRoom;
         }
     }
-    
-  
+
+
     private Room GetRoomContainingPlayer()
     {
         foreach (Room room in rooms)
@@ -55,10 +60,10 @@ public class RoomTransparencyManager : MonoBehaviour
                 return room;
             }
         }
-        
+
         return null;
     }
-    
+
     private void SetRoomWallsOpaque(Room room)
     {
         foreach (Renderer wallRenderer in room.wallRenderers)
@@ -66,7 +71,6 @@ public class RoomTransparencyManager : MonoBehaviour
             SetWallOpacity(wallRenderer, 1.0f);
         }
     }
-    
     private void SetRoomWallsTransparent(Room room)
     {
         foreach (Renderer wallRenderer in room.wallRenderers)
@@ -74,11 +78,13 @@ public class RoomTransparencyManager : MonoBehaviour
             SetWallOpacity(wallRenderer, transparencyAmount);
         }
     }
-    
+
 
     private void SetWallOpacity(Renderer wallRenderer, float opacity)
     {
+        int layer = LayerMask.NameToLayer(transparentLayerName);
         Material[] materials = wallRenderer.materials;
+        wallRenderer.gameObject.layer = layer;
         foreach (Material mat in materials)
         {
             if (opacity < 1.0f && mat.renderQueue < 3000)
@@ -91,11 +97,13 @@ public class RoomTransparencyManager : MonoBehaviour
                 mat.EnableKeyword("_ALPHABLEND_ON");
                 mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                 mat.renderQueue = 3000;
+
+
             }
             else if (opacity >= 1.0f && mat.renderQueue >= 3000)
             {
                 // Opak modk
-                mat.SetFloat("_Mode", 0); 
+                mat.SetFloat("_Mode", 0);
                 mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                 mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                 mat.SetInt("_ZWrite", 1);
@@ -104,7 +112,7 @@ public class RoomTransparencyManager : MonoBehaviour
                 mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                 mat.renderQueue = -1;
             }
-            
+
             Color color = mat.color;
             color.a = opacity;
             mat.color = color;
@@ -117,13 +125,13 @@ public class RoomTransparencyManager : MonoBehaviour
 public class Room
 {
     public string roomName;
-    
-    
+
+
     public Collider roomCollider;
-    
+
 
     public List<Renderer> wallRenderers = new List<Renderer>();
-    
+
 
     public bool IsPlayerInside(Vector3 playerPosition)
     {
@@ -142,13 +150,13 @@ public class Door
 
     public Room room1;
     public Room room2;
-    
+
 
     public bool isOpen = false;
-    
+
 
     public Renderer doorRenderer;
-    
+
 
     public Animator doorAnimator;
 
@@ -169,9 +177,9 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
-        
+
         RoomTransparencyManager script = (RoomTransparencyManager)target;
-        
+
         if (GUILayout.Button("Find Colliders Automatically for Rooms"))
         {
             FindRoomsAutomatically(script);
@@ -181,9 +189,9 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
     void FindRoomsAutomatically(RoomTransparencyManager script)
     {
         script.rooms.Clear();
-        
+
         GameObject[] roomObjects = GameObject.FindGameObjectsWithTag("Room");
-        
+
         foreach (GameObject roomObj in roomObjects)
         {
             Collider roomCollider = roomObj.GetComponent<Collider>();
@@ -192,8 +200,8 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
                 Room room = new Room();
                 room.roomName = roomObj.name;
                 room.roomCollider = roomCollider;
-                
-             
+
+
                 foreach (Transform child in roomObj.transform)
                 {
                     if (child.CompareTag("Wall"))
@@ -205,7 +213,7 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
                         }
                     }
                 }
-                
+
                 script.rooms.Add(room);
             }
         }
