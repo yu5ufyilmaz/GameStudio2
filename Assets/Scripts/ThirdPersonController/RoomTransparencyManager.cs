@@ -83,8 +83,13 @@ public class RoomTransparencyManager : MonoBehaviour
     private void SetWallOpacity(Renderer wallRenderer, float opacity)
     {
         int layer = LayerMask.NameToLayer(transparentLayerName);
+        int defLayer = LayerMask.NameToLayer("Default");
         Material[] materials = wallRenderer.materials;
-        wallRenderer.gameObject.layer = layer;
+
+        if (wallRenderer.gameObject.layer == defLayer)
+            wallRenderer.gameObject.layer = layer;
+        else
+            wallRenderer.gameObject.layer = defLayer;
         foreach (Material mat in materials)
         {
             if (opacity < 1.0f && mat.renderQueue < 3000)

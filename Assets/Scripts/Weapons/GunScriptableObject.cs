@@ -13,24 +13,33 @@ public class GunScriptableObject : ScriptableObject
 
 
     public DamageConfigScriptableObject DamageConfig;
+    public AmmoScriptableObject AmmoConfig;
     public ShootScriptableObject ShootConfig;
     public TrailScriptableObject TrailConfig;
+    public AudioScriptableObject AudioConfig;
 
     private MonoBehaviour ActiveMonoBehaviour;
     private GameObject Model;
+    private AudioSource modelAudioSource;
     private float LastShootTime;
     private ParticleSystem ShootSystem;
     private ObjectPool<TrailRenderer> TrailPool;
+
 
     [SerializeField]
     private AudioClip shootSound;
     [Range(0, 1)] public float shootAudioVolume = 0.5f;
 
 
-    public void Spawn(Transform Parent, MonoBehaviour ActiveMonoBehaviour)
+
+    public void Spawn(Transform Parent, MonoBehaviour ActiveMonoBehaviour, Camera ActiveCamera = null)
     {
         this.ActiveMonoBehaviour = ActiveMonoBehaviour;
         LastShootTime = 0;
+
+        AmmoConfig.CurrentClipAmmo = AmmoConfig.ClipSize;
+        AmmoConfig.CurrentAmmo = AmmoConfig.MaxAmmo;
+
         TrailPool = new ObjectPool<TrailRenderer>(CreateTrail);
 
         Model = Instantiate(ModelPrefab);
@@ -39,45 +48,80 @@ public class GunScriptableObject : ScriptableObject
         Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
 
         ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
+        modelAudioSource = Model.GetComponentInChildren<AudioSource>();
     }
-
-
-    public void Shoot()
+    public bool CanReload()
+    {
+        return AmmoConfig.CanReload();
+    }
+    public void EndReload()
+    {
+        AmmoConfig.Reload();
+    }
+    public void StartReloading()
+    {
+        AudioConfig.PlayReloadClip(modelAudioSource);
+    }
+    public void Shoot(GameObject aimTargetInstance)
     {
         if (Time.time > ShootConfig.FireRate + LastShootTime)
         {
-            LastShootTime = Time.time;
-            ShootSystem.Play();
-            PlayShootSound();
-            Vector3 shootDirection = ShootSystem.transform.forward
-            + new Vector3(
-                Random.Range(-ShootConfig.Spread.x, ShootConfig.Spread.x),
-                Random.Range(-ShootConfig.Spread.y, ShootConfig.Spread.y),
-                Random.Range(-ShootConfig.Spread.z, ShootConfig.Spread.z)
-                );
-            shootDirection.Normalize();
-            if (Physics.Raycast(ShootSystem.transform.position, shootDirection, out RaycastHit hit, float.MaxValue, ShootConfig.HitMask))
+            if (AmmoConfig.CurrentClipAmmo > 0)
             {
-                ActiveMonoBehaviour.StartCoroutine(
-                    PlayTrail(
-                        ShootSystem.transform.position, hit.point, hit
-                    )
-                );
+
+                LastShootTime = Time.time;
+                ShootSystem.Play();
+                AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
+
+                // Nişan alma hedef pozisyonunu al
+                Vector3 targetPosition = aimTargetInstance.transform.position;
+
+                // Merminin hedef pozisyona doğru yönünü hesapla
+                Vector3 shootDirection = (targetPosition - ShootSystem.transform.position).normalized
+                    + new Vector3(
+                        Random.Range(-ShootConfig.Spread.x, ShootConfig.Spread.x),
+                        Random.Range(-ShootConfig.Spread.y, ShootConfig.Spread.y),
+                        Random.Range(-ShootConfig.Spread.z, ShootConfig.Spread.z)
+                    );
+
+                shootDirection.Normalize();
+                AmmoConfig.CurrentClipAmmo--;
+                // Raycast ile merminin gideceği yönü kontrol et
+                if (Physics.Raycast(ShootSystem.transform.position, shootDirection, out RaycastHit hit, float.MaxValue, ShootConfig.HitMask))
+                {
+                    ActiveMonoBehaviour.StartCoroutine(
+                        PlayTrail(
+                            ShootSystem.transform.position, hit.point, hit
+                        )
+                    );
+                }
+                else
+                {
+                    ActiveMonoBehaviour.StartCoroutine(
+                        PlayTrail(
+                            ShootSystem.transform.position,
+                            ShootSystem.transform.position + (shootDirection * TrailConfig.MissDistance),
+                            new RaycastHit()
+                        )
+                    );
+                }
             }
             else
             {
-                ActiveMonoBehaviour.StartCoroutine(
-                    PlayTrail(
-                        ShootSystem.transform.position,
-                        ShootSystem.transform.position + (shootDirection * TrailConfig.MissDistance),
-                        new RaycastHit()
-                    )
-                );
+                AudioConfig.PLayOutOfAmmoClip(modelAudioSource); 
             }
         }
 
     }
-
+    public Vector3 GetRaycastOrigin()
+    {
+        Vector3 origin = ShootSystem.transform.position;
+        return origin;
+    }
+    public Vector3 GetGunForward()
+    {
+        return Model.transform.forward;
+    }
     private void PlayShootSound()
     {
         if (shootSound != null)
@@ -112,7 +156,7 @@ public class GunScriptableObject : ScriptableObject
             //ÖNEMLİ////
             //Burada mermi çarpma efectini yapıcağız
             // SurfaceManager.Instance.HandleImpact(Hit.transform.gameObject, EndPoint, Hit.normal,ImpacteType,0);
-            
+
             if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
             {
                 damageable.TakeDamage(DamageConfig.GetDamage(distance));

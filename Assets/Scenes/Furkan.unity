@@ -169,6 +169,10 @@ MonoBehaviour:
   patrolPoints: []
   waypointStopDistance: 0.5
   waitTime: 2
+  FootstepAudioClips: []
+  FootstepAudioVolume: 0.5
+  shootSound: {fileID: 0}
+  shootAudioVolume: 0.5
 --- !u!4 &5650056
 Transform:
   m_ObjectHideFlags: 0
@@ -666,6 +670,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 3893294199639930361}
+  buildingLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  transparentLayerName: TransparentWalls
   transparencyAmount: 0.3
   rooms:
   - roomName: Structure_Prefab
@@ -12362,7 +12370,7 @@ Transform:
   m_GameObject: {fileID: 2070925443028286612}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: 18.215973, y: 6.3750005, z: -6.0117235}
+  m_LocalPosition: {x: -46.843727, y: 6.375001, z: 3.3162773}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14619,7 +14627,7 @@ Transform:
   m_GameObject: {fileID: 4416926083347132227}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.998401, z: -0, w: -0.056528777}
-  m_LocalPosition: {x: 24.339697, y: 0, z: 0.112}
+  m_LocalPosition: {x: -40.72, y: 0, z: 9.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15087,6 +15095,13 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+  dodgeCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  dodgeAuido: {fileID: 0}
 --- !u!143 &4416926083347132233
 CharacterController:
   m_ObjectHideFlags: 0
@@ -16978,14 +16993,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbaf737bb7718824c86e9b98352e6d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crosshair: {fileID: 0}
+  GunSelector: {fileID: 0}
+  _leftHandReferans: {fileID: 0}
+  _leftElbowReferans: {fileID: 0}
+  leftElbowTarget: {fileID: 0}
+  leftHandTarget: {fileID: 0}
+  leftIdleHandTarget: {fileID: 0}
+  leftIdleElbowTarget: {fileID: 0}
+  HandIKAmount: 1
+  ElbowIKAmount: 1
+  autoReload: 1
   aimImage: {fileID: 1705943814}
   bulletPrefab: {fileID: 5671858156844636114, guid: b2eb46cd0bc253a48a27300de70f202c,
     type: 3}
-  muzzlePoint: {fileID: 1082522678}
+  shootSound: {fileID: 0}
+  shootAudioVolume: 0.5
   bulletSpeed: 20
   recoilAmount: 0.1
   bulletSpread: 0.05
   shootCooldown: 0.5
+  aimTargetInstance: {fileID: 0}
+  targetWeight: 0
 --- !u!4 &6983258930626336602
 Transform:
   m_ObjectHideFlags: 0
@@ -19122,7 +19151,7 @@ Transform:
   m_GameObject: {fileID: 8944336656349189697}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: 18.215973, y: 6.3750005, z: -6.0117235}
+  m_LocalPosition: {x: -46.843727, y: 6.375001, z: 3.3162773}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

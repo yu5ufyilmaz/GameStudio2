@@ -9,6 +9,9 @@ using Unity.VisualScripting;
 
 public class ShootController : MonoBehaviour
 {
+
+    [SerializeField]
+    private Image crosshair;
     [SerializeField]
     private PlayerGunSelector GunSelector;
     public Transform _leftHandReferans;
@@ -29,17 +32,27 @@ public class ShootController : MonoBehaviour
     private static readonly int IsShooting = Animator.StringToHash("isShooting");
     private static readonly int IsAiming = Animator.StringToHash("isAiming");
     private Animator animator;
-    private bool isShooting;
     private bool isAiming;
-    private bool isShootingInProgress;
-    private bool canShoot = true;
+
+
+    //Reload
+    [SerializeField]
+    private bool autoReload = true;
+    private bool shouldManuelReload = false;
+    [SerializeField]
+    private bool isReloading = false;
+
+
 
     // Ses bileşeni
     private AudioSource audioSource;
 
+
+
     // INPUT PARAMETRELERI
     private InputAction shootAction;
     private InputAction aimAction;
+    private InputAction reloadAction;
     private PlayerInput playerInput;
     private Camera mainCamera;
     private ThirdPersonController thirdPersonController;
@@ -47,31 +60,23 @@ public class ShootController : MonoBehaviour
     [Header("Referanslar")]
     [SerializeField]
     private Image aimImage;
-    [SerializeField]
-    private GameObject bulletPrefab;
 
     //private Transform muzzlePoint;
     [SerializeField]
     private AudioClip shootSound;
     [Range(0, 1)] public float shootAudioVolume = 0.5f;
 
-    [Header("Ateş Parametreleri")]
-    [SerializeField]
-    private float bulletSpeed = 20f;
-    [SerializeField]
-    private float recoilAmount = 0.1f;
-    [SerializeField]
-    private float bulletSpread = 0.05f;
-    [SerializeField]
-    private float shootCooldown = 0.5f;
 
     [Header("Nişan Alma Nesnesi")]
     [SerializeField]
     private GameObject aimTargetInstance; // Oluşturulacak nesne
-    private Rig rig;
-    private TwoBoneIKConstraint leftHandIKConstraint;
+    private Rig rig1;
+    private Rig rig2;
     public float targetWeight = 0f;
-    private float weightChangeSpeed = 10f; // Ağırlığın değişim hızı
+    private float weightChangeSpeed = 100f; // Ağırlığın değişim hızı
+
+
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -79,21 +84,28 @@ public class ShootController : MonoBehaviour
         mainCamera = Camera.main;
         thirdPersonController = GetComponent<ThirdPersonController>();
         audioSource = gameObject.AddComponent<AudioSource>();
-        rig = GameObject.Find("Rig 1").GetComponent<Rig>();
+        rig1 = GameObject.Find("Rig 1").GetComponent<Rig>();
+        rig2 = GameObject.Find("Rig 2").GetComponent<Rig>();
         shootAction = playerInput.actions["Shoot"];
         aimAction = playerInput.actions["Aim"];
+        reloadAction = playerInput.actions["Reload"];
 
         shootAction.Enable();
         aimAction.Enable();
 
+
         shootAction.performed += OnShootPerformed;
         aimAction.performed += OnAimPerformed;
+        reloadAction.performed += OnReloadPerformed;
+        reloadAction.canceled += OnReloadCanceled;
         aimAction.canceled += OnAimCanceled;
+
 
         aimImage.enabled = false;
         Cursor.visible = false;
+
+
         DoIKMagic();
-        // Nişan alma nesnesini oluştur
     }
     void DoIKMagic()
     {
@@ -109,8 +121,23 @@ public class ShootController : MonoBehaviour
         {
             Aim();
         }
-        IKWeight();
+        if (ShouldAutoReload() || ShouldManuelReload())
+        {
+            IKWeight(rig2, 0);
+            GunSelector.ActiveGun.StartReloading();
+            isReloading = true;
+            animator.SetTrigger("Reload");
+        }
+        IKWeight(rig1);
     }
+
+    private void EndReload()
+    {
+
+        GunSelector.ActiveGun.EndReload();
+        isReloading = false;
+    }
+
     void Aim()
     {
         Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -140,117 +167,44 @@ public class ShootController : MonoBehaviour
             //Debug.DrawLine(GunSelector.ActiveGun.position, targetPosition, Color.red);
         }
     }
-
+    private bool ShouldAutoReload()
+    {
+        return
+        !isReloading
+        && autoReload
+        && GunSelector.ActiveGun.AmmoConfig.CurrentClipAmmo == 0
+        && GunSelector.ActiveGun.AmmoConfig.CanReload();
+    }
+    private bool ShouldManuelReload()
+    {
+        return !isReloading
+        && shouldManuelReload
+        && GunSelector.ActiveGun.AmmoConfig.CanReload();
+    }
     private void OnShootPerformed(InputAction.CallbackContext context)
     {
         if (GunSelector != null)
         {
-            GunSelector.ActiveGun.Shoot();
-            PlayShootSound();
+            GunSelector.ActiveGun.Shoot(aimTargetInstance);
         }
 
-        /* if (!isShootingInProgress && canShoot)
-         {
-             isShootingInProgress = true;
-             isShooting = true;
-             animator.SetBool(IsShooting, true);
-             float animationDuration = GetAnimationDuration("isShooting");
-             StartCoroutine(ResetShooting(animationDuration));
-             ApplyRecoil();
-              ApplyBulletSpread();
-             Shoot();  // Ateş etme fonksiyonunu çağır
 
-
-              StartCoroutine(ShootCooldown());
-
-         }*/
-    }
-    /*
-        private void Shoot()
-        {
-            if (bulletPrefab != null && muzzlePoint != null)
-            {
-                GameObject bullet = Instantiate(bulletPrefab, muzzlePoint.position, muzzlePoint.rotation);
-                Rigidbody rb = bullet.GetComponent<Rigidbody>();
-
-                if (rb != null)
-                {
-                    // Fare konumunu kullanarak hedef pozisyonunu belirle
-                    Vector2 mousePosition = Mouse.current.position.ReadValue();
-                    Ray ray = mainCamera.ScreenPointToRay(mousePosition);
-                    if (Physics.Raycast(ray, out RaycastHit hit))
-                    {
-                        Vector3 targetPosition = hit.point;
-                        Vector3 direction = (targetPosition - muzzlePoint.position).normalized;
-
-                        // Apply bullet spread
-                        direction += new Vector3(
-                            Random.Range(-bulletSpread, bulletSpread),
-                            Random.Range(-bulletSpread, bulletSpread),
-                            Random.Range(-bulletSpread, bulletSpread));
-
-                        // Merminin yönünü ayarla
-                        rb.linearVelocity = direction * bulletSpeed; // Doğru yöne ateş et
-                    }
-                }
-            }
-        }*/
-
-    private float GetAnimationDuration(string animationName)
-    {
-        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-        foreach (AnimationClip clip in clips)
-        {
-            if (clip.name == animationName)
-                return clip.length;
-        }
-        return 0.5f;
-    }
-
-    private void PlayShootSound()
-    {
-        if (shootSound != null && audioSource != null)
-        {
-            AudioSource.PlayClipAtPoint(shootSound, GunSelector.transform.position, shootAudioVolume);
-        }
-    }
-
-    private IEnumerator ResetShooting(float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        isShooting = false;
-        isShootingInProgress = false;
-        animator.SetBool(IsShooting, false);
-    }
-
-    private void ApplyRecoil()
-    {
-        mainCamera.transform.localPosition += Random.insideUnitSphere * recoilAmount;
-    }
-
-    private void ApplyBulletSpread()
-    {
-        Vector3 spread = new Vector3(
-            Random.Range(-bulletSpread, bulletSpread),
-            Random.Range(-bulletSpread, bulletSpread),
-            0);
-        mainCamera.transform.forward += spread;
-    }
-
-    private IEnumerator ShootCooldown()
-    {
-        canShoot = false;
-        yield return new WaitForSeconds(shootCooldown);
-        canShoot = true;
     }
 
 
-    void IKWeight()
+
+    void IKWeight(Rig rig, float targetWeight = 0f)
     {
-        // Ağırlığı yavaşça hedef ağırlığa doğru değiştir
         rig.weight = Mathf.Lerp(rig.weight, targetWeight, Time.deltaTime * weightChangeSpeed);
     }
-
+    private void OnReloadPerformed(InputAction.CallbackContext context)
+    {
+        shouldManuelReload = true;
+    }
+    private void OnReloadCanceled(InputAction.CallbackContext context)
+    {
+        shouldManuelReload = false;
+    }
     private void OnAimPerformed(InputAction.CallbackContext context)
     {
 
@@ -293,9 +247,13 @@ public class ShootController : MonoBehaviour
     private void OnDestroy()
     {
         shootAction.performed -= OnShootPerformed;
+        reloadAction.performed -= OnReloadPerformed;
+        reloadAction.canceled -= OnReloadCanceled;
         aimAction.performed -= OnAimPerformed;
         aimAction.canceled -= OnAimCanceled;
 
+
+        reloadAction.Disable();
         shootAction.Disable();
         aimAction.Disable();
     }

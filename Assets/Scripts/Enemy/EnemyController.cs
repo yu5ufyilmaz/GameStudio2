@@ -398,7 +398,7 @@ public class EnemyController : MonoBehaviour
     {
         // Ölüm işlemleri burada yapılır
         // Örneğin: Ölüm animasyonu oynatma, ragdoll etkinleştirme, vb.
-        Destroy(gameObject, 2f); // 2 saniye sonra yok et
+        Destroy(gameObject, 1f); // 2 saniye sonra yok et
     }
 
     // Gizmo ile görüş ve ateş menzillerini görselleştirme

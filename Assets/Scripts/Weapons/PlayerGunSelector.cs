@@ -10,7 +10,7 @@ public class PlayerGunSelector : MonoBehaviour
     [SerializeField]
     private List<GunScriptableObject> Guns;
 
-
+        
 
     [Space]
     [Header("Runtime Filled")]
