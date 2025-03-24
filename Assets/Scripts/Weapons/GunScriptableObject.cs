@@ -108,7 +108,7 @@ public class GunScriptableObject : ScriptableObject
             }
             else
             {
-                AudioConfig.PLayOutOfAmmoClip(modelAudioSource); 
+                AudioConfig.PLayOutOfAmmoClip(modelAudioSource);
             }
         }
 
@@ -153,15 +153,19 @@ public class GunScriptableObject : ScriptableObject
 
         if (Hit.collider != null)
         {
-            //ÖNEMLİ////
-            //Burada mermi çarpma efectini yapıcağız
-            // SurfaceManager.Instance.HandleImpact(Hit.transform.gameObject, EndPoint, Hit.normal,ImpacteType,0);
-
-            if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
+            if (Hit.collider.gameObject.layer != LayerMask.NameToLayer("Bones"))
             {
-                damageable.TakeDamage(DamageConfig.GetDamage(distance));
+                if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
+                {
+                    damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
+                }
+            }
+            else
+            {
+                Debug.Log(Hit.collider.name + " does not implement IDamageable");
             }
         }
+
 
         yield return new WaitForSeconds(TrailConfig.Duration);
         yield return null;

@@ -40,7 +40,7 @@ public class ShootController : MonoBehaviour
     private bool autoReload = true;
     private bool shouldManuelReload = false;
     [SerializeField]
-    private bool isReloading = false;
+    public bool isReloading = false;
 
 
 
@@ -73,7 +73,7 @@ public class ShootController : MonoBehaviour
     private Rig rig1;
     private Rig rig2;
     public float targetWeight = 0f;
-    private float weightChangeSpeed = 100f; // Ağırlığın değişim hızı
+    private float weightChangeSpeed = 5f; // Ağırlığın değişim hızı
 
 
 
@@ -117,20 +117,30 @@ public class ShootController : MonoBehaviour
     }
     void Update()
     {
-        if (isAiming)
-        {
-            Aim();
-        }
+
         if (ShouldAutoReload() || ShouldManuelReload())
         {
-            IKWeight(rig2, 0);
+
+            IKWeight(rig2, targetWeight);
             GunSelector.ActiveGun.StartReloading();
             isReloading = true;
             animator.SetTrigger("Reload");
         }
-        IKWeight(rig1);
-    }
+        else
+        {
+            if (isAiming)
+            {
 
+                Aim();
+                IKWeight(rig1, targetWeight);
+            }
+            else
+            {
+                IKWeight(rig2, targetWeight);
+            }
+        }
+
+    }
     private void EndReload()
     {
 
@@ -193,9 +203,11 @@ public class ShootController : MonoBehaviour
 
 
 
-    void IKWeight(Rig rig, float targetWeight = 0f)
+    void IKWeight(Rig rig, float targetWeight)
     {
         rig.weight = Mathf.Lerp(rig.weight, targetWeight, Time.deltaTime * weightChangeSpeed);
+        //animator.SetLayerWeight(1, rig.weight);
+
     }
     private void OnReloadPerformed(InputAction.CallbackContext context)
     {

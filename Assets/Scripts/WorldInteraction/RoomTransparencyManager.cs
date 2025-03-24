@@ -123,6 +123,10 @@ public class RoomTransparencyManager : MonoBehaviour
             mat.color = color;
         }
     }
+    private void SetWallLayer()
+    {
+        
+    }
 }
 
 

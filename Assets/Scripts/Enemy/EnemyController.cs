@@ -55,6 +55,7 @@ public class EnemyController : MonoBehaviour
     private float _targetSpeed;
     private float _currentSpeed;
     private float _animationBlend;
+    public bool isDie = false;
 
     private void Start()
     {
@@ -95,34 +96,45 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        /*if (playerTransform == null)
-            return;*/
 
-        // Oyuncuya olan mesafeyi hesaplama
-        distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-
-        // Oyuncuyu görüş kontrolü
-        CheckPlayerVisibility();
-        UpdateAnimation();
-        // Durum makinesi
-        switch (currentState)
+        if (IsStopEnemy() == false)
         {
-            case EnemyState.Idle:
-                UpdateIdleState();
-                break;
-            case EnemyState.Patrol:
-                UpdatePatrolState();
-                break;
-            case EnemyState.Chase:
-                UpdateChaseState();
-                break;
-            case EnemyState.Attack:
-                UpdateAttackState();
-                break;
+            distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+            // Oyuncuyu görüş kontrolü
+            CheckPlayerVisibility();
+            UpdateAnimation();
+            // Durum makinesi
+            switch (currentState)
+            {
+                case EnemyState.Idle:
+                    UpdateIdleState();
+                    break;
+                case EnemyState.Patrol:
+                    UpdatePatrolState();
+                    break;
+                case EnemyState.Chase:
+                    UpdateChaseState();
+                    break;
+                case EnemyState.Attack:
+                    UpdateAttackState();
+                    break;
+            }
         }
-
-        // Animasyon güncellemesi
-
+        else
+        {
+            EnemyDieActions();
+        }
+    }
+    private void EnemyDieActions()
+    {
+        navMeshAgent.enabled = false;
+        animator.SetLayerWeight(1, 0f);
+        //Destroy(gameObject, 4f);
+    }
+    public bool IsStopEnemy()
+    {
+        return isDie;
     }
     private void OnFootstep(AnimationEvent animationEvent)
     {
@@ -382,23 +394,6 @@ public class EnemyController : MonoBehaviour
         {
             AudioSource.PlayClipAtPoint(shootSound, transform.position, shootAudioVolume);
         }
-    }
-    // Düşman hasar alma fonksiyonu
-    public void TakeDamage(float damageAmount)
-    {
-        health -= damageAmount;
-
-        if (health <= 0)
-        {
-            Die();
-        }
-    }
-
-    public void Die()
-    {
-        // Ölüm işlemleri burada yapılır
-        // Örneğin: Ölüm animasyonu oynatma, ragdoll etkinleştirme, vb.
-        Destroy(gameObject, 1f); // 2 saniye sonra yok et
     }
 
     // Gizmo ile görüş ve ateş menzillerini görselleştirme

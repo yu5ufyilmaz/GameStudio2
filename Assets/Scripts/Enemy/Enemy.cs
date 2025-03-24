@@ -8,10 +8,15 @@ public class Enemy : MonoBehaviour
    void Start()
    {
       health.OnDeath += Die;
+      health.OnTakeDamage += HitResponse;
    }
-
+   private void HitResponse(int Damage)
+   {
+      painResponse.HandlePain();
+   }
    private void Die(Vector3 Position)
    {
       painResponse.HandleDeath();
+      controller.isDie = true;
    }
 }

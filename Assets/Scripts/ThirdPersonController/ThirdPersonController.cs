@@ -108,6 +108,12 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
+        //Door Interaction
+        public float interactionRadius = 2f; // Oyuncunun etkileşim alanı
+        public float openSpeed = 2f; // Kapının açılma hızı
+        private bool isOpen = false; // Kapının açık mı kapalı mı olduğunu kontrol eder
+        private Transform currentDoor; // Şu an etkileşimde olduğumuz kapı
+
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
 #endif
@@ -175,6 +181,7 @@ namespace StarterAssets
             //if (!isDodging) 
             Move();
             Dodge();
+            OpenDoor();
         }
 
         private void LateUpdate()
@@ -238,7 +245,8 @@ namespace StarterAssets
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
-            // Aiming halinde hızı azaltmaca
+
+            // Aiming halinde hızı azaltma
             if (IsAiming)
             {
                 targetSpeed *= 1f;
@@ -281,22 +289,8 @@ namespace StarterAssets
                 }
                 else
                 {
-                    Vector3 aimDirection = (transform.forward * _input.move.y) + (transform.right * _input.move.x);
-                    aimDirection = aimDirection.normalized;
-
-                    // Mevcut yön ile nişan alma yönü arasındaki açıyı hesapla
-                    float angle = Vector3.Angle(transform.forward, aimDirection);
-
-                    // Eğer açı 120 dereceden büyükse, karakteri döndür
-                    if (angle > 120f)
-                    {
-                        _targetRotation = Mathf.Atan2(aimDirection.x, aimDirection.z) * Mathf.Rad2Deg +
-                                          _mainCamera.transform.eulerAngles.y;
-                        float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
-                        transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-                    }
-
-                    targetDirection = aimDirection;
+                    // Eğer hareket yoksa, karakterin açısını değiştirme
+                    targetDirection = transform.forward; // Mevcut yönü koru
                 }
             }
             else
@@ -324,9 +318,38 @@ namespace StarterAssets
                 if (currentHorizontalSpeed > 0) StartCoroutine(DodgeRoutine());
             }
         }
+        private void OpenDoor()
+        {
+            // Oyuncunun etrafındaki kapıları kontrol et
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, interactionRadius);
+            currentDoor = null; // Her frame'de kapıyı sıfırla
 
+            foreach (var hitCollider in hitColliders)
+            {
+                if (hitCollider.CompareTag("Door"))
+                {
+                    currentDoor = hitCollider.transform; // Kapıyı kaydet
+                    break; // İlk kapıyı bulduktan sonra döngüyü kır
+                }
+            }
+
+            // Eğer bir kapı varsa ve E tuşuna basıldıysa
+            if (currentDoor != null && Input.GetKeyDown(KeyCode.E))
+            {
+                ToggleDoor(currentDoor); // Kapıyı aç/kapa
+            }
+        }
+        private void ToggleDoor(Transform door)
+        {
+            DoorController doorController = door.GetComponent<DoorController>();
+            if (doorController != null)
+            {
+                doorController.ToggleDoor(transform.position); // Oyuncunun pozisyonunu geçir
+            }
+        }
         IEnumerator DodgeRoutine()
         {
+            _shootController.targetWeight = 0f;
             _animator.SetTrigger("Dodge");
             isDodging = true;
             float timer = 0;
