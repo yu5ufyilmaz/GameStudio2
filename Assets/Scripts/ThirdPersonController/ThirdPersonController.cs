@@ -79,8 +79,10 @@ namespace StarterAssets
         public bool LockCameraPosition = false;
 
         [SerializeField] AnimationCurve dodgeCurve;
+        [SerializeField] AnimationCurve jumpAwayCurve;
         [SerializeField] AudioClip dodgeAuido;
         bool isDodging;
+        bool isJumpAway;
         float dodgeTimer;
 
         // cinemachine
@@ -178,8 +180,8 @@ namespace StarterAssets
 
             JumpAndGravity();
             GroundedCheck();
-            //if (!isDodging) 
-            Move();
+            if (isJumpAway == false)
+                Move();
             Dodge();
             OpenDoor();
         }
@@ -310,14 +312,7 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
         }
-        private void Dodge()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-                if (currentHorizontalSpeed > 0) StartCoroutine(DodgeRoutine());
-            }
-        }
+
         private void OpenDoor()
         {
             // Oyuncunun etrafındaki kapıları kontrol et
@@ -347,9 +342,23 @@ namespace StarterAssets
                 doorController.ToggleDoor(transform.position); // Oyuncunun pozisyonunu geçir
             }
         }
+        private void Dodge()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
+                float currentHorizontalSpeed = localVelocity.z;
+                float currentVerticalSpeed = localVelocity.x;
+
+                if (currentHorizontalSpeed > 1.9f) StartCoroutine(DodgeRoutine());
+                else if (currentVerticalSpeed > 1.9f) StartCoroutine(JumpAwayRoutine(true));
+                else if (currentVerticalSpeed < -1.9f) StartCoroutine(JumpAwayRoutine(false));
+
+            }
+        }
         IEnumerator DodgeRoutine()
         {
-            _shootController.targetWeight = 0f;
+            _shootController.DodgeIK(0f);
             _animator.SetTrigger("Dodge");
             isDodging = true;
             float timer = 0;
@@ -358,16 +367,62 @@ namespace StarterAssets
             _controller.height = 0.9f;
             while (timer < dodgeTimer)
             {
-                _shootController.targetWeight = 0f;
                 float speed = dodgeCurve.Evaluate(timer);
                 Vector3 dir = (transform.forward * speed) + (Vector3.up * _verticalVelocity);
                 _controller.Move(dir * Time.deltaTime);
                 timer += Time.deltaTime;
                 yield return null;
             }
+            //_shootController.DodgeIK(1f);
             isDodging = false;
-            _controller.center = new Vector3(0f, 0.98f, 0f);
+            _controller.center = new Vector3(0f, 0.9f, 0f);
             _controller.height = 1.8f;
+        }
+        IEnumerator JumpAwayRoutine(bool isRight)
+        {
+            if (isRight)
+            {
+                _animator.SetTrigger("JumpAwayRight");
+                _controller.center = new Vector3(1.2f, 0.25f, 0f);
+                _controller.height = 0.72f;
+            }
+            else
+            {
+                _animator.SetTrigger("JumpAwayLeft");
+                _controller.center = new Vector3(-1.2f, 0.25f, 0f);
+                _controller.height = 0.72f;
+            }
+            isJumpAway = true;
+
+            _shootController.DodgeIK(0f);
+
+            float timer = 0;
+            AudioSource.PlayClipAtPoint(dodgeAuido, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+
+            while (timer < dodgeTimer)
+            {
+                float curveSpeed = jumpAwayCurve.Evaluate(timer);
+
+                Vector3 dir = (isRight ? transform.right : -transform.right);
+
+                Vector3 moveVector = dir * (_speed * Time.deltaTime * curveSpeed) +
+                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+                _controller.Move(moveVector);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+        }
+        public void SetJumpingBool()
+        {
+            if (isJumpAway == true)
+            {
+                _shootController.DodgeIK(1f);
+                _controller.height = 1.8f;
+                _controller.center = new Vector3(0f, 0.9f, 0f);
+
+                isJumpAway = false;
+            }
+
         }
         private void JumpAndGravity()
         {

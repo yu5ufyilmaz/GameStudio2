@@ -13,6 +13,10 @@ public class ShootController : MonoBehaviour
     [SerializeField]
     private Image crosshair;
     [SerializeField]
+    Transform aimTarget;
+
+
+    [SerializeField]
     private PlayerGunSelector GunSelector;
     public Transform _leftHandReferans;
     public Transform _leftElbowReferans;
@@ -74,6 +78,7 @@ public class ShootController : MonoBehaviour
     private Rig rig2;
     public float targetWeight = 0f;
     private float weightChangeSpeed = 5f; // Ağırlığın değişim hızı
+    private MultiAimConstraint ikConstraint;
 
 
 
@@ -93,13 +98,12 @@ public class ShootController : MonoBehaviour
         shootAction.Enable();
         aimAction.Enable();
 
-
         shootAction.performed += OnShootPerformed;
         aimAction.performed += OnAimPerformed;
         reloadAction.performed += OnReloadPerformed;
         reloadAction.canceled += OnReloadCanceled;
         aimAction.canceled += OnAimCanceled;
-
+        
 
         aimImage.enabled = false;
         Cursor.visible = false;
@@ -130,17 +134,18 @@ public class ShootController : MonoBehaviour
         {
             if (isAiming)
             {
-
                 Aim();
                 IKWeight(rig1, targetWeight);
             }
             else
             {
+
                 IKWeight(rig2, targetWeight);
             }
         }
 
     }
+
     private void EndReload()
     {
 
@@ -177,6 +182,31 @@ public class ShootController : MonoBehaviour
             //Debug.DrawLine(GunSelector.ActiveGun.position, targetPosition, Color.red);
         }
     }
+    IEnumerator MoveToTargetRoutine(Transform aimTarget, float duration)
+    {
+        Vector3 startPosition = aimTargetInstance.transform.position; // Başlangıç pozisyonu
+
+        float elapsedTime = 0f; // Geçen süre
+
+        while (elapsedTime < duration)
+        {
+            // Geçen süreyi normalize et
+            float t = elapsedTime / duration;
+
+            // Lerp ile yeni pozisyonu hesapla
+            aimTargetInstance.transform.position = Vector3.Lerp(startPosition, aimTarget.position, t);
+
+            // Geçen süreyi güncelle
+            elapsedTime += Time.deltaTime;
+
+            // Bir sonraki frame'e geç
+            yield return null;
+        }
+
+        // Hedef pozisyona tam olarak ulaş
+        aimTargetInstance.transform.position = aimTarget.position;
+
+    }
     private bool ShouldAutoReload()
     {
         return
@@ -207,7 +237,11 @@ public class ShootController : MonoBehaviour
     {
         rig.weight = Mathf.Lerp(rig.weight, targetWeight, Time.deltaTime * weightChangeSpeed);
         //animator.SetLayerWeight(1, rig.weight);
-
+    }
+    public void DodgeIK(float weight)
+    {
+        rig1.weight = weight;
+        rig2.weight = weight;
     }
     private void OnReloadPerformed(InputAction.CallbackContext context)
     {
@@ -246,6 +280,7 @@ public class ShootController : MonoBehaviour
 
         isAiming = false;
         aimImage.enabled = false;
+        StartCoroutine(MoveToTargetRoutine(aimTarget, 1.0f)); // 1 saniyede hedefe ulaşır
         if (thirdPersonController != null)
         {
             thirdPersonController.IsAiming = false;

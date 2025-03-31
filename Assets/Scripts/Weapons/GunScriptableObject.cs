@@ -153,12 +153,10 @@ public class GunScriptableObject : ScriptableObject
 
         if (Hit.collider != null)
         {
-            if (Hit.collider.gameObject.layer != LayerMask.NameToLayer("Bones"))
+
+            if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
             {
-                if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
-                {
-                    damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
-                }
+                damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
             }
             else
             {
