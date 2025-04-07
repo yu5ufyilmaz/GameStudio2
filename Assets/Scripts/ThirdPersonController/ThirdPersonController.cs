@@ -173,7 +173,7 @@ namespace StarterAssets
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
         }
-
+        
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
@@ -182,6 +182,7 @@ namespace StarterAssets
             GroundedCheck();
             if (isJumpAway == false)
                 Move();
+
             Dodge();
             OpenDoor();
         }
@@ -200,6 +201,7 @@ namespace StarterAssets
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
+
 
         private void GroundedCheck()
         {
@@ -383,13 +385,13 @@ namespace StarterAssets
             if (isRight)
             {
                 _animator.SetTrigger("JumpAwayRight");
-                _controller.center = new Vector3(1.2f, 0.25f, 0f);
+                _controller.center = new Vector3(0, 0.25f, 0f);
                 _controller.height = 0.72f;
             }
             else
             {
                 _animator.SetTrigger("JumpAwayLeft");
-                _controller.center = new Vector3(-1.2f, 0.25f, 0f);
+                _controller.center = new Vector3(0, 0.25f, 0f);
                 _controller.height = 0.72f;
             }
             isJumpAway = true;

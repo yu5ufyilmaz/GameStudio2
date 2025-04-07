@@ -5705,6 +5705,7 @@ MonoBehaviour:
   m_Script: {fileID: 930709014}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Entries: []
 --- !u!4 &570306480
 Transform:
   m_ObjectHideFlags: 19
@@ -18824,6 +18825,7 @@ MonoBehaviour:
   m_Script: {fileID: 2117718180}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Entries: []
 --- !u!4 &1560273640
 Transform:
   m_ObjectHideFlags: 19
@@ -23011,9 +23013,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.028434053
-  m_Height: 0.09
+  m_Height: 0.060638905
   m_Direction: 2
-  m_Center: {x: 0.000000013054482, y: -0.000000031602628, z: 0.016061388}
+  m_Center: {x: 0.000000012360022, y: -0.000000026837748, z: 0.0013807782}
 --- !u!1001 &2021123564
 PrefabInstance:
   m_ObjectHideFlags: 0

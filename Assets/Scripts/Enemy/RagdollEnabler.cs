@@ -42,7 +42,7 @@ public class RagdollEnabler : MonoBehaviour
         }
         foreach (Rigidbody rigidbody in Rigidbodies)
         {
-            //rigidbody.linearVelocity = Vector3.zero;
+           // rigidbody.linearVelocity = Vector3.zero;
             rigidbody.detectCollisions = true;
             rigidbody.useGravity = true;
             rigidbody.isKinematic = false;
