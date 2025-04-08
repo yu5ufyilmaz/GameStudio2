@@ -6,6 +6,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private int _MaxHealth = 100;
     [SerializeField]
     private int _Health;
+
+    [SerializeField]
+    private HealthBar healthBar;
+
+    [SerializeField]
+    private Animator _animator;
     public int CurrentHealth { get => _Health; set => _Health = value; }
     public int MaxHealth { get => _MaxHealth; set => _MaxHealth = value; }
 
@@ -24,12 +30,16 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (damageTaken != 0)
         {
             OnTakeDamage?.Invoke(damageTaken);
+            healthBar.SetHealth(CurrentHealth);
         }
 
         if (CurrentHealth == 0 && damageTaken != 0)
         {
+            _animator.SetTrigger("Die");
             OnDeath?.Invoke(transform.position);
-            Destroy(gameObject);
+            //Destroy(gameObject);
         }
     }
+
+
 }

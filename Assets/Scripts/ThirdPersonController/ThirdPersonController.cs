@@ -2,6 +2,7 @@
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -173,7 +174,7 @@ namespace StarterAssets
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
         }
-        
+
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
@@ -348,14 +349,16 @@ namespace StarterAssets
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                // Eğer karakter zaten dodging veya jumping durumundaysa, işlemi durdur
+                if (isDodging || isJumpAway) return;
+
                 Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
                 float currentHorizontalSpeed = localVelocity.z;
                 float currentVerticalSpeed = localVelocity.x;
 
-                if (currentHorizontalSpeed > 1.9f) StartCoroutine(DodgeRoutine());
-                else if (currentVerticalSpeed > 1.9f) StartCoroutine(JumpAwayRoutine(true));
+                // Yana kayma işlemi
+                if (currentVerticalSpeed > 1.9f) StartCoroutine(JumpAwayRoutine(true));
                 else if (currentVerticalSpeed < -1.9f) StartCoroutine(JumpAwayRoutine(false));
-
             }
         }
         IEnumerator DodgeRoutine()
@@ -382,6 +385,8 @@ namespace StarterAssets
         }
         IEnumerator JumpAwayRoutine(bool isRight)
         {
+            if (isJumpAway) yield break; // Eğer zaten jumping durumundaysak, işlemi durdur
+
             if (isRight)
             {
                 _animator.SetTrigger("JumpAwayRight");
@@ -408,11 +413,13 @@ namespace StarterAssets
                 Vector3 dir = (isRight ? transform.right : -transform.right);
 
                 Vector3 moveVector = dir * (_speed * Time.deltaTime * curveSpeed) +
-                                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+                                     new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
                 _controller.Move(moveVector);
                 timer += Time.deltaTime;
                 yield return null;
             }
+
+            // Atlamadan sonra durumu sıfırla
         }
         public void SetJumpingBool()
         {
@@ -535,6 +542,12 @@ namespace StarterAssets
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
+        }
+
+        public void Dying(string sceneName)
+        {
+            SceneManager.LoadScene(sceneName);
+            Cursor.visible = true;
         }
     }
 }
