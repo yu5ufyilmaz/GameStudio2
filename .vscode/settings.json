@@ -56,5 +56,10 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "GameStudio2.sln"
+    "dotnet.defaultSolution": "GameStudio2.sln",
+    "launch": {
+        
+        "configurations": [],
+        "compounds": []
+    }
 }
