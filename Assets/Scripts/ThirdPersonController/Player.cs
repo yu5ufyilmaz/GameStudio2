@@ -1,20 +1,22 @@
-using StarterAssets;
+using DotGalacticos.Guns.Demo;
 using UnityEngine;
-
-public class Player : MonoBehaviour
+namespace DotGalacticos
 {
-    public ThirdPersonController playerController;
-    public PlayerHealth health;
-    public ShootController playerShootController;
-    public PlayerPainResponse painResponse;
-
-    void Start()
+    public class Player : MonoBehaviour
     {
-        health.OnDeath += Die;
-    }
+        public ThirdPersonController playerController;
+        public PlayerHealth health;
+        public ShootController playerShootController;
+        public PlayerPainResponse painResponse;
 
-    private void Die(Vector3 Position)
-    {
-        painResponse.HandleDeath();
+        void Start()
+        {
+            health.OnDeath += Die;
+        }
+
+        private void Die(Vector3 Position)
+        {
+            painResponse.HandleDeath();
+        }
     }
 }

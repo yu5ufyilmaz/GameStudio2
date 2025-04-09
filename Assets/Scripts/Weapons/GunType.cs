@@ -3,5 +3,6 @@
 public enum GunType
 {
 Pistol,
-Rifle
+Rifle,
+Shotgun
 }

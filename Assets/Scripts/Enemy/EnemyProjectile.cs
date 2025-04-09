@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace StarterAssets
+namespace DotGalacticos.Enemy
 {
     public class EnemyProjectile : MonoBehaviour
     {

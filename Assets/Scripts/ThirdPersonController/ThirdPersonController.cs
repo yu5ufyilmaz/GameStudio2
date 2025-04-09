@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using DotGalacticos.Guns.Demo;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -8,7 +9,7 @@ using UnityEngine.SceneManagement;
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
  */
 
-namespace StarterAssets
+namespace DotGalacticos
 {
     [RequireComponent(typeof(CharacterController))]
 #if ENABLE_INPUT_SYSTEM 
@@ -544,6 +545,12 @@ namespace StarterAssets
             }
         }
 
+        /*************  ✨ Windsurf Command ⭐  *************/
+        /// <summary>
+        /// Reloads the scene with the given name and shows the mouse cursor.
+        /// </summary>
+        /// <param name="sceneName">The name of the scene to reload.</param>
+        /*******  33d346ed-5a72-493c-8b97-c61fbabb1e0b  *******/
         public void Dying(string sceneName)
         {
             SceneManager.LoadScene(sceneName);
