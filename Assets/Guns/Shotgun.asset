@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: 
   Type: 2
+  Place: 0
   Name: Shotgun
   ModelPrefab: {fileID: 7339565659889918224, guid: b5a57aa257945c9429f45605c26812af,
+    type: 3}
+  PickupPrefab: {fileID: 2959661137238905750, guid: 86cc108603a760b4b95dc2b468fb537f,
     type: 3}
   SpawnPosition: {x: -0.176, y: 0.0582, z: -0.0486}
   SpawnRotation: {x: 0, y: 0, z: 0}

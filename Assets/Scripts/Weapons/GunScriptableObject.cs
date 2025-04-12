@@ -12,8 +12,10 @@ namespace DotGalacticos.Guns
     public class GunScriptableObject : ScriptableObject, ICloneable
     {
         public GunType Type;
+        public GunPlace Place;
         public string Name;
         public GameObject ModelPrefab;
+        public GameObject PickupPrefab;
         public Vector3 SpawnPosition;
         public Vector3 SpawnRotation;
 
@@ -64,13 +66,20 @@ namespace DotGalacticos.Guns
         public void Despawn()
         {
             // We do a bunch of other stuff on the same frame, so we really want it to be immediately destroyed, not at Unity's convenience.
-            Model.SetActive(false);
+            SetActiveModel(false);
+
+           
+
             Debug.Log($"Destroying {Model.name}");
             Destroy(Model);
             TrailPool.Clear();
         
             modelAudioSource = null;
             ShootSystem = null;
+        }
+        public void SetActiveModel(bool active)
+        {
+            Model.SetActive(active);
         }
         public bool CanReload()
         {
@@ -232,6 +241,7 @@ namespace DotGalacticos.Guns
         {
             GunScriptableObject config = CreateInstance<GunScriptableObject>();
             config.Type = Type;
+            config.Place = Place;
             config.Name = Name;
             config.name = name;
             config.DamageConfig = DamageConfig.Clone() as DamageConfigScriptableObject;
@@ -241,6 +251,7 @@ namespace DotGalacticos.Guns
             config.AudioConfig = AudioConfig.Clone() as AudioScriptableObject;
 
             config.ModelPrefab = ModelPrefab;
+            config.PickupPrefab = PickupPrefab;
             config.SpawnPosition = SpawnPosition;
             config.SpawnRotation = SpawnRotation;
 
