@@ -242,13 +242,14 @@ public class EnemyController : MonoBehaviour
 
         if (distanceToPlayer <= detectionRange)
         {
+
             // Oyuncuya yönelik bir ray (ışın) oluşturma
             Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
 
             // Ray ile görüş kontrolü
             if (
                 Physics.Raycast(
-                    transform.position + Vector3.up,
+                    transform.position + Vector3.up * 0.4f,
                     directionToPlayer,
                     out RaycastHit hit,
                     detectionRange
@@ -281,7 +282,7 @@ public class EnemyController : MonoBehaviour
 
         // Oyuncu görünmüyorsa ve şu an kovalama veya saldırı durumunda isek
         if (
-            !playerVisible
+            playerVisible == false
             && (currentState == EnemyState.Chase || currentState == EnemyState.Attack)
         )
         {

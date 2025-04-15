@@ -20,7 +20,7 @@ MonoBehaviour:
   PickupPrefab: {fileID: 2959661137238905750, guid: 22321b0189bb87f4f80b4bd9e150e338,
     type: 3}
   SpawnPosition: {x: 0.0078, y: -0.0715, z: 0}
-  SpawnRotation: {x: 0, y: 0, z: 0}
+  SpawnRotation: {x: 0, y: 90, z: 0}
   DamageConfig: {fileID: 11400000, guid: 3501aac3ed45d3844828047fbf218fb1, type: 2}
   AmmoConfig: {fileID: 11400000, guid: bcc28c0d24da2624ca7f5690e08f6776, type: 2}
   ShootConfig: {fileID: 11400000, guid: 20e316b679e3cf343afcc7d51a29316e, type: 2}

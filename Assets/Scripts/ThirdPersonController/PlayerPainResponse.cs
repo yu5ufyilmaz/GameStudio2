@@ -13,6 +13,6 @@ public class PlayerPainResponse : MonoBehaviour
     {
         animator.applyRootMotion = true;
         animator.SetTrigger("Die");
-        Destroy(gameObject, 3f);
+        // Destroy(gameObject, 3f);
     }
 }

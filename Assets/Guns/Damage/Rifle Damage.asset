@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rifle Damage
   m_EditorClassIdentifier: 
   DamageCurve:
-    m_Mode: 1
+    m_Mode: 0
     m_CurveMultiplier: 1
     m_CurveMin:
       serializedVersion: 2
@@ -26,7 +26,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 5
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -34,7 +34,7 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
+        time: 10
         value: 1
         inSlope: 0
         outSlope: 0
@@ -46,4 +46,4 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_ConstantMin: 0
-    m_ConstantMax: 0
+    m_ConstantMax: 10

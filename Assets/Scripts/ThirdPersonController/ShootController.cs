@@ -14,7 +14,10 @@ namespace DotGalacticos.Guns.Demo
         private Image crosshair;
         [SerializeField]
         Transform aimTarget;
+        [SerializeField]
+        private LayerMask layerMask;
 
+        [Space(10)]
 
         [SerializeField]
         private PlayerGunSelector GunSelector;
@@ -37,7 +40,7 @@ namespace DotGalacticos.Guns.Demo
         private static readonly int IsAiming = Animator.StringToHash("isAiming");
         private Animator animator;
         private bool isAiming;
-
+        private bool isShooting = false;
 
         //Reload
         [SerializeField]
@@ -99,12 +102,13 @@ namespace DotGalacticos.Guns.Demo
             aimAction.Enable();
 
             shootAction.performed += OnShootPerformed;
+            shootAction.canceled += OnShootCanceled;
             aimAction.performed += OnAimPerformed;
             reloadAction.performed += OnReloadPerformed;
             reloadAction.canceled += OnReloadCanceled;
             aimAction.canceled += OnAimCanceled;
 
-
+            layerMask = LayerMask.GetMask("Default","Obstacle","Ground","Enemy");
             aimImage.enabled = false;
             Cursor.visible = false;
 
@@ -144,6 +148,12 @@ namespace DotGalacticos.Guns.Demo
                 }
             }
 
+
+            if (GunSelector != null)
+            {
+                GunSelector.ActiveGun.Tick(isShooting); // Sürekli ateşleme işlemi
+            }
+
         }
 
         private void EndReload()
@@ -152,22 +162,24 @@ namespace DotGalacticos.Guns.Demo
             GunSelector.ActiveGun.EndReload();
             isReloading = false;
         }
-      
+
 
         void Aim()
         {
+
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             aimImage.transform.position = mousePosition;
 
             Ray ray = mainCamera.ScreenPointToRay(mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ~LayerMask.GetMask("TransparentWalls")))
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
                 Vector3 targetPosition = hit.point;
-
+                Debug.Log($"Aiming at {targetPosition}");
                 // Nişan alma nesnesini güncelle
                 if (aimTargetInstance != null)
                 {
                     aimTargetInstance.transform.position = targetPosition;
+
                 }
 
                 // Karakterin nişan aldığı yöne bakmasını sağla
@@ -222,15 +234,6 @@ namespace DotGalacticos.Guns.Demo
             && shouldManuelReload
             && GunSelector.ActiveGun.AmmoConfig.CanReload();
         }
-        private void OnShootPerformed(InputAction.CallbackContext context)
-        {
-            if (GunSelector != null)
-            {
-                GunSelector.ActiveGun.Shoot(aimTargetInstance);
-            }
-
-
-        }
 
 
 
@@ -243,6 +246,20 @@ namespace DotGalacticos.Guns.Demo
         {
             rig1.weight = weight;
             rig2.weight = weight;
+        }
+        private void OnShootPerformed(InputAction.CallbackContext context)
+        {
+            if (GunSelector != null)
+            {
+                isShooting = true;
+            }
+        }
+        private void OnShootCanceled(InputAction.CallbackContext context)
+        {
+            if (GunSelector != null)
+            {
+                isShooting = false;
+            }
         }
         private void OnReloadPerformed(InputAction.CallbackContext context)
         {
@@ -281,9 +298,14 @@ namespace DotGalacticos.Guns.Demo
 
             isAiming = false;
             aimImage.enabled = false;
-            StartCoroutine(MoveToTargetRoutine(aimTarget, 1.0f)); // 1 saniyede hedefe ulaşır
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(MoveToTargetRoutine(aimTarget, 1.0f)); // 1 saniyede hedefe ulaşır
+            }
+
             if (thirdPersonController != null)
             {
+
                 thirdPersonController.IsAiming = false;
             }
             // Nişan alma sona erdiğinde hedef ağırlığı 0'a ayarla
@@ -294,16 +316,27 @@ namespace DotGalacticos.Guns.Demo
         }
         private void OnDestroy()
         {
-            shootAction.performed -= OnShootPerformed;
-            reloadAction.performed -= OnReloadPerformed;
-            reloadAction.canceled -= OnReloadCanceled;
-            aimAction.performed -= OnAimPerformed;
-            aimAction.canceled -= OnAimCanceled;
+            // InputAction'ları devre dışı bırak
+            if (shootAction != null)
+            {
+                shootAction.performed -= OnShootPerformed;
+                shootAction.canceled -= OnShootCanceled;
+                shootAction.Disable();
+            }
 
+            if (reloadAction != null)
+            {
+                reloadAction.performed -= OnReloadPerformed;
+                reloadAction.canceled -= OnReloadCanceled;
+                reloadAction.Disable();
+            }
 
-            reloadAction.Disable();
-            shootAction.Disable();
-            aimAction.Disable();
+            if (aimAction != null)
+            {
+                aimAction.performed -= OnAimPerformed;
+                aimAction.canceled -= OnAimCanceled;
+                aimAction.Disable();
+            }
         }
     }
 }

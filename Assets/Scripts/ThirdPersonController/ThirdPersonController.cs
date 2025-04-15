@@ -114,8 +114,6 @@ namespace DotGalacticos
 
         //Door Interaction
         public float interactionRadius = 2f; // Oyuncunun etkileşim alanı
-        public float openSpeed = 2f; // Kapının açılma hızı
-        private bool isOpen = false; // Kapının açık mı kapalı mı olduğunu kontrol eder
         private Transform currentDoor; // Şu an etkileşimde olduğumuz kapı
 
 #if ENABLE_INPUT_SYSTEM 
@@ -545,12 +543,6 @@ namespace DotGalacticos
             }
         }
 
-        /*************  ✨ Windsurf Command ⭐  *************/
-        /// <summary>
-        /// Reloads the scene with the given name and shows the mouse cursor.
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to reload.</param>
-        /*******  33d346ed-5a72-493c-8b97-c61fbabb1e0b  *******/
         public void Dying(string sceneName)
         {
             SceneManager.LoadScene(sceneName);

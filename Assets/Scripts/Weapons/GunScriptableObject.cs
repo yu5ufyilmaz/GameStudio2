@@ -30,7 +30,14 @@ namespace DotGalacticos.Guns
         private MonoBehaviour ActiveMonoBehaviour;
         private GameObject Model;
         private AudioSource modelAudioSource;
+
         private float LastShootTime;
+        private float InitialClickTime;
+        private float StopShootingTime;
+        private bool LastFrameWantedToShoot;
+
+        public bool canShoot = true;
+
         private ParticleSystem ShootSystem;
         private ObjectPool<TrailRenderer> TrailPool;
 
@@ -68,12 +75,12 @@ namespace DotGalacticos.Guns
             // We do a bunch of other stuff on the same frame, so we really want it to be immediately destroyed, not at Unity's convenience.
             SetActiveModel(false);
 
-           
+
 
             Debug.Log($"Destroying {Model.name}");
             Destroy(Model);
             TrailPool.Clear();
-        
+
             modelAudioSource = null;
             ShootSystem = null;
         }
@@ -89,70 +96,107 @@ namespace DotGalacticos.Guns
         public void EndReload()
         {
             AmmoConfig.Reload();
+            canShoot = true;
         }
 
         public void StartReloading()
         {
             AudioConfig.PlayReloadClip(modelAudioSource);
+            canShoot = false;
         }
-
-        public void Shoot(GameObject aimTargetInstance)
+        private bool hasPlayedOutOfAmmoClip = false;
+        public void Shoot()
         {
+            if (Time.time - LastShootTime - ShootConfig.FireRate > Time.deltaTime)
+            {
+                float lastDuration = Mathf.Clamp(
+                    0,
+                    (StopShootingTime - InitialClickTime),
+                    ShootConfig.MaxSpreadTime
+                );
+
+                float lerpTime = (ShootConfig.RecoilRecoverySpeed - (Time.time - StopShootingTime)) / ShootConfig.RecoilRecoverySpeed;
+
+
+                InitialClickTime = Time.time - Mathf.Lerp(0, lastDuration, Mathf.Clamp01(lerpTime));
+            }
             if (Time.time > ShootConfig.FireRate + LastShootTime)
             {
-                if (AmmoConfig.CurrentClipAmmo > 0)
+                if (AmmoConfig.CurrentClipAmmo > 0 && canShoot == true)
                 {
                     LastShootTime = Time.time;
                     ShootSystem.Play();
                     AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
-    
+
                     // Nişan alma hedef pozisyonunu al
-                     AmmoConfig.CurrentClipAmmo--;
-                    for(int i = 0; i < ShootConfig.BulletPerShoot; i++)
-                   { Vector3 targetPosition = aimTargetInstance.transform.position;
-
-                    // Merminin hedef pozisyona doğru yönünü hesapla
-                    Vector3 shootDirection =
-                        (targetPosition - ShootSystem.transform.position).normalized
-                        + new Vector3(
-                            Random.Range(-ShootConfig.Spread.x, ShootConfig.Spread.x),
-                            Random.Range(-ShootConfig.Spread.y, ShootConfig.Spread.y),
-                            Random.Range(-ShootConfig.Spread.z, ShootConfig.Spread.z)
-                        );
-
-                    shootDirection.Normalize();
-                    
-                    // Raycast ile merminin gideceği yönü kontrol et
-                    if (
-                        Physics.Raycast(
-                            ShootSystem.transform.position,
-                            shootDirection,
-                            out RaycastHit hit,
-                            float.MaxValue,
-                            ShootConfig.HitMask
-                        )
-                    )
+                    AmmoConfig.CurrentClipAmmo--;
+                    hasPlayedOutOfAmmoClip = false;
+                    for (int i = 0; i < ShootConfig.BulletPerShoot; i++)
                     {
-                        ActiveMonoBehaviour.StartCoroutine(
-                            PlayTrail(ShootSystem.transform.position, hit.point, hit)
-                        );
-                    }
-                    else
-                    {
-                        ActiveMonoBehaviour.StartCoroutine(
-                            PlayTrail(
+                        Vector3 spreadAmount = ShootConfig.GetSpread();
+
+                        Model.transform.forward += Model.transform.TransformDirection(spreadAmount);
+
+                        Vector3 shootDirection = -Model.transform.forward + spreadAmount;
+
+                        // Raycast ile merminin gideceği yönü kontrol et
+                        if (
+                            Physics.Raycast(
                                 ShootSystem.transform.position,
-                                ShootSystem.transform.position
-                                    + (shootDirection * TrailConfig.MissDistance),
-                                new RaycastHit()
+                                shootDirection,
+                                out RaycastHit hit,
+                                float.MaxValue,
+                                ShootConfig.HitMask
                             )
-                        );
-                    }}
+                        )
+                        {
+                            ActiveMonoBehaviour.StartCoroutine(
+                                PlayTrail(ShootSystem.transform.position, hit.point, hit)
+                            );
+                        }
+                        else
+                        {
+                            ActiveMonoBehaviour.StartCoroutine(
+                                PlayTrail(
+                                    ShootSystem.transform.position,
+                                    ShootSystem.transform.position
+                                        + (shootDirection * TrailConfig.MissDistance),
+                                    new RaycastHit()
+                                )
+                            );
+                        }
+                    }
                 }
                 else
                 {
-                    AudioConfig.PLayOutOfAmmoClip(modelAudioSource);
+                    if (!hasPlayedOutOfAmmoClip)
+                    {
+                        Debug.Log("Playing out of ammo clip."); // Debug mesajı
+                        AudioConfig.PlayOutOfAmmoClip(modelAudioSource);
+                        hasPlayedOutOfAmmoClip = true; // Ses çaldı, tekrar çalmaması için değişkeni güncelle
+                    }
                 }
+            }
+        }
+
+        public void Tick(bool WantsToShoot)
+        {
+
+            Model.transform.localRotation = Quaternion.Lerp(
+                Model.transform.localRotation,
+                Quaternion.Euler(SpawnRotation),
+                Time.deltaTime * ShootConfig.RecoilRecoverySpeed
+            );
+            if (WantsToShoot)
+            {
+                LastFrameWantedToShoot = true;
+                Shoot();
+
+            }
+            if (LastFrameWantedToShoot)
+            {
+                StopShootingTime = Time.time;
+                LastFrameWantedToShoot = false;
             }
         }
 
@@ -207,10 +251,6 @@ namespace DotGalacticos.Guns
                 if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
                 {
                     damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
-                }
-                else
-                {
-                    Debug.Log(Hit.collider.name + " does not implement IDamageable");
                 }
             }
 

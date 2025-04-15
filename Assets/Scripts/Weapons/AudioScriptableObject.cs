@@ -24,7 +24,7 @@ namespace DotGalacticos.Guns
             }
         }
 
-        public void PLayOutOfAmmoClip(AudioSource audioSource)
+        public void PlayOutOfAmmoClip(AudioSource audioSource)
         {
             AudioSource.PlayClipAtPoint(EmptyClip, audioSource.transform.position, Volume);
         }

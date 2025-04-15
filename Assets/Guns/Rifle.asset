@@ -15,12 +15,12 @@ MonoBehaviour:
   Type: 1
   Place: 0
   Name: Rifle
-  ModelPrefab: {fileID: 919132149155446097, guid: 8abe83caab149fe44b6f567247dfaa47,
+  ModelPrefab: {fileID: 7717014556491473306, guid: bd044aa279fa0f644aca1075a63d47e0,
     type: 3}
-  PickupPrefab: {fileID: 4861954911074397531, guid: a89f0ec375178184c9d51118e4400853,
+  PickupPrefab: {fileID: 2959661137238905750, guid: 2e7ffcb27bea53742aa3ddaa1f77b175,
     type: 3}
-  SpawnPosition: {x: 0, y: 0, z: 0}
-  SpawnRotation: {x: 130.18, y: 16.64, z: 11.741}
+  SpawnPosition: {x: -0.0716, y: 0.0395, z: -0.0137}
+  SpawnRotation: {x: 180, y: -90, z: 180}
   DamageConfig: {fileID: 11400000, guid: f86c834b38999bd408e95f4a47984501, type: 2}
   AmmoConfig: {fileID: 11400000, guid: 7e8ed5e221ca9354db4e1021cbba6010, type: 2}
   ShootConfig: {fileID: 11400000, guid: 186086f6da0bab040b1420db26a47c55, type: 2}

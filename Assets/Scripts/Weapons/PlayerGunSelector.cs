@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DotGalacticos.Guns.Modifiers;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,6 +13,7 @@ namespace DotGalacticos.Guns.Demo
         private Animator animator;
 
         private static readonly int IsOneHanded = Animator.StringToHash("Is1HandedGun");
+        private static readonly int IsSecondHanded = Animator.StringToHash("Is2HandedGun");
         [SerializeField]
         private GunType Gun;
         [SerializeField]
@@ -36,6 +39,8 @@ namespace DotGalacticos.Guns.Demo
         [SerializeField]
         public GunScriptableObject SecondHandBaseGun;
 
+        private int activeGunIndex = 1;
+
         private void Awake()
         {
             GunScriptableObject firstGun = Guns.Find(gun => gun.Type == Gun);
@@ -51,7 +56,7 @@ namespace DotGalacticos.Guns.Demo
             SetupGun(ActiveBaseGun);
             SetupHandGuns(firstGun, secondGun);
         }
-        
+
         private void SetupHandGuns(GunScriptableObject firstHandGun, GunScriptableObject secondHandGun)
         {
             FirstHandBaseGun = firstHandGun;
@@ -71,8 +76,13 @@ namespace DotGalacticos.Guns.Demo
 
         private void UpdateAnimator(GunScriptableObject gun)
         {
-            animator.SetBool(IsOneHanded, gun.Place != GunPlace.FirstHand);
+            bool isOneHanded = gun.Place != GunPlace.FirstHand;
+            bool isTwoHanded = gun.Place != GunPlace.SecondHand;
+
+            animator.SetBool(IsSecondHanded, isTwoHanded);
+            animator.SetBool(IsOneHanded, isOneHanded);
         }
+
         public void DespawnActiveGun()
         {
             if (ActiveGun != null)
@@ -102,11 +112,13 @@ namespace DotGalacticos.Guns.Demo
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                SwitchGun(1); // 1 tuşuna basıldığında ilk silahı seç
+                if (activeGunIndex != 1)
+                    StartCoroutine(SwitchGunCoroutine(1)); // 1 tuşuna basıldığında birinci silahı seç
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                SwitchGun(2); // 2 tuşuna basıldığında ikinci silahı seç
+                if (activeGunIndex != 2)
+                    StartCoroutine(SwitchGunCoroutine(2)); // 2 tuşuna basıldığında ikinci silahı seç
             }
             else if (Input.GetKeyDown(KeyCode.F))
             {
@@ -115,13 +127,28 @@ namespace DotGalacticos.Guns.Demo
             }
         }
 
-     private void SwitchGun(int gunNumber)
+        private IEnumerator SwitchGunCoroutine(int gunNumber)
+        {
+            animator.SetTrigger("Switch"); // Animasyonu tetikle
+            ActiveGun.canShoot = false;
+            // Animasyonun bitmesini bekle
+            yield return new WaitForSeconds(1.1f);
+
+            // Animasyon bittiğinde silahı değiştir
+            animator.ResetTrigger("Switch");
+            SwitchGun(gunNumber);
+            ActiveGun.canShoot = true;
+
+        }
+
+        private void SwitchGun(int gunNumber)
         {
             if (gunNumber == 1)
             {
                 // Birinci el silahını aktif et
                 if (FirstHandGun != null)
                 {
+                    activeGunIndex = 1;
                     DespawnActiveGun(); // Mevcut silahı yok et
                     SetupGun(FirstHandGun); // Birinci el silahını kur
                     ActiveBaseGun = FirstHandGun; // Aktif silahı birinci el silahı olarak ayarla
@@ -132,47 +159,70 @@ namespace DotGalacticos.Guns.Demo
                 // İkinci el silahını aktif et
                 if (SecondHandGun != null)
                 {
+                    activeGunIndex = 2;
                     DespawnActiveGun(); // Mevcut silahı yok et
-                    SetupGun( SecondHandGun); // İkinci el silahını kur
+                    SetupGun(SecondHandGun); // İkinci el silahını kur
                     ActiveBaseGun = SecondHandGun; // Aktif silahı ikinci el silahı olarak ayarla
                 }
             }
         }
-
-         private void TryPickupGroundGun()
+        private void TryPickupGroundGun()
         {
-            // Yerdeki silahı kontrol et ve al
-             Collider[] hitColliders = Physics.OverlapSphere(transform.position, 2f, 1 << LayerMask.NameToLayer("Pickups"));
-             foreach (var hitCollider in hitColliders)
-            {  
-                    GunScriptableObject gunToPickup = hitCollider.GetComponent<GunPickup>().Gun; // Silahın verisini al
-                    if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
+            // Yerdeki silahları kontrol et
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 2f, 1 << LayerMask.NameToLayer("Pickups"));
+
+            // En yakın silahı bulmak için değişkenler
+            GunScriptableObject closestGun = null;
+            float closestDistance = Mathf.Infinity;
+
+            foreach (var hitCollider in hitColliders)
+            {
+                GunScriptableObject gunToPickup = hitCollider.GetComponent<GunPickup>().Gun; // Silahın verisini al
+                if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
+                {
+                    // Silahın pozisyonu ile oyuncunun pozisyonu arasındaki mesafeyi hesapla
+                    float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+
+                    // Eğer bu silah, şu ana kadar bulduğumuz en yakın silah ise, güncelle
+                    if (distance < closestDistance)
                     {
-                        if (gunToPickup.Place == GunPlace.FirstHand)
-                        {
-                            DropGun(FirstHandGun);
-                            PickupGun(gunToPickup, SecondHandGun);
-                            SetupGun(gunToPickup);
-                            
-                        }
-                        else
-                        {
-                            DropGun(SecondHandGun);
-                            PickupGun(ActiveGun, gunToPickup); // Yeni silahı al
-                            SetupGun(gunToPickup);
-                        }
+                        closestDistance = distance;
+                        closestGun = gunToPickup;
                     }
-                    Destroy(hitCollider.gameObject); // Yerdeki silahı yok et
-                
+                }
+            }
+
+            // Eğer en yakın silah bulunduysa, onu al
+            if (closestGun != null)
+            {
+                if (closestGun.Place == GunPlace.FirstHand)
+                {
+                    DropGun(FirstHandGun);
+                    PickupGun(closestGun, SecondHandGun);
+                    SetupGun(closestGun);
+                }
+                else
+                {
+                    DropGun(SecondHandGun);
+                    PickupGun(ActiveGun, closestGun); // Yeni silahı al
+                    SetupGun(closestGun);
+                }
+
+                // En yakın silahın bulunduğu collider'ı yok et
+                Collider closestCollider = hitColliders.FirstOrDefault(c => c.GetComponent<GunPickup>().Gun == closestGun);
+                if (closestCollider != null)
+                {
+                    Destroy(closestCollider.gameObject); // Yerdeki silahı yok et
+                }
             }
         }
         private void DropGun(GunScriptableObject gunToDrop)
         {
             if (gunToDrop != null)
             {
-                Instantiate(gunToDrop.PickupPrefab, transform.position, Quaternion.identity);
+                Instantiate(gunToDrop.PickupPrefab, GunParent.position, Quaternion.identity);
             }
         }
-       
+
     }
 }
