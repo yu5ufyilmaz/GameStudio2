@@ -174,7 +174,6 @@ namespace DotGalacticos.Guns.Demo
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
                 Vector3 targetPosition = hit.point;
-                Debug.Log($"Aiming at {targetPosition}");
                 // Nişan alma nesnesini güncelle
                 if (aimTargetInstance != null)
                 {

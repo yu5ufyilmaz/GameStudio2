@@ -241,30 +241,27 @@ namespace DotGalacticos
 
         public void Move()
         {
-            Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
-            float speedX = localVelocity.x;
-            float speedZ = localVelocity.z;
-
-            // Hedef hız: sprint veya normal hız
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
-
             // Aiming halinde hızı azaltma
             if (IsAiming)
             {
-                targetSpeed *= 1f;
+                targetSpeed *= 1f; // Nişan alırken hızı azalt
             }
-
+            Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
+            float speedX = localVelocity.x; // X eksenindeki hız
+            float speedZ = localVelocity.z; // Z eksenindeki hız
+            
             // Mevcut yatay hız
-            float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+            // float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
             // Hızın yumuşak geçişi
-            if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
+            if (Mathf.Abs(localVelocity.magnitude - targetSpeed) > speedOffset)
             {
-                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
+                _speed = Mathf.Lerp(localVelocity.magnitude, targetSpeed * inputMagnitude, Time.deltaTime * SpeedChangeRate);
                 _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
             else
@@ -272,46 +269,43 @@ namespace DotGalacticos
                 _speed = targetSpeed;
             }
 
-            _animationBlend = Mathf.Lerp(_animationBlend, speedX, Time.deltaTime * SpeedChangeRate);
-            _animationBlendZ = Mathf.Lerp(_animationBlendZ, speedZ, Time.deltaTime * SpeedChangeRate);
+            // Animasyon blend değerlerini güncelle
+            _animationBlend = speedX; // X eksenindeki hızı kullan
+            _animationBlendZ = speedZ; // Z eksenindeki hızı kullan
             if (Mathf.Abs(_animationBlend) < 0.01f) _animationBlend = 0f;
             if (Mathf.Abs(_animationBlendZ) < 0.01f) _animationBlendZ = 0f;
 
             Vector3 targetDirection = Vector3.zero;
 
-            if (!IsAiming)
-            {
-                Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-                if (inputDirection != Vector3.zero)
-                {
-                    _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                      _mainCamera.transform.eulerAngles.y;
-                    float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
-                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
-                    targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-                }
-                else
-                {
-                    // Eğer hareket yoksa, karakterin açısını değiştirme
-                    targetDirection = transform.forward; // Mevcut yönü koru
-                }
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+            if (inputDirection != Vector3.zero)
+            {
+                _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                                  _mainCamera.transform.eulerAngles.y;
+                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+                targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
             }
             else
             {
-                targetDirection = (transform.forward * _input.move.y) + (transform.right * _input.move.x);
-                targetDirection = targetDirection.normalized;
+                // Eğer hareket yoksa, karakterin açısını değiştirme
+                targetDirection = transform.forward; // Mevcut yönü koru
             }
 
+
+            // Hareket vektörünü hesapla
             Vector3 moveVector = targetDirection * (_speed * Time.deltaTime) +
                                  new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
             _controller.Move(moveVector);
 
+            // Animasyon güncellemeleri
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDSpeedZ, _animationBlendZ);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                _animator.SetFloat(_animIDMotionSpeed, _input.move.magnitude);
             }
         }
 

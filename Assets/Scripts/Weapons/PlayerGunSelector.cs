@@ -68,6 +68,7 @@ namespace DotGalacticos.Guns.Demo
 
         private void SetupGun(GunScriptableObject gun)
         {
+            SaveAmmoAmount(gun);
             ActiveBaseGun = gun;
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
             ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştir
@@ -150,8 +151,10 @@ namespace DotGalacticos.Guns.Demo
                 {
                     activeGunIndex = 1;
                     DespawnActiveGun(); // Mevcut silahı yok et
-                    SetupGun(FirstHandGun); // Birinci el silahını kur
                     ActiveBaseGun = FirstHandGun; // Aktif silahı birinci el silahı olarak ayarla
+
+                    SetupGun(FirstHandGun); // Birinci el silahını kur
+
                 }
             }
             else if (gunNumber == 2)
@@ -161,8 +164,10 @@ namespace DotGalacticos.Guns.Demo
                 {
                     activeGunIndex = 2;
                     DespawnActiveGun(); // Mevcut silahı yok et
-                    SetupGun(SecondHandGun); // İkinci el silahını kur
                     ActiveBaseGun = SecondHandGun; // Aktif silahı ikinci el silahı olarak ayarla
+
+                    SetupGun(SecondHandGun); // İkinci el silahını kur
+
                 }
             }
         }
@@ -173,11 +178,14 @@ namespace DotGalacticos.Guns.Demo
 
             // En yakın silahı bulmak için değişkenler
             GunScriptableObject closestGun = null;
+            GunPickup gunPickup = null;
             float closestDistance = Mathf.Infinity;
 
             foreach (var hitCollider in hitColliders)
             {
-                GunScriptableObject gunToPickup = hitCollider.GetComponent<GunPickup>().Gun; // Silahın verisini al
+                GunPickup gunPickupScript = hitCollider.GetComponent<GunPickup>();
+                GunScriptableObject gunToPickup = gunPickupScript.Gun; // Silahın verisini al
+
                 if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
                 {
                     // Silahın pozisyonu ile oyuncunun pozisyonu arasındaki mesafeyi hesapla
@@ -188,6 +196,7 @@ namespace DotGalacticos.Guns.Demo
                     {
                         closestDistance = distance;
                         closestGun = gunToPickup;
+                        gunPickup = gunPickupScript;
                     }
                 }
             }
@@ -198,12 +207,15 @@ namespace DotGalacticos.Guns.Demo
                 if (closestGun.Place == GunPlace.FirstHand)
                 {
                     DropGun(FirstHandGun);
+                    gunPickup.SetWeaponAmmoAmount(closestGun);
                     PickupGun(closestGun, SecondHandGun);
                     SetupGun(closestGun);
+
                 }
                 else
                 {
                     DropGun(SecondHandGun);
+                    gunPickup.SetWeaponAmmoAmount(closestGun);
                     PickupGun(ActiveGun, closestGun); // Yeni silahı al
                     SetupGun(closestGun);
                 }
@@ -216,11 +228,19 @@ namespace DotGalacticos.Guns.Demo
                 }
             }
         }
+        private void SaveAmmoAmount(GunScriptableObject gun)
+        {
+            GunScriptableObject newGun = gun;
+            newGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.CurrentClipAmmo;
+            newGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.CurrentAmmo;
+        }
         private void DropGun(GunScriptableObject gunToDrop)
         {
             if (gunToDrop != null)
             {
-                Instantiate(gunToDrop.PickupPrefab, GunParent.position, Quaternion.identity);
+                GameObject PickupObject = Instantiate(gunToDrop.PickupPrefab, GunParent.position, Quaternion.identity);
+                GunPickup gunPickups = PickupObject.GetComponent<GunPickup>();
+                gunPickups.SetPickupAmmoAmount(this);
             }
         }
 

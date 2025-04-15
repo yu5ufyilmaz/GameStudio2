@@ -56,7 +56,7 @@ namespace DotGalacticos.Guns
             this.ActiveMonoBehaviour = ActiveMonoBehaviour;
             /*
             LastShootTime = 0;
-
+            
             AmmoConfig.CurrentClipAmmo = AmmoConfig.ClipSize;
             AmmoConfig.CurrentAmmo = AmmoConfig.MaxAmmo;*/
 

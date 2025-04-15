@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2049708361118031813}
-  - component: {fileID: 2378986210669597256}
   - component: {fileID: 100691736207808733}
+  - component: {fileID: 2378986210669597256}
   - component: {fileID: 4099973641983814996}
   m_Layer: 11
   m_Name: ShotgunPickup
@@ -36,6 +36,21 @@ Transform:
   - {fileID: 3024422957873393661}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &100691736207808733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2959661137238905750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 208ba00f29133e04f9ecc6fad4ee1805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Gun: {fileID: 11400000, guid: 0e8f2aa8ade87594382fba24c05432be, type: 2}
+  currentClipAmmo: 6
+  currentAmmo: 60
 --- !u!65 &2378986210669597256
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -57,20 +72,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6158209, y: 0.18308544, z: 0.11245155}
   m_Center: {x: 0.027441502, y: -0.011233926, z: 0.037386894}
---- !u!114 &100691736207808733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2959661137238905750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 208ba00f29133e04f9ecc6fad4ee1805, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Gun: {fileID: 11400000, guid: 0e8f2aa8ade87594382fba24c05432be, type: 2}
-  SpinDirection: {x: 0, y: 1, z: 0}
 --- !u!54 &4099973641983814996
 Rigidbody:
   m_ObjectHideFlags: 0
