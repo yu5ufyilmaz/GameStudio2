@@ -13,13 +13,18 @@ MonoBehaviour:
   m_Name: Rifle
   m_EditorClassIdentifier: 
   Type: 1
+  Place: 0
   Name: Rifle
-  ModelPrefab: {fileID: 0}
-  SpawnPosition: {x: -229, y: -0.0461, z: -0.0756}
-  SpawnRotation: {x: 130.18, y: 16.64, z: 11.741}
-  DamageConfig: {fileID: 11400000, guid: 3501aac3ed45d3844828047fbf218fb1, type: 2}
-  AmmoConfig: {fileID: 11400000, guid: bcc28c0d24da2624ca7f5690e08f6776, type: 2}
+  ModelPrefab: {fileID: 7717014556491473306, guid: bd044aa279fa0f644aca1075a63d47e0,
+    type: 3}
+  PickupPrefab: {fileID: 2959661137238905750, guid: 2e7ffcb27bea53742aa3ddaa1f77b175,
+    type: 3}
+  SpawnPosition: {x: -0.0716, y: 0.0395, z: -0.0137}
+  SpawnRotation: {x: 180, y: -90, z: 180}
+  DamageConfig: {fileID: 11400000, guid: f86c834b38999bd408e95f4a47984501, type: 2}
+  AmmoConfig: {fileID: 11400000, guid: 7e8ed5e221ca9354db4e1021cbba6010, type: 2}
   ShootConfig: {fileID: 11400000, guid: 186086f6da0bab040b1420db26a47c55, type: 2}
   TrailConfig: {fileID: 11400000, guid: 9d04f840a0888694ebdcc73a2f3fc58a, type: 2}
+  AudioConfig: {fileID: 11400000, guid: ef8eaa07062a23b4b8a73fa15d8a6d59, type: 2}
   shootSound: {fileID: 8300000, guid: def08657925575c47ab3a4a37156b5bf, type: 3}
   shootAudioVolume: 0.5

@@ -12,27 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29c3565334651e488c325881aeec772, type: 3}
   m_Name: Rifle Trail Config
   m_EditorClassIdentifier: 
-  Material: {fileID: 0}
+  Material: {fileID: 2100000, guid: 1c7a9c4e89c73204badd6dbdc207d256, type: 2}
   WidthCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.03652191
-      value: 0.9458008
-      inSlope: 0
-      outSlope: 0
+      time: 0
+      value: 0.1
+      inSlope: -0.083364286
+      outSlope: -0.083364286
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.14932486
     - serializedVersion: 3
-      time: 1.0045776
-      value: 0.010269165
-      inSlope: 0
-      outSlope: 0
+      time: 1
+      value: 0.001449585
+      inSlope: -0.26876006
+      outSlope: -0.26876006
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.081201494
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

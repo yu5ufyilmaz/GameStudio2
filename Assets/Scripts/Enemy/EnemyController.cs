@@ -1,48 +1,89 @@
-using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
     // Referanslar
     [Header("Referanslar")]
-    [SerializeField] private Transform playerTransform;
-    [SerializeField] private Animator animator;
-    [SerializeField] private NavMeshAgent navMeshAgent;
-    [SerializeField] private Transform weaponMuzzle;
-    [SerializeField] private GameObject bulletPrefab;
+    [SerializeField]
+    private Transform playerTransform;
+
+    [SerializeField]
+    private Animator animator;
+
+    [SerializeField]
+    private NavMeshAgent navMeshAgent;
+
+    [SerializeField]
+    private Transform weaponMuzzle;
+
+    [SerializeField]
+    private GameObject bulletPrefab;
 
     // Düşman Özellikleri
     [Header("Düşman Özellikleri")]
-    [SerializeField] private float health = 100f;
-    [SerializeField] private float detectionRange = 10f;
-    [SerializeField] private float attackRange = 8f;
-    [SerializeField] private float fireRate = 1f;
-    [SerializeField] private float patrolSpeed = 2f;
-    [SerializeField] private float chaseSpeed = 6f;
-    [SerializeField] private float bulletSpeed = 20f;
-    [SerializeField] private float speedChangeRate = 10.0f;
+    [SerializeField]
+    private float health = 100f;
+
+    [SerializeField]
+    private float detectionRange = 10f;
+
+    [SerializeField]
+    private float attackRange = 8f;
+
+    [SerializeField]
+    private float fireRate = 1f;
+
+    [SerializeField]
+    private float patrolSpeed = 2f;
+
+    [SerializeField]
+    private float chaseSpeed = 6f;
+
+    [SerializeField]
+    private float bulletSpeed = 20f;
+
+    [SerializeField]
+    private float speedChangeRate = 10.0f;
 
     // Devriye Noktaları
     [Header("Devriye")]
-    [SerializeField] private Transform[] patrolPoints;
-    [SerializeField] private float waypointStopDistance = 0.5f;
-    [SerializeField] private float waitTime = 2f;
+    [SerializeField]
+    private Transform[] patrolPoints;
+
+    [SerializeField]
+    private float waypointStopDistance = 0.5f;
+
+    [SerializeField]
+    private float waitTime = 2f;
 
     [Header("Sesler")]
     public AudioClip[] FootstepAudioClips;
-    [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+
+    [Range(0, 1)]
+    public float FootstepAudioVolume = 0.5f;
+
     [SerializeField]
     private AudioClip shootSound;
-    [Range(0, 1)] public float shootAudioVolume = 0.5f;
+
+    [Range(0, 1)]
+    public float shootAudioVolume = 0.5f;
 
     // Animator Parametreleri
     private int _animIDSpeed;
     private int _animIDFire;
 
     // Durum Yönetimi
-    private enum EnemyState { Idle, Patrol, Chase, Attack }
+    private enum EnemyState
+    {
+        Idle,
+        Patrol,
+        Chase,
+        Attack,
+    }
+
     private EnemyState currentState = EnemyState.Idle;
 
     // Özel Değişkenler
@@ -96,7 +137,6 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-
         if (IsStopEnemy() == false)
         {
             distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
@@ -126,16 +166,19 @@ public class EnemyController : MonoBehaviour
             EnemyDieActions();
         }
     }
+
     private void EnemyDieActions()
     {
         navMeshAgent.enabled = false;
         animator.SetLayerWeight(1, 0f);
         //Destroy(gameObject, 4f);
     }
+
     public bool IsStopEnemy()
     {
         return isDie;
     }
+
     private void OnFootstep(AnimationEvent animationEvent)
     {
         if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -143,7 +186,11 @@ public class EnemyController : MonoBehaviour
             if (FootstepAudioClips.Length > 0)
             {
                 var index = Random.Range(0, FootstepAudioClips.Length);
-                AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.position, FootstepAudioVolume);
+                AudioSource.PlayClipAtPoint(
+                    FootstepAudioClips[index],
+                    transform.position,
+                    FootstepAudioVolume
+                );
             }
         }
     }
@@ -151,7 +198,11 @@ public class EnemyController : MonoBehaviour
     private void UpdateAnimation()
     {
         // Mevcut hızı hesapla
-        float currentHorizontalSpeed = new Vector3(navMeshAgent.velocity.x, 0f, navMeshAgent.velocity.z).magnitude;
+        float currentHorizontalSpeed = new Vector3(
+            navMeshAgent.velocity.x,
+            0f,
+            navMeshAgent.velocity.z
+        ).magnitude;
 
         // Duruma göre hedef hızı ayarla
         switch (currentState)
@@ -173,9 +224,11 @@ public class EnemyController : MonoBehaviour
         // Gerçek hızdan animasyon hızını hesapla (0-6 arasında)
         float animSpeed = currentHorizontalSpeed;
         // Eğer 0.1'den küçükse tamamen durduğunu varsay
-        if (currentHorizontalSpeed < 0.1f) animSpeed = 0f;
+        if (currentHorizontalSpeed < 0.1f)
+            animSpeed = 0f;
         // 6'dan büyükse 6 ile sınırla
-        if (currentHorizontalSpeed > 6f) animSpeed = 6f;
+        if (currentHorizontalSpeed > 6f)
+            animSpeed = 6f;
 
         _animationBlend = Mathf.Lerp(_animationBlend, animSpeed, Time.deltaTime * speedChangeRate);
 
@@ -189,11 +242,19 @@ public class EnemyController : MonoBehaviour
 
         if (distanceToPlayer <= detectionRange)
         {
+
             // Oyuncuya yönelik bir ray (ışın) oluşturma
             Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
 
             // Ray ile görüş kontrolü
-            if (Physics.Raycast(transform.position + Vector3.up, directionToPlayer, out RaycastHit hit, detectionRange))
+            if (
+                Physics.Raycast(
+                    transform.position + Vector3.up * 0.4f,
+                    directionToPlayer,
+                    out RaycastHit hit,
+                    detectionRange
+                )
+            )
             {
                 if (hit.transform == playerTransform)
                 {
@@ -220,7 +281,10 @@ public class EnemyController : MonoBehaviour
         }
 
         // Oyuncu görünmüyorsa ve şu an kovalama veya saldırı durumunda isek
-        if (!playerVisible && (currentState == EnemyState.Chase || currentState == EnemyState.Attack))
+        if (
+            playerVisible == false
+            && (currentState == EnemyState.Chase || currentState == EnemyState.Attack)
+        )
         {
             // Oyuncunun son görüldüğü konuma git
             if (currentState == EnemyState.Attack)
@@ -230,8 +294,10 @@ public class EnemyController : MonoBehaviour
             }
 
             // Son konum yakınına geldiysek veya yol bulunamadıysa devriyeye geri dön
-            if (Vector3.Distance(transform.position, lastKnownPlayerPosition) < waypointStopDistance ||
-                !navMeshAgent.hasPath)
+            if (
+                Vector3.Distance(transform.position, lastKnownPlayerPosition) < waypointStopDistance
+                || !navMeshAgent.hasPath
+            )
             {
                 ChangeState(EnemyState.Patrol);
             }
@@ -284,13 +350,16 @@ public class EnemyController : MonoBehaviour
             Vector3 direction = (playerTransform.position - transform.position).normalized;
             direction.y = 0;
             Quaternion lookRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                lookRotation,
+                Time.deltaTime * 5f
+            );
 
             // Ateş etme
             if (canFire)
             {
                 StartCoroutine(FireRoutine());
-
             }
         }
         else if (distanceToPlayer > attackRange)
@@ -370,7 +439,11 @@ public class EnemyController : MonoBehaviour
         if (bulletPrefab != null && weaponMuzzle != null)
         {
             // Mermi oluşturma işlemi
-            GameObject bullet = Instantiate(bulletPrefab, weaponMuzzle.position, weaponMuzzle.rotation);
+            GameObject bullet = Instantiate(
+                bulletPrefab,
+                weaponMuzzle.position,
+                weaponMuzzle.rotation
+            );
             Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
 
             if (bulletRb != null)
@@ -388,6 +461,7 @@ public class EnemyController : MonoBehaviour
 
         canFire = true;
     }
+
     private void PlayShootSound()
     {
         if (shootSound != null)

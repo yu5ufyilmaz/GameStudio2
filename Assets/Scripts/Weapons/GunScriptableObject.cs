@@ -1,192 +1,301 @@
+using System;
 using System.Collections;
+using DotGalacticos.Guns.ImpactEffects;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
-[CreateAssetMenu(fileName = "Gun", menuName = "Guns/Gun", order = 0)]
-public class GunScriptableObject : ScriptableObject
+using Random = UnityEngine.Random;
+
+namespace DotGalacticos.Guns
 {
-
-    public GunType Type;
-    public string Name;
-    public GameObject ModelPrefab;
-    public Vector3 SpawnPosition;
-    public Vector3 SpawnRotation;
-
-
-    public DamageConfigScriptableObject DamageConfig;
-    public AmmoScriptableObject AmmoConfig;
-    public ShootScriptableObject ShootConfig;
-    public TrailScriptableObject TrailConfig;
-    public AudioScriptableObject AudioConfig;
-
-    private MonoBehaviour ActiveMonoBehaviour;
-    private GameObject Model;
-    private AudioSource modelAudioSource;
-    private float LastShootTime;
-    private ParticleSystem ShootSystem;
-    private ObjectPool<TrailRenderer> TrailPool;
-
-
-    [SerializeField]
-    private AudioClip shootSound;
-    [Range(0, 1)] public float shootAudioVolume = 0.5f;
-
-
-
-    public void Spawn(Transform Parent, MonoBehaviour ActiveMonoBehaviour, Camera ActiveCamera = null)
+    [CreateAssetMenu(fileName = "Gun", menuName = "Guns/Gun", order = 0)]
+    public class GunScriptableObject : ScriptableObject, ICloneable
     {
-        this.ActiveMonoBehaviour = ActiveMonoBehaviour;
-        LastShootTime = 0;
+        public GunType Type;
+        public GunPlace Place;
+        public string Name;
+        public GameObject ModelPrefab;
+        public GameObject PickupPrefab;
+        public Vector3 SpawnPosition;
+        public Vector3 SpawnRotation;
 
-        AmmoConfig.CurrentClipAmmo = AmmoConfig.ClipSize;
-        AmmoConfig.CurrentAmmo = AmmoConfig.MaxAmmo;
+        public DamageConfigScriptableObject DamageConfig;
+        public AmmoScriptableObject AmmoConfig;
+        public ShootScriptableObject ShootConfig;
+        public TrailScriptableObject TrailConfig;
+        public AudioScriptableObject AudioConfig;
 
-        TrailPool = new ObjectPool<TrailRenderer>(CreateTrail);
+        public ICollisionHandler[] BulletImpactEffects = new ICollisionHandler[0];
 
-        Model = Instantiate(ModelPrefab);
-        Model.transform.SetParent(Parent, false);
-        Model.transform.localPosition = SpawnPosition;
-        Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
+        private MonoBehaviour ActiveMonoBehaviour;
+        private GameObject Model;
+        private AudioSource modelAudioSource;
 
-        ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
-        modelAudioSource = Model.GetComponentInChildren<AudioSource>();
-    }
-    public bool CanReload()
-    {
-        return AmmoConfig.CanReload();
-    }
-    public void EndReload()
-    {
-        AmmoConfig.Reload();
-    }
-    public void StartReloading()
-    {
-        AudioConfig.PlayReloadClip(modelAudioSource);
-    }
-    public void Shoot(GameObject aimTargetInstance)
-    {
-        if (Time.time > ShootConfig.FireRate + LastShootTime)
+        private float LastShootTime;
+        private float InitialClickTime;
+        private float StopShootingTime;
+        private bool LastFrameWantedToShoot;
+
+        public bool canShoot = true;
+
+        private ParticleSystem ShootSystem;
+        private ObjectPool<TrailRenderer> TrailPool;
+
+        [SerializeField]
+        private AudioClip shootSound;
+
+        [Range(0, 1)]
+        public float shootAudioVolume = 0.5f;
+
+        public void Spawn(
+            Transform Parent,
+            MonoBehaviour ActiveMonoBehaviour,
+            Camera ActiveCamera = null
+        )
         {
-            if (AmmoConfig.CurrentClipAmmo > 0)
+            this.ActiveMonoBehaviour = ActiveMonoBehaviour;
+            /*
+            LastShootTime = 0;
+            
+            AmmoConfig.CurrentClipAmmo = AmmoConfig.ClipSize;
+            AmmoConfig.CurrentAmmo = AmmoConfig.MaxAmmo;*/
+
+            TrailPool = new ObjectPool<TrailRenderer>(CreateTrail);
+
+            Model = Instantiate(ModelPrefab);
+            Model.transform.SetParent(Parent, false);
+            Model.transform.localPosition = SpawnPosition;
+            Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
+
+            ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
+            modelAudioSource = Model.GetComponentInChildren<AudioSource>();
+        }
+        public void Despawn()
+        {
+            // We do a bunch of other stuff on the same frame, so we really want it to be immediately destroyed, not at Unity's convenience.
+            SetActiveModel(false);
+
+
+
+            Debug.Log($"Destroying {Model.name}");
+            Destroy(Model);
+            TrailPool.Clear();
+
+            modelAudioSource = null;
+            ShootSystem = null;
+        }
+        public void SetActiveModel(bool active)
+        {
+            Model.SetActive(active);
+        }
+        public bool CanReload()
+        {
+            return AmmoConfig.CanReload();
+        }
+
+        public void EndReload()
+        {
+            AmmoConfig.Reload();
+            canShoot = true;
+        }
+
+        public void StartReloading()
+        {
+            AudioConfig.PlayReloadClip(modelAudioSource);
+            canShoot = false;
+        }
+        private bool hasPlayedOutOfAmmoClip = false;
+        public void Shoot()
+        {
+            if (Time.time - LastShootTime - ShootConfig.FireRate > Time.deltaTime)
             {
+                float lastDuration = Mathf.Clamp(
+                    0,
+                    (StopShootingTime - InitialClickTime),
+                    ShootConfig.MaxSpreadTime
+                );
 
-                LastShootTime = Time.time;
-                ShootSystem.Play();
-                AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
+                float lerpTime = (ShootConfig.RecoilRecoverySpeed - (Time.time - StopShootingTime)) / ShootConfig.RecoilRecoverySpeed;
 
-                // Nişan alma hedef pozisyonunu al
-                Vector3 targetPosition = aimTargetInstance.transform.position;
 
-                // Merminin hedef pozisyona doğru yönünü hesapla
-                Vector3 shootDirection = (targetPosition - ShootSystem.transform.position).normalized
-                    + new Vector3(
-                        Random.Range(-ShootConfig.Spread.x, ShootConfig.Spread.x),
-                        Random.Range(-ShootConfig.Spread.y, ShootConfig.Spread.y),
-                        Random.Range(-ShootConfig.Spread.z, ShootConfig.Spread.z)
-                    );
-
-                shootDirection.Normalize();
-                AmmoConfig.CurrentClipAmmo--;
-                // Raycast ile merminin gideceği yönü kontrol et
-                if (Physics.Raycast(ShootSystem.transform.position, shootDirection, out RaycastHit hit, float.MaxValue, ShootConfig.HitMask))
+                InitialClickTime = Time.time - Mathf.Lerp(0, lastDuration, Mathf.Clamp01(lerpTime));
+            }
+            if (Time.time > ShootConfig.FireRate + LastShootTime)
+            {
+                if (AmmoConfig.CurrentClipAmmo > 0 && canShoot == true)
                 {
-                    ActiveMonoBehaviour.StartCoroutine(
-                        PlayTrail(
-                            ShootSystem.transform.position, hit.point, hit
+                    LastShootTime = Time.time;
+                    ShootSystem.Play();
+                    AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
+
+                    // Nişan alma hedef pozisyonunu al
+                    AmmoConfig.CurrentClipAmmo--;
+                    hasPlayedOutOfAmmoClip = false;
+                    for (int i = 0; i < ShootConfig.BulletPerShoot; i++)
+                    {
+                        Vector3 spreadAmount = ShootConfig.GetSpread();
+
+                        Model.transform.forward += Model.transform.TransformDirection(spreadAmount);
+
+                        Vector3 shootDirection = -Model.transform.forward + spreadAmount;
+
+                        // Raycast ile merminin gideceği yönü kontrol et
+                        if (
+                            Physics.Raycast(
+                                ShootSystem.transform.position,
+                                shootDirection,
+                                out RaycastHit hit,
+                                float.MaxValue,
+                                ShootConfig.HitMask
+                            )
                         )
-                    );
+                        {
+                            ActiveMonoBehaviour.StartCoroutine(
+                                PlayTrail(ShootSystem.transform.position, hit.point, hit)
+                            );
+                        }
+                        else
+                        {
+                            ActiveMonoBehaviour.StartCoroutine(
+                                PlayTrail(
+                                    ShootSystem.transform.position,
+                                    ShootSystem.transform.position
+                                        + (shootDirection * TrailConfig.MissDistance),
+                                    new RaycastHit()
+                                )
+                            );
+                        }
+                    }
                 }
                 else
                 {
-                    ActiveMonoBehaviour.StartCoroutine(
-                        PlayTrail(
-                            ShootSystem.transform.position,
-                            ShootSystem.transform.position + (shootDirection * TrailConfig.MissDistance),
-                            new RaycastHit()
-                        )
-                    );
+                    if (!hasPlayedOutOfAmmoClip)
+                    {
+                        Debug.Log("Playing out of ammo clip."); // Debug mesajı
+                        AudioConfig.PlayOutOfAmmoClip(modelAudioSource);
+                        hasPlayedOutOfAmmoClip = true; // Ses çaldı, tekrar çalmaması için değişkeni güncelle
+                    }
                 }
             }
-            else
-            {
-                AudioConfig.PLayOutOfAmmoClip(modelAudioSource);
-            }
         }
 
-    }
-    public Vector3 GetRaycastOrigin()
-    {
-        Vector3 origin = ShootSystem.transform.position;
-        return origin;
-    }
-    public Vector3 GetGunForward()
-    {
-        return Model.transform.forward;
-    }
-    private void PlayShootSound()
-    {
-        if (shootSound != null)
+        public void Tick(bool WantsToShoot)
         {
-            AudioSource.PlayClipAtPoint(shootSound, ShootSystem.transform.position, shootAudioVolume);
-        }
-    }
-    private IEnumerator PlayTrail(Vector3 StartPoint, Vector3 EndPoint, RaycastHit Hit)
-    {
-        TrailRenderer instance = TrailPool.Get();
-        instance.gameObject.SetActive(true);
-        instance.transform.position = StartPoint;
-        yield return null;
 
-        instance.emitting = true;
-
-        float distance = Vector3.Distance(StartPoint, EndPoint);
-        float remainingDistance = distance;
-        while (remainingDistance > 0)
-        {
-            instance.transform.position = Vector3.Lerp(
-                StartPoint,
-                EndPoint, Mathf.Clamp01(1 - (remainingDistance / distance))
+            Model.transform.localRotation = Quaternion.Lerp(
+                Model.transform.localRotation,
+                Quaternion.Euler(SpawnRotation),
+                Time.deltaTime * ShootConfig.RecoilRecoverySpeed
             );
-            remainingDistance -= TrailConfig.SimulationSpeed * Time.deltaTime;
-            yield return null;
-        }
-        instance.transform.position = EndPoint;
+            if (WantsToShoot)
+            {
+                LastFrameWantedToShoot = true;
+                Shoot();
 
-        if (Hit.collider != null)
+            }
+            if (LastFrameWantedToShoot)
+            {
+                StopShootingTime = Time.time;
+                LastFrameWantedToShoot = false;
+            }
+        }
+
+        public Vector3 GetRaycastOrigin()
         {
+            Vector3 origin = ShootSystem.transform.position;
+            return origin;
+        }
 
-            if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
+        public Vector3 GetGunForward()
+        {
+            return Model.transform.forward;
+        }
+
+        private void PlayShootSound()
+        {
+            if (shootSound != null)
             {
-                damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
-            }
-            else
-            {
-                Debug.Log(Hit.collider.name + " does not implement IDamageable");
+                AudioSource.PlayClipAtPoint(
+                    shootSound,
+                    ShootSystem.transform.position,
+                    shootAudioVolume
+                );
             }
         }
 
+        private IEnumerator PlayTrail(Vector3 StartPoint, Vector3 EndPoint, RaycastHit Hit)
+        {
+            TrailRenderer instance = TrailPool.Get();
+            instance.gameObject.SetActive(true);
+            instance.transform.position = StartPoint;
+            yield return null;
 
-        yield return new WaitForSeconds(TrailConfig.Duration);
-        yield return null;
-        instance.emitting = false;
-        instance.gameObject.SetActive(false);
-        TrailPool.Release(instance);
+            instance.emitting = true;
+
+            float distance = Vector3.Distance(StartPoint, EndPoint);
+            float remainingDistance = distance;
+            while (remainingDistance > 0)
+            {
+                instance.transform.position = Vector3.Lerp(
+                    StartPoint,
+                    EndPoint,
+                    Mathf.Clamp01(1 - (remainingDistance / distance))
+                );
+                remainingDistance -= TrailConfig.SimulationSpeed * Time.deltaTime;
+                yield return null;
+            }
+            instance.transform.position = EndPoint;
+
+            if (Hit.collider != null)
+            {
+                if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
+                {
+                    damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
+                }
+            }
+
+            yield return new WaitForSeconds(TrailConfig.Duration);
+            yield return null;
+            instance.emitting = false;
+            instance.gameObject.SetActive(false);
+            TrailPool.Release(instance);
+        }
+
+        private TrailRenderer CreateTrail()
+        {
+            GameObject Instance = new GameObject("Bullet Trail");
+            TrailRenderer trail = Instance.AddComponent<TrailRenderer>();
+            trail.colorGradient = TrailConfig.Color;
+            trail.material = TrailConfig.Material;
+            trail.widthCurve = TrailConfig.WidthCurve;
+            trail.time = TrailConfig.Duration;
+            trail.minVertexDistance = TrailConfig.MinVertexDistance;
+
+            trail.emitting = false;
+            trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+            return trail;
+        }
+
+        public object Clone()
+        {
+            GunScriptableObject config = CreateInstance<GunScriptableObject>();
+            config.Type = Type;
+            config.Place = Place;
+            config.Name = Name;
+            config.name = name;
+            config.DamageConfig = DamageConfig.Clone() as DamageConfigScriptableObject;
+            config.ShootConfig = ShootConfig.Clone() as ShootScriptableObject;
+            config.AmmoConfig = AmmoConfig.Clone() as AmmoScriptableObject;
+            config.TrailConfig = TrailConfig.Clone() as TrailScriptableObject;
+            config.AudioConfig = AudioConfig.Clone() as AudioScriptableObject;
+
+            config.ModelPrefab = ModelPrefab;
+            config.PickupPrefab = PickupPrefab;
+            config.SpawnPosition = SpawnPosition;
+            config.SpawnRotation = SpawnRotation;
+
+            return config;
+        }
     }
-    private TrailRenderer CreateTrail()
-    {
-        GameObject Instance = new GameObject("Bullet Trail");
-        TrailRenderer trail = Instance.AddComponent<TrailRenderer>();
-        trail.colorGradient = TrailConfig.Color;
-        trail.material = TrailConfig.Material;
-        trail.widthCurve = TrailConfig.WidthCurve;
-        trail.time = TrailConfig.Duration;
-        trail.minVertexDistance = TrailConfig.MinVertexDistance;
-
-        trail.emitting = false;
-        trail.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-
-        return trail;
-
-    }
-
-
 }

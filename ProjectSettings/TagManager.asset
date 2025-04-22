@@ -8,6 +8,7 @@ TagManager:
   - Room
   - Wall
   - Door
+  - Pickups
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Ground
   - Enemy
   - Bones
-  - 
+  - Pickups
   - 
   - 
   - 

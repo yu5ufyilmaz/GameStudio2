@@ -68,25 +68,25 @@ public class RoomTransparencyManager : MonoBehaviour
     {
         foreach (Renderer wallRenderer in room.wallRenderers)
         {
-            SetWallOpacity(wallRenderer, 1.0f);
+            SetWallOpacity(wallRenderer, 1.0f,"Obstacle");
         }
     }
     private void SetRoomWallsTransparent(Room room)
     {
         foreach (Renderer wallRenderer in room.wallRenderers)
         {
-            SetWallOpacity(wallRenderer, transparencyAmount);
+            SetWallOpacity(wallRenderer, transparencyAmount,"TransparentWalls");
         }
     }
 
 
-    private void SetWallOpacity(Renderer wallRenderer, float opacity)
+    private void SetWallOpacity(Renderer wallRenderer, float opacity,string transparentLayerName)
     {
         int layer = LayerMask.NameToLayer(transparentLayerName);
-        int defLayer = LayerMask.NameToLayer("Default");
+        
         Material[] materials = wallRenderer.materials;
-
-        if (wallRenderer.gameObject.layer == defLayer)
+        int defLayer = LayerMask.NameToLayer(transparentLayerName);
+       if (wallRenderer.gameObject.layer == defLayer)
             wallRenderer.gameObject.layer = layer;
         else
             wallRenderer.gameObject.layer = defLayer;
@@ -122,10 +122,6 @@ public class RoomTransparencyManager : MonoBehaviour
             color.a = opacity;
             mat.color = color;
         }
-    }
-    private void SetWallLayer()
-    {
-        
     }
 }
 
