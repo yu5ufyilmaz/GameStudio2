@@ -24,10 +24,10 @@ MonoBehaviour:
     m_Value: 1
   fixedExposure:
     m_OverrideState: 1
-    m_Value: 4.6538143
+    m_Value: 3.5
   compensation:
     m_OverrideState: 1
-    m_Value: -8.01
+    m_Value: -8.53
   limitMin:
     m_OverrideState: 1
     m_Value: -3
@@ -575,7 +575,7 @@ MonoBehaviour:
     m_Value: 1
   shadows:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   shadowResolution:
     m_OverrideState: 1
     m_Value: 256
@@ -701,7 +701,7 @@ MonoBehaviour:
     m_Value: 20000
   groundTint:
     m_OverrideState: 1
-    m_Value: {r: 0.25256523, g: 0.25256523, b: 0.25256523, a: 1}
+    m_Value: {r: 0.040500473, g: 0.12049607, b: 0.45609158, a: 1}
   groundColorTexture:
     m_OverrideState: 0
     m_Value: {fileID: 0}
@@ -925,7 +925,7 @@ MonoBehaviour:
     m_Value: 1
   albedo:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_Value: {r: 0.4037736, g: 0.4037736, b: 0.4037736, a: 1}
   globalLightProbeDimmer:
     m_OverrideState: 1
     m_Value: 1
