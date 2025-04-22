@@ -108,12 +108,12 @@ namespace DotGalacticos.Guns.Demo
             reloadAction.canceled += OnReloadCanceled;
             aimAction.canceled += OnAimCanceled;
 
-            layerMask = LayerMask.GetMask("Default","Obstacle","Ground","Enemy");
+            layerMask = LayerMask.GetMask("Default", "Obstacle", "Ground", "Enemy");
             aimImage.enabled = false;
             Cursor.visible = false;
 
 
-            DoIKMagic();
+            // DoIKMagic();
         }
         void DoIKMagic()
         {
@@ -271,9 +271,9 @@ namespace DotGalacticos.Guns.Demo
         private void OnAimPerformed(InputAction.CallbackContext context)
         {
 
-            _leftHandReferans.position = leftHandTarget.position;
-            _leftHandReferans.rotation = leftHandTarget.rotation;
-            _leftElbowReferans.position = leftElbowTarget.position;
+            /* _leftHandReferans.position = leftHandTarget.position;
+             _leftHandReferans.rotation = leftHandTarget.rotation;
+             _leftElbowReferans.position = leftElbowTarget.position;*/
 
             isAiming = true;
             aimImage.enabled = true;
@@ -291,9 +291,9 @@ namespace DotGalacticos.Guns.Demo
         private void OnAimCanceled(InputAction.CallbackContext context)
         {
 
-            _leftHandReferans.position = leftIdleHandTarget.position;
-            _leftHandReferans.rotation = leftIdleHandTarget.rotation;
-            _leftElbowReferans.position = leftIdleElbowTarget.position;
+            /* _leftHandReferans.position = leftIdleHandTarget.position;
+             _leftHandReferans.rotation = leftIdleHandTarget.rotation;
+             _leftElbowReferans.position = leftIdleElbowTarget.position;*/
 
             isAiming = false;
             aimImage.enabled = false;
