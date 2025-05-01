@@ -274,17 +274,17 @@ namespace DotGalacticos
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
+
             // Aiming halinde hızı azaltma
             if (IsAiming)
             {
                 targetSpeed *= 1f; // Nişan alırken hızı azalt
             }
+
             Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
             float speedX = localVelocity.x; // X eksenindeki hız
             float speedZ = localVelocity.z; // Z eksenindeki hız
 
-            // Mevcut yatay hız
-            // float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
@@ -306,10 +306,20 @@ namespace DotGalacticos
             // Animasyon blend değerlerini güncelle
             _animationBlend = speedX; // X eksenindeki hızı kullan
             _animationBlendZ = speedZ; // Z eksenindeki hızı kullan
-            if (Mathf.Abs(_animationBlend) < 0.01f)
+
+            // Geri yürüyüş kontrolü
+            if (_input.move.y < 0) // Eğer geri hareket ediyorsa
+            {
+                _animationBlendZ = -Mathf.Abs(speedZ); // Negatif hız
+            }
+            else if (Mathf.Abs(_animationBlend) < 0.01f)
+            {
                 _animationBlend = 0f;
+            }
             if (Mathf.Abs(_animationBlendZ) < 0.01f)
+            {
                 _animationBlendZ = 0f;
+            }
 
             Vector3 targetDirection = Vector3.zero;
 

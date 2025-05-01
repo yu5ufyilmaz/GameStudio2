@@ -5,10 +5,13 @@ public class RagdollEnabler : MonoBehaviour
 {
     [SerializeField]
     private Animator Animator;
+
     [SerializeField]
     private Transform RagdollRoot;
+
     [SerializeField]
     private NavMeshAgent Agent;
+
     [SerializeField]
     private bool StartRagdoll = false;
     private Rigidbody[] Rigidbodies;
@@ -42,7 +45,7 @@ public class RagdollEnabler : MonoBehaviour
         }
         foreach (Rigidbody rigidbody in Rigidbodies)
         {
-           // rigidbody.linearVelocity = Vector3.zero;
+            // rigidbody.linearVelocity = Vector3.zero;
             rigidbody.detectCollisions = true;
             rigidbody.useGravity = true;
             rigidbody.isKinematic = false;
@@ -54,7 +57,7 @@ public class RagdollEnabler : MonoBehaviour
         foreach (Rigidbody rigidbody in Rigidbodies)
         {
             rigidbody.detectCollisions = false;
-            rigidbody.useGravity = false;
+            rigidbody.useGravity = true;
             rigidbody.isKinematic = true;
         }
     }

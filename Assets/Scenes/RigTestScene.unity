@@ -3869,20 +3869,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 928042280922578703, guid: 6fc315069ace92f41832bfe90087a074,
-        type: 3}
-      propertyPath: DeathSystem
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_Name
       value: Enemy (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5521780328064044724, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -3998,6 +3988,7 @@ MonoBehaviour:
   m_Script: {fileID: 930709014}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Entries: []
 --- !u!4 &570306480
 Transform:
   m_ObjectHideFlags: 19
@@ -10728,6 +10719,7 @@ MonoBehaviour:
   aimTargetInstance: {fileID: 949492619}
   targetWeight: 0
   maxAimDistance: 10
+  fixedAimHeight: 1.5
 --- !u!143 &1269183298
 CharacterController:
   m_ObjectHideFlags: 0
@@ -12700,6 +12692,7 @@ MonoBehaviour:
   m_Script: {fileID: 2117718180}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Entries: []
 --- !u!4 &1560273640
 Transform:
   m_ObjectHideFlags: 19
@@ -21294,7 +21287,7 @@ MonoBehaviour:
   m_NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
   m_AmplitudeGain: 0
-  m_FrequencyGain: 2
+  m_FrequencyGain: 0.5
   mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!33 &2073921712319143427
 MeshFilter:
@@ -33522,6 +33515,7 @@ MonoBehaviour:
   aimTargetInstance: {fileID: 6958760816416417064}
   targetWeight: 0
   maxAimDistance: 10
+  fixedAimHeight: 1.5
 --- !u!114 &6982812147933622149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33689,7 +33683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 531237272217f1a4a8c16a541d23367c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Gun: 2
+  Gun: 1
   SecondGun: 0
   GunParent: {fileID: 635310137}
   SecondHandTargetParent: {fileID: 970435340}
@@ -40413,11 +40407,11 @@ MeshFilter:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 8944336656349189700}
+  - {fileID: 2070925443028286827}
   - {fileID: 2114283753834967213}
   - {fileID: 223232886}
   - {fileID: 8345070700268369567}
-  - {fileID: 8944336656349189700}
-  - {fileID: 2070925443028286827}
   - {fileID: 3893294199639930361}
   - {fileID: 1269183300}
   - {fileID: 548902917}

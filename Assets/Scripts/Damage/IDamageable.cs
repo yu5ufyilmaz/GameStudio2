@@ -12,5 +12,4 @@ public interface IDamageable
     public event DeathEvent OnDeath;
 
     public void TakeDamage(int Damage, Vector3 hitPoint);
-
 }

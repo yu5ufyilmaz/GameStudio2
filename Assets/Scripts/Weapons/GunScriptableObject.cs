@@ -158,7 +158,10 @@ namespace DotGalacticos.Guns
                 if (AmmoConfig.CurrentClipAmmo > 0 && canShoot == true)
                 {
                     LastShootTime = Time.time;
-                    CameraShake.Instance.ShakeCamera(2f, 0.5f);
+                    CameraShake.Instance.ShakeCamera(
+                        ShootConfig.ShakeIntensity,
+                        ShootConfig.ShakeTime
+                    );
                     ShootSystem.Play();
                     AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
 

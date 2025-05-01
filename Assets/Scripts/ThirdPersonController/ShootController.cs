@@ -164,46 +164,49 @@ namespace DotGalacticos.Guns.Demo
         }
 
         public float maxAimDistance = 10f; // Nişan alma objesinin maksimum mesafesi
+        public float fixedAimHeight = 1.5f; // Sabit nişan yüksekliği, ihtiyaç halinde değiştirilebilir
 
-        void Aim()
+       private void Aim()
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             aimImage.transform.position = mousePosition;
 
             Ray ray = mainCamera.ScreenPointToRay(mousePosition);
+
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
                 Vector3 targetPosition = hit.point;
 
-                // Nişan alma objesinin maksimum mesafesini kontrol et
-                if (Vector3.Distance(transform.position, targetPosition) > maxAimDistance)
+                // Hedef mesafe limiti kontrolü
+                Vector3 direction = (targetPosition - transform.position);
+                float distance = direction.magnitude;
+                if (distance > maxAimDistance)
                 {
-                    // Eğer hedef mesafe maksimum mesafeden uzaktaysa, hedefi sınırlayın
-                    Vector3 direction = (targetPosition - transform.position).normalized;
-                    targetPosition = transform.position + direction * maxAimDistance;
+                    direction = direction.normalized * maxAimDistance;
+                    // targetPosition'ı yeni pozisyona ayarla
+                    targetPosition = transform.position + direction;
+                    // Y koordinatını orijinal hit noktasındaki Y değerine orantılı olarak korumak istiyoruz.
+                    // Fakat çekince uzaklığı orantılı korumak için Y aynı kalmalı, böylece üstüne çıkma olmaz.
+                    // Bu haliyle hedefin Y'si doğal olarak gerçekçi kalacak.
                 }
 
-                // Nişan alma nesnesini güncelle
+                // Nişan objesini bu hedef pozisyona koy
                 if (aimTargetInstance != null)
                 {
                     aimTargetInstance.transform.position = targetPosition;
                 }
 
-                // Karakterin nişan aldığı yöne bakmasını sağla
-                Vector3 directionToTarget = (targetPosition - transform.position).normalized;
-                directionToTarget.y = 0; // Y eksenini sıfırla, sadece X ve Z düzleminde döndür
-                if (directionToTarget != Vector3.zero)
+                // Karakter dönüşü sadece yatay düzlemde olsun (y=0)
+                Vector3 directionToTarget = targetPosition - transform.position;
+                directionToTarget.y = 0;
+
+                if (directionToTarget.sqrMagnitude > 0.001f)
                 {
                     Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
-                    transform.rotation = Quaternion.Slerp(
-                        transform.rotation,
-                        lookRotation,
-                        Time.deltaTime * 10f
-                    );
+                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
                 }
             }
         }
-
         IEnumerator MoveToTargetRoutine(Transform aimTarget, float duration)
         {
             Vector3 startPosition = aimTargetInstance.transform.position; // Başlangıç pozisyonu

@@ -242,7 +242,6 @@ public class EnemyController : MonoBehaviour
 
         if (distanceToPlayer <= detectionRange)
         {
-
             // Oyuncuya yönelik bir ray (ışın) oluşturma
             Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
 
