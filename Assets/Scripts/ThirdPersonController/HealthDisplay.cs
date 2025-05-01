@@ -1,9 +1,6 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(TextMeshProUGUI))]
-public class HealthDisplay : MonoBehaviour
-{
-
-}
+public class HealthDisplay : MonoBehaviour { }
