@@ -163,50 +163,67 @@ namespace DotGalacticos.Guns.Demo
             isReloading = false;
         }
 
-        public float maxAimDistance = 10f; // Nişan alma objesinin maksimum mesafesi
-        public float fixedAimHeight = 1.5f; // Sabit nişan yüksekliği, ihtiyaç halinde değiştirilebilir
+        public float orbitRadius = 5f;
+        public float fixedAimHeight = 1f; // Sabit nişan yüksekliği, ihtiyaç halinde değiştirilebilir
 
-       private void Aim()
+        private void Aim()
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
-            aimImage.transform.position = mousePosition;
+            RectTransform rectTransform = aimImage.GetComponent<RectTransform>();
+            rectTransform.position = mousePosition;
 
             Ray ray = mainCamera.ScreenPointToRay(mousePosition);
 
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
+            // Yatay düzlemde karakter konumuna göre mouse ışınının açılarını hesaplayacağız
+            // Öncelikle yatay düzlemde mouse pozisyonunun karaktere göre konumunu bulalım
+
+            Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, fixedAimHeight, 0)); // Y sabit düzlem
+
+            if (horizontalPlane.Raycast(ray, out float enter))
             {
-                Vector3 targetPosition = hit.point;
+                Vector3 hitPoint = ray.GetPoint(enter);
 
-                // Hedef mesafe limiti kontrolü
-                Vector3 direction = (targetPosition - transform.position);
-                float distance = direction.magnitude;
-                if (distance > maxAimDistance)
-                {
-                    direction = direction.normalized * maxAimDistance;
-                    // targetPosition'ı yeni pozisyona ayarla
-                    targetPosition = transform.position + direction;
-                    // Y koordinatını orijinal hit noktasındaki Y değerine orantılı olarak korumak istiyoruz.
-                    // Fakat çekince uzaklığı orantılı korumak için Y aynı kalmalı, böylece üstüne çıkma olmaz.
-                    // Bu haliyle hedefin Y'si doğal olarak gerçekçi kalacak.
-                }
+                // Karakter pozisyonundan hitPoint'e yatay yön vektörü (Y 0)
+                Vector3 direction = hitPoint - transform.position;
+                direction.y = 0;
 
-                // Nişan objesini bu hedef pozisyona koy
+                // Eğer fare karakterin tam üstünde ise (direction sıfırsa), işlem yapma
+                if (direction.sqrMagnitude < 0.001f)
+                    return;
+
+                // Açıyı hesapla (0-360 derece)
+                float angle = Mathf.Atan2(direction.z, direction.x); // radyan cinsinden
+
+                // Hedef pozisyonunu sabit yarıçap ve hesaplanan açıya göre hesapla
+                // Unity yatayda Z ekseni ileri, X ekseni sağdır.
+                float targetX = transform.position.x + orbitRadius * Mathf.Cos(angle);
+                float targetZ = transform.position.z + orbitRadius * Mathf.Sin(angle);
+                float targetY = fixedAimHeight;
+
+                Vector3 targetPosition = new Vector3(targetX, targetY, targetZ);
+
+                // aimTargetInstance pozisyonunu güncelle
                 if (aimTargetInstance != null)
                 {
                     aimTargetInstance.transform.position = targetPosition;
                 }
 
-                // Karakter dönüşü sadece yatay düzlemde olsun (y=0)
-                Vector3 directionToTarget = targetPosition - transform.position;
-                directionToTarget.y = 0;
+                // Karakter sadece yatay düzlemde hedefe dönsün
+                Vector3 lookDirection = targetPosition - transform.position;
+                lookDirection.y = 0;
 
-                if (directionToTarget.sqrMagnitude > 0.001f)
+                if (lookDirection.sqrMagnitude > 0.001f)
                 {
-                    Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+                    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+                    transform.rotation = Quaternion.Slerp(
+                        transform.rotation,
+                        targetRotation,
+                        Time.deltaTime * 5f
+                    );
                 }
             }
         }
+
         IEnumerator MoveToTargetRoutine(Transform aimTarget, float duration)
         {
             Vector3 startPosition = aimTargetInstance.transform.position; // Başlangıç pozisyonu
