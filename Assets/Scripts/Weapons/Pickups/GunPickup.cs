@@ -32,11 +32,13 @@ namespace DotGalacticos.Guns.Demo
                 CurrentAmmo = Mathf.Clamp(CurrentAmmo, 0, Gun.AmmoConfig.MaxAmmo);
             }
         }
+
         public void SetPickupAmmoAmount(PlayerGunSelector DroppedGunBase)
         {
             currentAmmo = DroppedGunBase.ActiveGun.AmmoConfig.CurrentAmmo;
             currentClipAmmo = DroppedGunBase.ActiveGun.AmmoConfig.CurrentClipAmmo;
         }
+
         public void SetWeaponAmmoAmount(GunScriptableObject ActiveGun)
         {
             GunScriptableObject newGun = ActiveGun;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DotGalacticos.Guns.ImpactEffects;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -19,6 +20,9 @@ namespace DotGalacticos.Guns
         public Vector3 SpawnPosition;
         public Vector3 SpawnRotation;
 
+        public Vector3 SecondHandPositionOffset;
+        public Vector3 SecondHandRotationOffset;
+
         public DamageConfigScriptableObject DamageConfig;
         public AmmoScriptableObject AmmoConfig;
         public ShootScriptableObject ShootConfig;
@@ -30,6 +34,7 @@ namespace DotGalacticos.Guns
         private MonoBehaviour ActiveMonoBehaviour;
         private GameObject Model;
         private AudioSource modelAudioSource;
+        public Transform secondHandTarget;
 
         private float LastShootTime;
         private float InitialClickTime;
@@ -46,6 +51,8 @@ namespace DotGalacticos.Guns
 
         [Range(0, 1)]
         public float shootAudioVolume = 0.5f;
+
+        public Dictionary<string, int> AmmoStorage = new Dictionary<string, int>();
 
         public void Spawn(
             Transform Parent,
@@ -67,15 +74,16 @@ namespace DotGalacticos.Guns
             Model.transform.localPosition = SpawnPosition;
             Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
 
+            secondHandTarget = Model.transform.GetChild(0);
+
             ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
             modelAudioSource = Model.GetComponentInChildren<AudioSource>();
         }
+
         public void Despawn()
         {
             // We do a bunch of other stuff on the same frame, so we really want it to be immediately destroyed, not at Unity's convenience.
             SetActiveModel(false);
-
-
 
             Debug.Log($"Destroying {Model.name}");
             Destroy(Model);
@@ -84,10 +92,12 @@ namespace DotGalacticos.Guns
             modelAudioSource = null;
             ShootSystem = null;
         }
+
         public void SetActiveModel(bool active)
         {
             Model.SetActive(active);
         }
+
         public bool CanReload()
         {
             return AmmoConfig.CanReload();
@@ -104,7 +114,29 @@ namespace DotGalacticos.Guns
             AudioConfig.PlayReloadClip(modelAudioSource);
             canShoot = false;
         }
+
+        public void SaveAmmo(string gunName, int currentClipAmmo, int currentAmmo)
+        {
+            AmmoStorage[gunName] = currentClipAmmo;
+            AmmoStorage[gunName + "_Total"] = currentAmmo;
+        }
+
+        public int GetClipAmmo(string gunName)
+        {
+            return AmmoStorage.ContainsKey(gunName)
+                ? AmmoStorage[gunName]
+                : AmmoConfig.CurrentClipAmmo;
+        }
+
+        public int GetTotalAmmo(string gunName)
+        {
+            return AmmoStorage.ContainsKey(gunName + "_Total")
+                ? AmmoStorage[gunName + "_Total"]
+                : AmmoConfig.CurrentAmmo;
+        }
+
         private bool hasPlayedOutOfAmmoClip = false;
+
         public void Shoot()
         {
             if (Time.time - LastShootTime - ShootConfig.FireRate > Time.deltaTime)
@@ -115,8 +147,9 @@ namespace DotGalacticos.Guns
                     ShootConfig.MaxSpreadTime
                 );
 
-                float lerpTime = (ShootConfig.RecoilRecoverySpeed - (Time.time - StopShootingTime)) / ShootConfig.RecoilRecoverySpeed;
-
+                float lerpTime =
+                    (ShootConfig.RecoilRecoverySpeed - (Time.time - StopShootingTime))
+                    / ShootConfig.RecoilRecoverySpeed;
 
                 InitialClickTime = Time.time - Mathf.Lerp(0, lastDuration, Mathf.Clamp01(lerpTime));
             }
@@ -125,6 +158,7 @@ namespace DotGalacticos.Guns
                 if (AmmoConfig.CurrentClipAmmo > 0 && canShoot == true)
                 {
                     LastShootTime = Time.time;
+                    CameraShake.Instance.ShakeCamera(2f, 0.5f);
                     ShootSystem.Play();
                     AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
 
@@ -181,7 +215,6 @@ namespace DotGalacticos.Guns
 
         public void Tick(bool WantsToShoot)
         {
-
             Model.transform.localRotation = Quaternion.Lerp(
                 Model.transform.localRotation,
                 Quaternion.Euler(SpawnRotation),
@@ -191,7 +224,6 @@ namespace DotGalacticos.Guns
             {
                 LastFrameWantedToShoot = true;
                 Shoot();
-
             }
             if (LastFrameWantedToShoot)
             {

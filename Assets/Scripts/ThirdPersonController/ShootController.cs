@@ -1,24 +1,25 @@
 using System.Collections;
-using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
-using UnityEngine.Animations.Rigging;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Animations.Rigging;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
 namespace DotGalacticos.Guns.Demo
 {
     public class ShootController : MonoBehaviour
     {
-
         [SerializeField]
         private Image crosshair;
+
         [SerializeField]
         Transform aimTarget;
+
         [SerializeField]
         private LayerMask layerMask;
 
         [Space(10)]
-
         [SerializeField]
         private PlayerGunSelector GunSelector;
         public Transform _leftHandReferans;
@@ -29,6 +30,7 @@ namespace DotGalacticos.Guns.Demo
 
         public Transform leftIdleHandTarget;
         public Transform leftIdleElbowTarget;
+
         [Range(0, 1f)]
         public float HandIKAmount = 1f;
 
@@ -46,15 +48,12 @@ namespace DotGalacticos.Guns.Demo
         [SerializeField]
         private bool autoReload = true;
         private bool shouldManuelReload = false;
+
         [SerializeField]
         public bool isReloading = false;
 
-
-
         // Ses bileşeni
         private AudioSource audioSource;
-
-
 
         // INPUT PARAMETRELERI
         private InputAction shootAction;
@@ -71,8 +70,12 @@ namespace DotGalacticos.Guns.Demo
         //private Transform muzzlePoint;
         [SerializeField]
         private AudioClip shootSound;
-        [Range(0, 1)] public float shootAudioVolume = 0.5f;
 
+        [SerializeField]
+        private CameraTargetSwitcher cameraTargetSwitcher;
+
+        [Range(0, 1)]
+        public float shootAudioVolume = 0.5f;
 
         [Header("Nişan Alma Nesnesi")]
         [SerializeField]
@@ -82,8 +85,6 @@ namespace DotGalacticos.Guns.Demo
         public float targetWeight = 0f;
         private float weightChangeSpeed = 5f; // Ağırlığın değişim hızı
         private MultiAimConstraint ikConstraint;
-
-
 
         void Start()
         {
@@ -109,27 +110,30 @@ namespace DotGalacticos.Guns.Demo
             aimAction.canceled += OnAimCanceled;
 
             layerMask = LayerMask.GetMask("Default", "Obstacle", "Ground", "Enemy");
-            aimImage.enabled = false;
+            aimImage.enabled = true; // Crosshair başlangıçta görünür
             Cursor.visible = false;
-
 
             // DoIKMagic();
         }
+
         void DoIKMagic()
         {
             Transform[] allChildren = GetComponentsInChildren<Transform>();
             leftHandTarget = allChildren.FirstOrDefault(child => child.name == "LeftHandTarget");
             leftElbowTarget = allChildren.FirstOrDefault(child => child.name == "LeftElbowTarget");
-            leftIdleHandTarget = allChildren.FirstOrDefault(child => child.name == "LeftIdleHandTarget");
-            leftIdleElbowTarget = allChildren.FirstOrDefault(child => child.name == "LeftIdleElbowTarget");
+            leftIdleHandTarget = allChildren.FirstOrDefault(child =>
+                child.name == "LeftIdleHandTarget"
+            );
+            leftIdleElbowTarget = allChildren.FirstOrDefault(child =>
+                child.name == "LeftIdleElbowTarget"
+            );
         }
+
         void Update()
         {
-
             if (ShouldAutoReload() || ShouldManuelReload())
             {
-
-                IKWeight(rig2, targetWeight);
+                //IKWeight(rig2, targetWeight);
                 GunSelector.ActiveGun.StartReloading();
                 isReloading = true;
                 animator.SetTrigger("Reload");
@@ -138,35 +142,31 @@ namespace DotGalacticos.Guns.Demo
             {
                 if (isAiming)
                 {
-                    Aim();
                     IKWeight(rig1, targetWeight);
                 }
                 else
                 {
-
-                    IKWeight(rig2, targetWeight);
+                    //IKWeight(rig2, targetWeight);
                 }
+                Aim();
             }
-
 
             if (GunSelector != null)
             {
                 GunSelector.ActiveGun.Tick(isShooting); // Sürekli ateşleme işlemi
             }
-
         }
 
         private void EndReload()
         {
-
             GunSelector.ActiveGun.EndReload();
             isReloading = false;
         }
 
+        public float maxAimDistance = 10f; // Nişan alma objesinin maksimum mesafesi
 
         void Aim()
         {
-
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             aimImage.transform.position = mousePosition;
 
@@ -174,26 +174,36 @@ namespace DotGalacticos.Guns.Demo
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
             {
                 Vector3 targetPosition = hit.point;
+
+                // Nişan alma objesinin maksimum mesafesini kontrol et
+                if (Vector3.Distance(transform.position, targetPosition) > maxAimDistance)
+                {
+                    // Eğer hedef mesafe maksimum mesafeden uzaktaysa, hedefi sınırlayın
+                    Vector3 direction = (targetPosition - transform.position).normalized;
+                    targetPosition = transform.position + direction * maxAimDistance;
+                }
+
                 // Nişan alma nesnesini güncelle
                 if (aimTargetInstance != null)
                 {
                     aimTargetInstance.transform.position = targetPosition;
-
                 }
 
                 // Karakterin nişan aldığı yöne bakmasını sağla
-                Vector3 direction = (targetPosition - transform.position).normalized;
-                direction.y = 0; // Y eksenini sıfırla, sadece X ve Z düzleminde döndür
-                if (direction != Vector3.zero)
+                Vector3 directionToTarget = (targetPosition - transform.position).normalized;
+                directionToTarget.y = 0; // Y eksenini sıfırla, sadece X ve Z düzleminde döndür
+                if (directionToTarget != Vector3.zero)
                 {
-                    Quaternion lookRotation = Quaternion.LookRotation(direction);
-                    transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
+                    Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
+                    transform.rotation = Quaternion.Slerp(
+                        transform.rotation,
+                        lookRotation,
+                        Time.deltaTime * 10f
+                    );
                 }
-
-                // Çizgi çizme
-                //Debug.DrawLine(GunSelector.ActiveGun.position, targetPosition, Color.red);
             }
         }
+
         IEnumerator MoveToTargetRoutine(Transform aimTarget, float duration)
         {
             Vector3 startPosition = aimTargetInstance.transform.position; // Başlangıç pozisyonu
@@ -206,7 +216,11 @@ namespace DotGalacticos.Guns.Demo
                 float t = elapsedTime / duration;
 
                 // Lerp ile yeni pozisyonu hesapla
-                aimTargetInstance.transform.position = Vector3.Lerp(startPosition, aimTarget.position, t);
+                aimTargetInstance.transform.position = Vector3.Lerp(
+                    startPosition,
+                    aimTarget.position,
+                    t
+                );
 
                 // Geçen süreyi güncelle
                 elapsedTime += Time.deltaTime;
@@ -217,35 +231,35 @@ namespace DotGalacticos.Guns.Demo
 
             // Hedef pozisyona tam olarak ulaş
             aimTargetInstance.transform.position = aimTarget.position;
-
         }
+
         private bool ShouldAutoReload()
         {
-            return
-            !isReloading
-            && autoReload
-            && GunSelector.ActiveGun.AmmoConfig.CurrentClipAmmo == 0
-            && GunSelector.ActiveGun.AmmoConfig.CanReload();
+            return !isReloading
+                && autoReload
+                && GunSelector.ActiveGun.AmmoConfig.CurrentClipAmmo == 0
+                && GunSelector.ActiveGun.AmmoConfig.CanReload();
         }
+
         private bool ShouldManuelReload()
         {
             return !isReloading
-            && shouldManuelReload
-            && GunSelector.ActiveGun.AmmoConfig.CanReload();
+                && shouldManuelReload
+                && GunSelector.ActiveGun.AmmoConfig.CanReload();
         }
-
-
 
         void IKWeight(Rig rig, float targetWeight)
         {
             rig.weight = Mathf.Lerp(rig.weight, targetWeight, Time.deltaTime * weightChangeSpeed);
             //animator.SetLayerWeight(1, rig.weight);
         }
+
         public void DodgeIK(float weight)
         {
             rig1.weight = weight;
             rig2.weight = weight;
         }
+
         private void OnShootPerformed(InputAction.CallbackContext context)
         {
             if (GunSelector != null)
@@ -253,6 +267,7 @@ namespace DotGalacticos.Guns.Demo
                 isShooting = true;
             }
         }
+
         private void OnShootCanceled(InputAction.CallbackContext context)
         {
             if (GunSelector != null)
@@ -260,59 +275,58 @@ namespace DotGalacticos.Guns.Demo
                 isShooting = false;
             }
         }
+
         private void OnReloadPerformed(InputAction.CallbackContext context)
         {
             shouldManuelReload = true;
         }
+
         private void OnReloadCanceled(InputAction.CallbackContext context)
         {
             shouldManuelReload = false;
         }
+
         private void OnAimPerformed(InputAction.CallbackContext context)
         {
-
             /* _leftHandReferans.position = leftHandTarget.position;
              _leftHandReferans.rotation = leftHandTarget.rotation;
              _leftElbowReferans.position = leftElbowTarget.position;*/
 
             isAiming = true;
-            aimImage.enabled = true;
             if (thirdPersonController != null)
             {
                 thirdPersonController.IsAiming = true;
             }
+            //cameraTargetSwitcher.SwitchTargets();
 
             // Nişan alındığında hedef ağırlığı 1'e ayarla
             targetWeight = 1f;
             animator.SetBool(IsAiming, true);
-
         }
 
         private void OnAimCanceled(InputAction.CallbackContext context)
         {
-
             /* _leftHandReferans.position = leftIdleHandTarget.position;
              _leftHandReferans.rotation = leftIdleHandTarget.rotation;
              _leftElbowReferans.position = leftIdleElbowTarget.position;*/
 
             isAiming = false;
-            aimImage.enabled = false;
+
             if (gameObject.activeInHierarchy)
             {
-                StartCoroutine(MoveToTargetRoutine(aimTarget, 1.0f)); // 1 saniyede hedefe ulaşır
+                //StartCoroutine(MoveToTargetRoutine(aimTarget, 1.0f)); // 1 saniyede hedefe ulaşır
             }
 
             if (thirdPersonController != null)
             {
-
                 thirdPersonController.IsAiming = false;
             }
+            //cameraTargetSwitcher.FixTarget();
             // Nişan alma sona erdiğinde hedef ağırlığı 0'a ayarla
-
-
-            targetWeight = 0f;
+            targetWeight = 1f;
             animator.SetBool(IsAiming, false);
         }
+
         private void OnDestroy()
         {
             // InputAction'ları devre dışı bırak

@@ -20,11 +20,19 @@ public class DoorController : MonoBehaviour
         // Kapının açılma ve kapanma animasyonu
         if (isOpen)
         {
-            door.rotation = Quaternion.Slerp(door.rotation, openRotation, Time.deltaTime * openSpeed);
+            door.rotation = Quaternion.Slerp(
+                door.rotation,
+                openRotation,
+                Time.deltaTime * openSpeed
+            );
         }
         else
         {
-            door.rotation = Quaternion.Slerp(door.rotation, closedRotation, Time.deltaTime * openSpeed);
+            door.rotation = Quaternion.Slerp(
+                door.rotation,
+                closedRotation,
+                Time.deltaTime * openSpeed
+            );
         }
     }
 

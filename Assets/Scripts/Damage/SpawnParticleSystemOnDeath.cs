@@ -17,6 +17,6 @@ public class SpawnParticleSystemOnDeath : MonoBehaviour
 
     private void Damageable_OnDeath(Vector3 Position)
     {
-        Instantiate(DeathSystem, Position, Quaternion.identity);
+        //Instantiate(DeathSystem, Position, Quaternion.identity);
     }
 }

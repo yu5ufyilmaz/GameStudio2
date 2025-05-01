@@ -14,6 +14,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/RigTestScene.unity
     guid: 674e34ee413c49e4cb2eb604e95589a9
+  - enabled: 1
+    path: Assets/Scenes/DemoLevels/DemoLevel_P.unity
+    guid: 05cf0f9cc5210914a853bb20651e5168
+  - enabled: 1
+    path: Assets/Scenes/DemoLevels/DemoLevel_Common.unity
+    guid: d2d49c3cd6e4020439f5161865722314
+  - enabled: 1
+    path: Assets/Scenes/DemoLevels/DemoLevel_Casino.unity
+    guid: 729a8a35239e30643b162fda37fd17c0
+  - enabled: 1
+    path: Assets/Scenes/DemoLevels/DemoLevel_LosPollos.unity
+    guid: 6e1816207727aad4d829b3ccd23489f8
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3,
       type: 2}

@@ -4969,12 +4969,12 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.1855, y: 1.363, z: 0.305}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 120, y: 120, z: 120}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 7573376465621807894}
   - {fileID: 288836671581426288}
   - {fileID: 6179250776841394190}
-  - {fileID: 7573376465621807894}
   - {fileID: 7573376466593175101}
   - {fileID: 7573376465656654603}
   - {fileID: 7573376465216522506}
@@ -5118,7 +5118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7573376465621807894}
   m_Layer: 1
-  m_Name: LeftHand
+  m_Name: SecondHandTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5133,7 +5133,7 @@ Transform:
   m_GameObject: {fileID: 7573376465621807895}
   serializedVersion: 2
   m_LocalRotation: {x: 0.27773565, y: -0.018361231, z: 0.95744157, w: -0.076362774}
-  m_LocalPosition: {x: -0.1058, y: 0.0088, z: 0.0199}
+  m_LocalPosition: {x: -0.0199, y: 0.0071, z: -0.0665}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5267,6 +5267,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 4061623325394170407, guid: 8768e2968c746704ba62b80d55c9d231, type: 3}
+    - {fileID: 2540748133227332945, guid: 8768e2968c746704ba62b80d55c9d231, type: 3}
+    - {fileID: 4952298747941631807, guid: 8768e2968c746704ba62b80d55c9d231, type: 3}
+    - {fileID: 4325939333509000952, guid: 8768e2968c746704ba62b80d55c9d231, type: 3}
+    - {fileID: 46280289837295951, guid: 8768e2968c746704ba62b80d55c9d231, type: 3}
+    - {fileID: 4667247368699131593, guid: 8768e2968c746704ba62b80d55c9d231, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8768e2968c746704ba62b80d55c9d231, type: 3}

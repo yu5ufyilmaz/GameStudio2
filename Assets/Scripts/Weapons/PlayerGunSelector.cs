@@ -4,6 +4,7 @@ using System.Linq;
 using DotGalacticos.Guns.Modifiers;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 namespace DotGalacticos.Guns.Demo
 {
@@ -14,8 +15,10 @@ namespace DotGalacticos.Guns.Demo
 
         private static readonly int IsOneHanded = Animator.StringToHash("Is1HandedGun");
         private static readonly int IsSecondHanded = Animator.StringToHash("Is2HandedGun");
+
         [SerializeField]
         private GunType Gun;
+
         [SerializeField]
         private GunType SecondGun;
 
@@ -23,23 +26,44 @@ namespace DotGalacticos.Guns.Demo
         private Transform GunParent;
 
         [SerializeField]
+        private Transform SecondHandTargetParent;
+
+        [SerializeField]
         private List<GunScriptableObject> Guns;
 
         [Space]
         [Header("Runtime Filled")]
         public GunScriptableObject ActiveGun;
+
         [SerializeField]
         public GunScriptableObject ActiveBaseGun;
 
         public GunScriptableObject FirstHandGun; // İkinci el silahı
+
         [SerializeField]
         public GunScriptableObject FirstHandBaseGun;
 
         public GunScriptableObject SecondHandGun; // İkinci el silahı
+
         [SerializeField]
         public GunScriptableObject SecondHandBaseGun;
+        private Rig rig2;
 
         private int activeGunIndex = 1;
+
+        private class AmmoState
+        {
+            public int CurrentClipAmmo;
+            public int CurrentAmmo;
+
+            public AmmoState(int clipAmmo, int totalAmmo)
+            {
+                CurrentClipAmmo = clipAmmo;
+                CurrentAmmo = totalAmmo;
+            }
+        }
+
+        private Dictionary<int, AmmoState> ammoStates = new Dictionary<int, AmmoState>();
 
         private void Awake()
         {
@@ -50,14 +74,28 @@ namespace DotGalacticos.Guns.Demo
                 Debug.LogError("No GunScriptableObject found.");
                 return;
             }
-
+            rig2 = GameObject.Find("Rig 2").GetComponent<Rig>();
             animator = GetComponent<Animator>();
             ActiveBaseGun = firstGun; // Başlangıçta aktif silahı birinci el silahı olarak ayarla
             SetupGun(ActiveBaseGun);
             SetupHandGuns(firstGun, secondGun);
+            if (FirstHandGun != null)
+                ammoStates[1] = new AmmoState(
+                    FirstHandGun.AmmoConfig.CurrentClipAmmo,
+                    FirstHandGun.AmmoConfig.CurrentAmmo
+                );
+
+            if (SecondHandGun != null)
+                ammoStates[2] = new AmmoState(
+                    SecondHandGun.AmmoConfig.CurrentClipAmmo,
+                    SecondHandGun.AmmoConfig.CurrentAmmo
+                );
         }
 
-        private void SetupHandGuns(GunScriptableObject firstHandGun, GunScriptableObject secondHandGun)
+        private void SetupHandGuns(
+            GunScriptableObject firstHandGun,
+            GunScriptableObject secondHandGun
+        )
         {
             FirstHandBaseGun = firstHandGun;
             SecondHandBaseGun = secondHandGun;
@@ -69,9 +107,13 @@ namespace DotGalacticos.Guns.Demo
         private void SetupGun(GunScriptableObject gun)
         {
             SaveAmmoAmount(gun);
+
             ActiveBaseGun = gun;
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
             ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştir
+            SecondHandTargetParent.position = ActiveGun.secondHandTarget.position;
+            ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
+            ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
             UpdateAnimator(gun); // Animatörü güncelle
         }
 
@@ -109,6 +151,7 @@ namespace DotGalacticos.Guns.Demo
                 mod.Apply(ActiveGun);
             }
         }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -130,51 +173,71 @@ namespace DotGalacticos.Guns.Demo
 
         private IEnumerator SwitchGunCoroutine(int gunNumber)
         {
-            animator.SetTrigger("Switch"); // Animasyonu tetikle
-            ActiveGun.canShoot = false;
-            // Animasyonun bitmesini bekle
+            animator.SetTrigger("Switch");
+            if (ActiveGun != null)
+                ActiveGun.canShoot = false;
+
             yield return new WaitForSeconds(1.1f);
 
-            // Animasyon bittiğinde silahı değiştir
             animator.ResetTrigger("Switch");
-            SwitchGun(gunNumber);
-            ActiveGun.canShoot = true;
 
+            SwitchGun(gunNumber);
+
+            if (ActiveGun != null)
+                ActiveGun.canShoot = true;
         }
 
         private void SwitchGun(int gunNumber)
         {
-            if (gunNumber == 1)
+            // İlk önce mevcut silahın ammo durumunu kaydet
+            if (activeGunIndex != 0 && ActiveGun != null)
             {
-                // Birinci el silahını aktif et
-                if (FirstHandGun != null)
+                ammoStates[activeGunIndex] = new AmmoState(
+                    ActiveGun.AmmoConfig.CurrentClipAmmo,
+                    ActiveGun.AmmoConfig.CurrentAmmo
+                );
+            }
+
+            if (gunNumber == 1 && FirstHandGun != null)
+            {
+                activeGunIndex = 1;
+                DespawnActiveGun();
+
+                ActiveBaseGun = FirstHandGun;
+                SetupGun(FirstHandGun);
+
+                // Ammo durumunu yükle
+                if (ammoStates.ContainsKey(1))
                 {
-                    activeGunIndex = 1;
-                    DespawnActiveGun(); // Mevcut silahı yok et
-                    ActiveBaseGun = FirstHandGun; // Aktif silahı birinci el silahı olarak ayarla
-
-                    SetupGun(FirstHandGun); // Birinci el silahını kur
-
+                    ActiveGun.AmmoConfig.CurrentClipAmmo = ammoStates[1].CurrentClipAmmo;
+                    ActiveGun.AmmoConfig.CurrentAmmo = ammoStates[1].CurrentAmmo;
                 }
             }
-            else if (gunNumber == 2)
+            else if (gunNumber == 2 && SecondHandGun != null)
             {
-                // İkinci el silahını aktif et
-                if (SecondHandGun != null)
+                activeGunIndex = 2;
+                DespawnActiveGun();
+
+                ActiveBaseGun = SecondHandGun;
+                SetupGun(SecondHandGun);
+
+                // Ammo durumunu yükle
+                if (ammoStates.ContainsKey(2))
                 {
-                    activeGunIndex = 2;
-                    DespawnActiveGun(); // Mevcut silahı yok et
-                    ActiveBaseGun = SecondHandGun; // Aktif silahı ikinci el silahı olarak ayarla
-
-                    SetupGun(SecondHandGun); // İkinci el silahını kur
-
+                    ActiveGun.AmmoConfig.CurrentClipAmmo = ammoStates[2].CurrentClipAmmo;
+                    ActiveGun.AmmoConfig.CurrentAmmo = ammoStates[2].CurrentAmmo;
                 }
             }
         }
+
         private void TryPickupGroundGun()
         {
             // Yerdeki silahları kontrol et
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 2f, 1 << LayerMask.NameToLayer("Pickups"));
+            Collider[] hitColliders = Physics.OverlapSphere(
+                transform.position,
+                2f,
+                1 << LayerMask.NameToLayer("Pickups")
+            );
 
             // En yakın silahı bulmak için değişkenler
             GunScriptableObject closestGun = null;
@@ -189,7 +252,10 @@ namespace DotGalacticos.Guns.Demo
                 if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
                 {
                     // Silahın pozisyonu ile oyuncunun pozisyonu arasındaki mesafeyi hesapla
-                    float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+                    float distance = Vector3.Distance(
+                        transform.position,
+                        hitCollider.transform.position
+                    );
 
                     // Eğer bu silah, şu ana kadar bulduğumuz en yakın silah ise, güncelle
                     if (distance < closestDistance)
@@ -210,7 +276,6 @@ namespace DotGalacticos.Guns.Demo
                     gunPickup.SetWeaponAmmoAmount(closestGun);
                     PickupGun(closestGun, SecondHandGun);
                     SetupGun(closestGun);
-
                 }
                 else
                 {
@@ -221,28 +286,35 @@ namespace DotGalacticos.Guns.Demo
                 }
 
                 // En yakın silahın bulunduğu collider'ı yok et
-                Collider closestCollider = hitColliders.FirstOrDefault(c => c.GetComponent<GunPickup>().Gun == closestGun);
+                Collider closestCollider = hitColliders.FirstOrDefault(c =>
+                    c.GetComponent<GunPickup>().Gun == closestGun
+                );
                 if (closestCollider != null)
                 {
                     Destroy(closestCollider.gameObject); // Yerdeki silahı yok et
                 }
             }
         }
+
         private void SaveAmmoAmount(GunScriptableObject gun)
         {
             GunScriptableObject newGun = gun;
             newGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.CurrentClipAmmo;
             newGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.CurrentAmmo;
         }
+
         private void DropGun(GunScriptableObject gunToDrop)
         {
             if (gunToDrop != null)
             {
-                GameObject PickupObject = Instantiate(gunToDrop.PickupPrefab, GunParent.position, Quaternion.identity);
+                GameObject PickupObject = Instantiate(
+                    gunToDrop.PickupPrefab,
+                    GunParent.position,
+                    Quaternion.identity
+                );
                 GunPickup gunPickups = PickupObject.GetComponent<GunPickup>();
                 gunPickups.SetPickupAmmoAmount(this);
             }
         }
-
     }
 }
