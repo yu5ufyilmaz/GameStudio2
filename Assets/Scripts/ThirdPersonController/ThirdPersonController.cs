@@ -280,21 +280,19 @@ namespace DotGalacticos
 
         public void Move()
         {
-            // Hedef hız: sprint veya normal hız
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
 
-            // Mevcut yatay hız
             float currentHorizontalSpeed = new Vector3(
                 _controller.velocity.x,
                 0.0f,
                 _controller.velocity.z
             ).magnitude;
+
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            // Hızın yumuşak geçişi
             if (
                 currentHorizontalSpeed < targetSpeed - speedOffset
                 || currentHorizontalSpeed > targetSpeed + speedOffset
@@ -320,66 +318,59 @@ namespace DotGalacticos
             if (_animationBlend < 0.01f)
                 _animationBlend = 0f;
 
-            // Dünya koordinat sistemindeki hareket yönü
+            // Input yönü: x ve z (y yok)
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-            Vector3 targetDirection = Vector3.zero;
 
-            // Koşma durumunda karakter sadece hareket yönüne bakacak
-            if (_input.sprint && inputDirection != Vector3.zero)
+            if (inputDirection.magnitude > 0)
             {
-                _targetRotation =
-                    Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg
-                    + _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(
-                    transform.eulerAngles.y,
-                    _targetRotation,
-                    ref _rotationVelocity,
-                    RotationSmoothTime
-                );
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-            }
-            // Nişan alma veya normal yürüme durumunda (koşmuyorken)
-            // ShootController bunu yönetecek, buraya bir şey yapmıyoruz
+                // Kameradan sadece Y rotasyonunu alıyoruz
+                float cameraYaw = _mainCamera.transform.eulerAngles.y;
+                Quaternion cameraRotation = Quaternion.Euler(0, cameraYaw, 0);
 
-            // Hedef yön hesaplama (hareket için)
-            if (inputDirection != Vector3.zero)
-            {
-                if (IsAiming)
+                // Hareket yönünü kamera Y rotasyonuna göre döndür
+                Vector3 targetDirection = cameraRotation * inputDirection;
+
+                if (_input.sprint)
                 {
-                    // Aiming modunda karakterin forward ve right vektörlerine göre hareket
-                    targetDirection =
-                        (transform.forward * _input.move.y) + (transform.right * _input.move.x);
-                    targetDirection.Normalize();
+                    // Kayarak dönüş için smooth zamanı biraz artırıldı
+                    float smoothTime = 0.3f;
+                    float rotation = Mathf.SmoothDampAngle(
+                        transform.eulerAngles.y,
+                        Mathf.Atan2(targetDirection.x, targetDirection.z) * Mathf.Rad2Deg,
+                        ref _rotationVelocity,
+                        smoothTime
+                    );
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
                 }
-                else
+
+                Vector3 moveVector =
+                    targetDirection * (_speed * Time.deltaTime)
+                    + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+
+                _controller.Move(moveVector);
+
+                Vector3 localVelocity = transform.InverseTransformDirection(targetDirection);
+
+                if (_hasAnimator)
                 {
-                    // Normal hareket için güncellenmiş rotasyona göre hedef yön
-                    _targetRotation =
-                        Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg
-                        + _mainCamera.transform.eulerAngles.y;
-                    targetDirection =
-                        Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+                    float speedX = localVelocity.x * _speed;
+                    float speedZ = localVelocity.z * _speed;
+
+                    _animator.SetFloat("Speed X", speedX);
+                    _animator.SetFloat("Speed Z", speedZ);
+                    _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
                 }
             }
-
-            // Hareket uygulaması: Hedef yön * hız + gravity etkisi
-            Vector3 moveVector =
-                targetDirection * (_speed * Time.deltaTime)
-                + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
-            _controller.Move(moveVector);
-
-            // Animator güncellemeleri için hareket vektörünü karakterin lokal koordinat sistemine dönüştür
-            Vector3 localVelocity = transform.InverseTransformDirection(targetDirection);
-
-            // SpeedX ve SpeedZ parametrelerini güncelle
-            if (_hasAnimator)
+            else
             {
-                float speedX = localVelocity.x * _speed; // Sağ-sol hareket (X)
-                float speedZ = localVelocity.z * _speed; // İleri-geri hareket (Z)
-
-                _animator.SetFloat("Speed X", speedX);
-                _animator.SetFloat("Speed Z", speedZ);
-                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                if (_hasAnimator)
+                {
+                    _animator.SetFloat("Speed X", 0);
+                    _animator.SetFloat("Speed Z", 0);
+                    _animator.SetFloat(_animIDMotionSpeed, 0);
+                }
+                // Hareket yoksa hızlı dönüşü engellemek için rotationVelocity sıfırlanabilir
+                _rotationVelocity = 0f;
             }
         }
 
