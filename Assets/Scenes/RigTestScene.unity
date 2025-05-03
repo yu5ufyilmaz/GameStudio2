@@ -2572,7 +2572,7 @@ GameObject:
   - component: {fileID: 376556085}
   - component: {fileID: 376556086}
   m_Layer: 6
-  m_Name: Rig 1
+  m_Name: Aim Rig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7429,7 +7429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_ConstrainedObject: {fileID: 6596787017357423344}
     m_SourceObjects:
@@ -11006,7 +11006,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_ConstrainedObject: {fileID: 7647720324110931870}
     m_SourceObjects:
@@ -11655,6 +11655,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   dodgeAuido: {fileID: 8300000, guid: 033b0b48fd5744b438d432f8a8b5f6a5, type: 3}
   interactionRadius: 1
+  _input: {fileID: 0}
 --- !u!114 &1269183297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11804,7 +11805,7 @@ GameObject:
   - component: {fileID: 1324647450}
   - component: {fileID: 1324647451}
   m_Layer: 6
-  m_Name: Rig 2
+  m_Name: Left Hand Rig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28229,14 +28230,14 @@ GameObject:
   - component: {fileID: 3893294199639930361}
   - component: {fileID: 6982812147933622147}
   - component: {fileID: 4416926083347132233}
-  - component: {fileID: 6982812147933622148}
   - component: {fileID: 4416926083347132232}
+  - component: {fileID: 6982812147933622148}
   - component: {fileID: 5885216829670671795}
+  - component: {fileID: 6982812147933622151}
   - component: {fileID: 135756641613574975}
   - component: {fileID: 4416926083347132239}
   - component: {fileID: 6982812147933622150}
   - component: {fileID: 6982812147933622149}
-  - component: {fileID: 6982812147933622151}
   - component: {fileID: 6982812147933622154}
   - component: {fileID: 6982812147933622153}
   - component: {fileID: 6982812147933622152}
@@ -28353,6 +28354,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   dodgeAuido: {fileID: 8300000, guid: 033b0b48fd5744b438d432f8a8b5f6a5, type: 3}
   interactionRadius: 1
+  _input: {fileID: 0}
 --- !u!143 &4416926083347132233
 CharacterController:
   m_ObjectHideFlags: 0

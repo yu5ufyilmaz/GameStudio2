@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using DotGalacticos.Guns.Demo;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -103,6 +104,7 @@ namespace DotGalacticos
         bool isDodging;
         bool isJumpAway;
         float dodgeTimer;
+        public bool isRunning => _input != null && _input.sprint && _input.move != Vector2.zero;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -122,7 +124,7 @@ namespace DotGalacticos
         private float _fallTimeoutDelta;
 
         // animation IDs
-        private int _animIDSpeed;
+        private int _animIDSpeedX;
         private int _animIDSpeedZ;
         private int _animIDGrounded;
         private int _animIDJump;
@@ -137,7 +139,7 @@ namespace DotGalacticos
 #endif
         private Animator _animator;
         private CharacterController _controller;
-        private StarterAssetsInputs _input;
+        public StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private ShootController _shootController;
 
@@ -146,6 +148,12 @@ namespace DotGalacticos
         private bool _hasAnimator;
 
         public bool IsAiming { get; set; }
+
+        //Animation Rig Variables
+        private Rig _aimRig;
+        private float targetWeight; // Hedef ağırlık
+        private float currentWeight; // Mevcut ağırlık
+        private float weightChangeRate = 5f; // Ağırlık değişim hızı
 
         private bool IsCurrentDeviceMouse
         {
@@ -175,6 +183,7 @@ namespace DotGalacticos
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
+            _aimRig = GameObject.Find("Aim Rig").GetComponent<Rig>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -211,7 +220,7 @@ namespace DotGalacticos
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed = Animator.StringToHash("Speed X");
+            _animIDSpeedX = Animator.StringToHash("Speed X");
             _animIDSpeedZ = Animator.StringToHash("Speed Z");
             _animIDGrounded = Animator.StringToHash("Grounded");
             _animIDJump = Animator.StringToHash("Jump");
@@ -271,28 +280,28 @@ namespace DotGalacticos
 
         public void Move()
         {
+            // Hedef hız: sprint veya normal hız
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
 
-            // Aiming halinde hızı azaltma
-            if (IsAiming)
-            {
-                targetSpeed *= 1f; // Nişan alırken hızı azalt
-            }
-
-            Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
-            float speedX = localVelocity.x; // X eksenindeki hız
-            float speedZ = localVelocity.z; // Z eksenindeki hız
-
+            // Mevcut yatay hız
+            float currentHorizontalSpeed = new Vector3(
+                _controller.velocity.x,
+                0.0f,
+                _controller.velocity.z
+            ).magnitude;
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
             // Hızın yumuşak geçişi
-            if (Mathf.Abs(localVelocity.magnitude - targetSpeed) > speedOffset)
+            if (
+                currentHorizontalSpeed < targetSpeed - speedOffset
+                || currentHorizontalSpeed > targetSpeed + speedOffset
+            )
             {
                 _speed = Mathf.Lerp(
-                    localVelocity.magnitude,
+                    currentHorizontalSpeed,
                     targetSpeed * inputMagnitude,
                     Time.deltaTime * SpeedChangeRate
                 );
@@ -303,28 +312,20 @@ namespace DotGalacticos
                 _speed = targetSpeed;
             }
 
-            // Animasyon blend değerlerini güncelle
-            _animationBlend = speedX; // X eksenindeki hızı kullan
-            _animationBlendZ = speedZ; // Z eksenindeki hızı kullan
-
-            // Geri yürüyüş kontrolü
-            if (_input.move.y < 0) // Eğer geri hareket ediyorsa
-            {
-                _animationBlendZ = -Mathf.Abs(speedZ); // Negatif hız
-            }
-            else if (Mathf.Abs(_animationBlend) < 0.01f)
-            {
+            _animationBlend = Mathf.Lerp(
+                _animationBlend,
+                targetSpeed,
+                Time.deltaTime * SpeedChangeRate
+            );
+            if (_animationBlend < 0.01f)
                 _animationBlend = 0f;
-            }
-            if (Mathf.Abs(_animationBlendZ) < 0.01f)
-            {
-                _animationBlendZ = 0f;
-            }
 
+            // Dünya koordinat sistemindeki hareket yönü
+            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
             Vector3 targetDirection = Vector3.zero;
 
-            Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-            if (inputDirection != Vector3.zero)
+            // Koşma durumunda karakter sadece hareket yönüne bakacak
+            if (_input.sprint && inputDirection != Vector3.zero)
             {
                 _targetRotation =
                     Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg
@@ -336,27 +337,49 @@ namespace DotGalacticos
                     RotationSmoothTime
                 );
                 transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-
-                targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
             }
-            else
+            // Nişan alma veya normal yürüme durumunda (koşmuyorken)
+            // ShootController bunu yönetecek, buraya bir şey yapmıyoruz
+
+            // Hedef yön hesaplama (hareket için)
+            if (inputDirection != Vector3.zero)
             {
-                // Eğer hareket yoksa, karakterin açısını değiştirme
-                targetDirection = transform.forward; // Mevcut yönü koru
+                if (IsAiming)
+                {
+                    // Aiming modunda karakterin forward ve right vektörlerine göre hareket
+                    targetDirection =
+                        (transform.forward * _input.move.y) + (transform.right * _input.move.x);
+                    targetDirection.Normalize();
+                }
+                else
+                {
+                    // Normal hareket için güncellenmiş rotasyona göre hedef yön
+                    _targetRotation =
+                        Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg
+                        + _mainCamera.transform.eulerAngles.y;
+                    targetDirection =
+                        Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+                }
             }
 
-            // Hareket vektörünü hesapla
+            // Hareket uygulaması: Hedef yön * hız + gravity etkisi
             Vector3 moveVector =
                 targetDirection * (_speed * Time.deltaTime)
                 + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
             _controller.Move(moveVector);
 
-            // Animasyon güncellemeleri
+            // Animator güncellemeleri için hareket vektörünü karakterin lokal koordinat sistemine dönüştür
+            Vector3 localVelocity = transform.InverseTransformDirection(targetDirection);
+
+            // SpeedX ve SpeedZ parametrelerini güncelle
             if (_hasAnimator)
             {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDSpeedZ, _animationBlendZ);
-                _animator.SetFloat(_animIDMotionSpeed, _input.move.magnitude);
+                float speedX = localVelocity.x * _speed; // Sağ-sol hareket (X)
+                float speedZ = localVelocity.z * _speed; // İleri-geri hareket (Z)
+
+                _animator.SetFloat("Speed X", speedX);
+                _animator.SetFloat("Speed Z", speedZ);
+                _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
         }
 

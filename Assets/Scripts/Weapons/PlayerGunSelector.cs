@@ -48,7 +48,7 @@ namespace DotGalacticos.Guns.Demo
         [SerializeField]
         public GunScriptableObject SecondHandBaseGun;
         private Rig rig2;
-
+        private TwoBoneIKConstraint ik;
         private int activeGunIndex = 1;
 
         private class AmmoState
@@ -74,7 +74,8 @@ namespace DotGalacticos.Guns.Demo
                 Debug.LogError("No GunScriptableObject found.");
                 return;
             }
-            rig2 = GameObject.Find("Rig 2").GetComponent<Rig>();
+            rig2 = GameObject.Find("Left Hand Rig").GetComponent<Rig>();
+            ik = rig2.GetComponentInChildren<TwoBoneIKConstraint>();
             animator = GetComponent<Animator>();
             ActiveBaseGun = firstGun; // Başlangıçta aktif silahı birinci el silahı olarak ayarla
             SetupGun(ActiveBaseGun);
@@ -111,7 +112,9 @@ namespace DotGalacticos.Guns.Demo
             ActiveBaseGun = gun;
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
             ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştir
-            SecondHandTargetParent.position = ActiveGun.secondHandTarget.position;
+            ik.data.target = ActiveGun.secondHandTarget;
+            //SecondHandTargetParent.position = ActiveGun.SecondHandPositionOffset;
+            //SecondHandTargetParent.rotation = Quaternion.Euler(ActiveGun.SecondHandRotationOffset);
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
             UpdateAnimator(gun); // Animatörü güncelle

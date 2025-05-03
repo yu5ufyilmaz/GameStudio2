@@ -84,7 +84,8 @@ namespace DotGalacticos.Guns.Demo
         private Rig rig2;
         public float targetWeight = 0f;
         private float weightChangeSpeed = 5f; // Ağırlığın değişim hızı
-        private MultiAimConstraint ikConstraint;
+        public float orbitRadius = 5f;
+        public float fixedAimHeight = 1f; // Sabit nişan yüksekliği, ihtiyaç halinde değiştirilebilir
 
         void Start()
         {
@@ -93,14 +94,15 @@ namespace DotGalacticos.Guns.Demo
             mainCamera = Camera.main;
             thirdPersonController = GetComponent<ThirdPersonController>();
             audioSource = gameObject.AddComponent<AudioSource>();
-            rig1 = GameObject.Find("Rig 1").GetComponent<Rig>();
-            rig2 = GameObject.Find("Rig 2").GetComponent<Rig>();
+            rig1 = GameObject.Find("Aim Rig").GetComponent<Rig>();
+            rig2 = GameObject.Find("Left Hand Rig").GetComponent<Rig>();
             shootAction = playerInput.actions["Shoot"];
             aimAction = playerInput.actions["Aim"];
             reloadAction = playerInput.actions["Reload"];
 
             shootAction.Enable();
             aimAction.Enable();
+            reloadAction.Enable();
 
             shootAction.performed += OnShootPerformed;
             shootAction.canceled += OnShootCanceled;
@@ -143,17 +145,14 @@ namespace DotGalacticos.Guns.Demo
                 if (isAiming)
                 {
                     IKWeight(rig1, targetWeight);
+                    if (GunSelector != null)
+                    {
+                        GunSelector.ActiveGun.Tick(isShooting); // Sürekli ateşleme işlemi
+                    }
                 }
-                else
-                {
-                    //IKWeight(rig2, targetWeight);
-                }
-                Aim();
-            }
 
-            if (GunSelector != null)
-            {
-                GunSelector.ActiveGun.Tick(isShooting); // Sürekli ateşleme işlemi
+                // Her zaman Aim metodunu çağır - karakter koşarken yönünü Aim metodu içinde kontrol edeceğiz
+                Aim();
             }
         }
 
@@ -163,9 +162,6 @@ namespace DotGalacticos.Guns.Demo
             isReloading = false;
         }
 
-        public float orbitRadius = 5f;
-        public float fixedAimHeight = 1f; // Sabit nişan yüksekliği, ihtiyaç halinde değiştirilebilir
-
         private void Aim()
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -173,84 +169,86 @@ namespace DotGalacticos.Guns.Demo
             rectTransform.position = mousePosition;
 
             Ray ray = mainCamera.ScreenPointToRay(mousePosition);
-
-            // Yatay düzlemde karakter konumuna göre mouse ışınının açılarını hesaplayacağız
-            // Öncelikle yatay düzlemde mouse pozisyonunun karaktere göre konumunu bulalım
-
-            Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, fixedAimHeight, 0)); // Y sabit düzlem
+            Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, fixedAimHeight, 0));
 
             if (horizontalPlane.Raycast(ray, out float enter))
             {
                 Vector3 hitPoint = ray.GetPoint(enter);
-
-                // Karakter pozisyonundan hitPoint'e yatay yön vektörü (Y 0)
                 Vector3 direction = hitPoint - transform.position;
                 direction.y = 0;
 
-                // Eğer fare karakterin tam üstünde ise (direction sıfırsa), işlem yapma
                 if (direction.sqrMagnitude < 0.001f)
                     return;
 
-                // Açıyı hesapla (0-360 derece)
-                float angle = Mathf.Atan2(direction.z, direction.x); // radyan cinsinden
+                float angle = Mathf.Atan2(direction.z, direction.x);
 
-                // Hedef pozisyonunu sabit yarıçap ve hesaplanan açıya göre hesapla
-                // Unity yatayda Z ekseni ileri, X ekseni sağdır.
                 float targetX = transform.position.x + orbitRadius * Mathf.Cos(angle);
                 float targetZ = transform.position.z + orbitRadius * Mathf.Sin(angle);
                 float targetY = fixedAimHeight;
 
                 Vector3 targetPosition = new Vector3(targetX, targetY, targetZ);
+                float distanceToCharacter = Vector3.Distance(targetPosition, transform.position);
+                if (distanceToCharacter < 5f)
+                {
+                    Vector3 dirNormalized = (targetPosition - transform.position).normalized;
+                    targetPosition = transform.position + dirNormalized * 5f;
+                    targetPosition.y = fixedAimHeight; // Y sabit
+                }
 
-                // aimTargetInstance pozisyonunu güncelle
                 if (aimTargetInstance != null)
                 {
                     aimTargetInstance.transform.position = targetPosition;
                 }
 
-                // Karakter sadece yatay düzlemde hedefe dönsün
-                Vector3 lookDirection = targetPosition - transform.position;
+                Vector3 lookDirection;
+
+                // Koşma durumu kontrolü
+                if (thirdPersonController != null && thirdPersonController.isRunning)
+                {
+                    // Koşuyorsa karakter hareket yönüne dönsün
+                    Vector3 moveDir = thirdPersonController._input.move;
+                    if (moveDir.sqrMagnitude > 0.001f)
+                    {
+                        // Hareket yönünü dünya koordinatlarına çevir
+                        Vector3 worldMoveDir = new Vector3(moveDir.x, 0, moveDir.y).normalized;
+                        // Kamera yönüne göre düzelt
+                        lookDirection =
+                            Quaternion.Euler(0, mainCamera.transform.eulerAngles.y, 0)
+                            * worldMoveDir;
+                    }
+                    else
+                    {
+                        // Hareket yoksa nişan alınan noktaya bak
+                        lookDirection = targetPosition - transform.position;
+                    }
+                }
+                else
+                {
+                    // Koşmuyorsa (yürürken veya nişan alırken) nişan alınan hedefe dönsün
+                    lookDirection = targetPosition - transform.position;
+                }
+
                 lookDirection.y = 0;
 
                 if (lookDirection.sqrMagnitude > 0.001f)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+                    float rotationSpeed = 25f;
+                    float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
+                    float speedMultiplier = Mathf.InverseLerp(0, 180, angleDifference);
+                    float adjustedRotationSpeed = Mathf.Lerp(
+                        rotationSpeed * 0.5f,
+                        rotationSpeed * 2f,
+                        speedMultiplier
+                    );
+
                     transform.rotation = Quaternion.Slerp(
                         transform.rotation,
                         targetRotation,
-                        Time.deltaTime * 5f
+                        Time.deltaTime * adjustedRotationSpeed
                     );
                 }
             }
-        }
-
-        IEnumerator MoveToTargetRoutine(Transform aimTarget, float duration)
-        {
-            Vector3 startPosition = aimTargetInstance.transform.position; // Başlangıç pozisyonu
-
-            float elapsedTime = 0f; // Geçen süre
-
-            while (elapsedTime < duration)
-            {
-                // Geçen süreyi normalize et
-                float t = elapsedTime / duration;
-
-                // Lerp ile yeni pozisyonu hesapla
-                aimTargetInstance.transform.position = Vector3.Lerp(
-                    startPosition,
-                    aimTarget.position,
-                    t
-                );
-
-                // Geçen süreyi güncelle
-                elapsedTime += Time.deltaTime;
-
-                // Bir sonraki frame'e geç
-                yield return null;
-            }
-
-            // Hedef pozisyona tam olarak ulaş
-            aimTargetInstance.transform.position = aimTarget.position;
         }
 
         private bool ShouldAutoReload()
@@ -326,24 +324,15 @@ namespace DotGalacticos.Guns.Demo
 
         private void OnAimCanceled(InputAction.CallbackContext context)
         {
-            /* _leftHandReferans.position = leftIdleHandTarget.position;
-             _leftHandReferans.rotation = leftIdleHandTarget.rotation;
-             _leftElbowReferans.position = leftIdleElbowTarget.position;*/
-
             isAiming = false;
-
-            if (gameObject.activeInHierarchy)
-            {
-                //StartCoroutine(MoveToTargetRoutine(aimTarget, 1.0f)); // 1 saniyede hedefe ulaşır
-            }
 
             if (thirdPersonController != null)
             {
                 thirdPersonController.IsAiming = false;
             }
-            //cameraTargetSwitcher.FixTarget();
+
             // Nişan alma sona erdiğinde hedef ağırlığı 0'a ayarla
-            targetWeight = 1f;
+            targetWeight = 0f;
             animator.SetBool(IsAiming, false);
         }
 
