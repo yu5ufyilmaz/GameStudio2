@@ -8,6 +8,7 @@ namespace DotGalacticos.Enemy
         public float Damage = 10f;
         public float LifeTime = 5f;
         public GameObject ImpactEffect;
+
         void OnTriggerEnter(Collider other)
         {
             // Çarpışma efekti oluştur
@@ -20,7 +21,8 @@ namespace DotGalacticos.Enemy
             if (other.gameObject.CompareTag("Player"))
             {
                 // Player'a hasar ver
-                ThirdPersonController playerController = other.gameObject.GetComponent<ThirdPersonController>();
+                ThirdPersonController playerController =
+                    other.gameObject.GetComponent<ThirdPersonController>();
                 PlayerHealth playerHealth = other.gameObject.GetComponent<PlayerHealth>();
 
                 if (playerHealth != null)
@@ -41,6 +43,7 @@ namespace DotGalacticos.Enemy
             // Mermiyi yok et
             Destroy(gameObject);
         }
+
         private void Start()
         {
             // Belirli bir süre sonra mermiyi yok et
@@ -65,7 +68,8 @@ namespace DotGalacticos.Enemy
             if (collision.gameObject.CompareTag("Player"))
             {
                 // Player'a hasar ver
-                ThirdPersonController playerController = collision.gameObject.GetComponent<ThirdPersonController>();
+                ThirdPersonController playerController =
+                    collision.gameObject.GetComponent<ThirdPersonController>();
                 PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
 
                 if (playerHealth != null)

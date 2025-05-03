@@ -111,12 +111,13 @@ namespace DotGalacticos.Guns.Demo
 
             ActiveBaseGun = gun;
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
-            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştir
+            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştier
+
             ik.data.target = ActiveGun.secondHandTarget;
-            //SecondHandTargetParent.position = ActiveGun.SecondHandPositionOffset;
-            //SecondHandTargetParent.rotation = Quaternion.Euler(ActiveGun.SecondHandRotationOffset);
+
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
+
             UpdateAnimator(gun); // Animatörü güncelle
         }
 

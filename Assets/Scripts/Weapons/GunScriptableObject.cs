@@ -78,6 +78,8 @@ namespace DotGalacticos.Guns
 
             ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
             modelAudioSource = Model.GetComponentInChildren<AudioSource>();
+
+            SoundManager.instance.RegisterAudioSource(modelAudioSource);
         }
 
         public void Despawn()
@@ -89,6 +91,7 @@ namespace DotGalacticos.Guns
             Destroy(Model);
             TrailPool.Clear();
 
+            SoundManager.instance.UnregisterAudioSource(modelAudioSource);
             modelAudioSource = null;
             ShootSystem = null;
         }
