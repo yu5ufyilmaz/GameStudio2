@@ -427,6 +427,7 @@ namespace DotGalacticos
 
         IEnumerator DodgeRoutine()
         {
+            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             _shootController.DodgeIK(0f);
             _animator.SetTrigger("Dodge");
             isDodging = true;
@@ -454,6 +455,7 @@ namespace DotGalacticos
 
         IEnumerator JumpAwayRoutine(bool isRight)
         {
+            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             if (isJumpAway)
                 yield break; // Eğer zaten jumping durumundaysak, işlemi durdur
 
@@ -610,6 +612,7 @@ namespace DotGalacticos
 
         private void OnFootstep(AnimationEvent animationEvent)
         {
+            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 if (FootstepAudioClips.Length > 0)
@@ -626,6 +629,7 @@ namespace DotGalacticos
 
         private void OnLand(AnimationEvent animationEvent)
         {
+            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(

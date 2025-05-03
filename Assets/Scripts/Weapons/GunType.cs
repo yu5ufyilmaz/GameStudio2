@@ -1,8 +1,6 @@
-
-
 public enum GunType
 {
-Pistol,
-Rifle,
-Shotgun
+    Pistol,
+    Rifle,
+    Shotgun,
 }

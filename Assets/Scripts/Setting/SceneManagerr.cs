@@ -28,13 +28,14 @@ public class SceneManagerr : MonoBehaviour
         string currentSceneName = SceneManager.GetActiveScene().name;
         LoadScene(currentSceneName);
     }
-     public void QuitGame()
+
+    public void QuitGame()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         // Eğer oyun Unity Editor'da çalışıyorsa, oyunu durdur
         UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#else
         Application.Quit();
-        #endif
+#endif
     }
 }

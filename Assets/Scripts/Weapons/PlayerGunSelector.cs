@@ -250,23 +250,29 @@ namespace DotGalacticos.Guns.Demo
 
             foreach (var hitCollider in hitColliders)
             {
-                GunPickup gunPickupScript = hitCollider.GetComponent<GunPickup>();
-                GunScriptableObject gunToPickup = gunPickupScript.Gun; // Silahın verisini al
-
-                if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
+                if (hitCollider != null)
                 {
-                    // Silahın pozisyonu ile oyuncunun pozisyonu arasındaki mesafeyi hesapla
-                    float distance = Vector3.Distance(
-                        transform.position,
-                        hitCollider.transform.position
-                    );
-
-                    // Eğer bu silah, şu ana kadar bulduğumuz en yakın silah ise, güncelle
-                    if (distance < closestDistance)
+                    GunPickup gunPickupScript = hitCollider.GetComponent<GunPickup>();
+                    if (gunPickupScript != null)
                     {
-                        closestDistance = distance;
-                        closestGun = gunToPickup;
-                        gunPickup = gunPickupScript;
+                        GunScriptableObject gunToPickup = gunPickupScript.Gun; // Silahın verisini al
+
+                        if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
+                        {
+                            // Silahın pozisyonu ile oyuncunun pozisyonu arasındaki mesafeyi hesapla
+                            float distance = Vector3.Distance(
+                                transform.position,
+                                hitCollider.transform.position
+                            );
+
+                            // Eğer bu silah, şu ana kadar bulduğumuz en yakın silah ise, güncelle
+                            if (distance < closestDistance)
+                            {
+                                closestDistance = distance;
+                                closestGun = gunToPickup;
+                                gunPickup = gunPickupScript;
+                            }
+                        }
                     }
                 }
             }

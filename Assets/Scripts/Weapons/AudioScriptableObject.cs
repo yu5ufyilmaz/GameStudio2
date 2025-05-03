@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace DotGalacticos.Guns
 {
     [CreateAssetMenu(fileName = "Audio Config", menuName = "Guns/Audio Config", order = 5)]
@@ -14,23 +15,30 @@ namespace DotGalacticos.Guns
 
         public void PlayShotingClip(AudioSource audioSource, bool IsLastBullet = false)
         {
+            Volume = PlayerPrefs.GetFloat("SFXVolume");
             if (IsLastBullet && LastBulletClip != null)
             {
                 AudioSource.PlayClipAtPoint(LastBulletClip, audioSource.transform.position, Volume);
             }
             else
             {
-                AudioSource.PlayClipAtPoint(FireClips[Random.Range(0, FireClips.Length)], audioSource.transform.position, Volume);
+                AudioSource.PlayClipAtPoint(
+                    FireClips[Random.Range(0, FireClips.Length)],
+                    audioSource.transform.position,
+                    Volume
+                );
             }
         }
 
         public void PlayOutOfAmmoClip(AudioSource audioSource)
         {
+            Volume = PlayerPrefs.GetFloat("SFXVolume");
             AudioSource.PlayClipAtPoint(EmptyClip, audioSource.transform.position, Volume);
         }
 
         public void PlayReloadClip(AudioSource audioSource)
         {
+            Volume = PlayerPrefs.GetFloat("SFXVolume");
             AudioSource.PlayClipAtPoint(ReloadClip, audioSource.transform.position, Volume);
         }
 

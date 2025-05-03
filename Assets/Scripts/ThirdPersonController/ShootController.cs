@@ -74,9 +74,6 @@ namespace DotGalacticos.Guns.Demo
         [SerializeField]
         private CameraTargetSwitcher cameraTargetSwitcher;
 
-        [Range(0, 1)]
-        public float shootAudioVolume = 0.5f;
-
         [Header("Nişan Alma Nesnesi")]
         [SerializeField]
         private GameObject aimTargetInstance; // Oluşturulacak nesne

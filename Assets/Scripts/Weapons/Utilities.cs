@@ -1,7 +1,8 @@
-using UnityEngine;
+using System;
 using System.Collections;
 using System.Reflection;
-using System;
+using UnityEngine;
+
 namespace DotGalacticos.Guns
 {
     public class Utilities

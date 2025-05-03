@@ -181,6 +181,7 @@ public class EnemyController : MonoBehaviour
 
     private void OnFootstep(AnimationEvent animationEvent)
     {
+        FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
         if (animationEvent.animatorClipInfo.weight > 0.5f)
         {
             if (FootstepAudioClips.Length > 0)
@@ -463,6 +464,7 @@ public class EnemyController : MonoBehaviour
 
     private void PlayShootSound()
     {
+        shootAudioVolume = PlayerPrefs.GetFloat("SFXVolume");
         if (shootSound != null)
         {
             AudioSource.PlayClipAtPoint(shootSound, transform.position, shootAudioVolume);

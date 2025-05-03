@@ -46,8 +46,8 @@ public class BackgroundMusicManager : MonoBehaviour
     // Call this to play new background music with fade transition
     public void PlayMusic(AudioClip musicClip, bool immediate = false)
     {
-        if (musicClip == null)
-            return;
+        if (musicClip == null || PlayerPrefs.GetFloat("MusicVolume") <= 0f)
+            return; // Don't play if volume is zero
 
         if (audioSource.clip == musicClip)
             return; // same music already playing
@@ -60,7 +60,7 @@ public class BackgroundMusicManager : MonoBehaviour
         if (immediate || fadeDuration <= 0f)
         {
             audioSource.clip = musicClip;
-            audioSource.volume = 1f;
+            audioSource.volume = PlayerPrefs.GetFloat("MusicVolume");
             audioSource.Play();
         }
         else
@@ -91,11 +91,16 @@ public class BackgroundMusicManager : MonoBehaviour
         while (time < fadeDuration)
         {
             time += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(0f, 1f, time / fadeDuration);
+            audioSource.volume = Mathf.Lerp(
+                0f,
+                PlayerPrefs.GetFloat("MusicVolume"),
+                time / fadeDuration
+            );
             yield return null;
         }
 
-        audioSource.volume = 1f;
+        audioSource.volume = PlayerPrefs.GetFloat("MusicVolume");
+
         fadeCoroutine = null;
     }
 

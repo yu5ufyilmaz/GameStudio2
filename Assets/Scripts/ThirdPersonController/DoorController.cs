@@ -9,10 +9,17 @@ public class DoorController : MonoBehaviour
     private Quaternion closedRotation; // Kapının kapalı pozisyonu
     private Quaternion openRotation; // Kapının açık pozisyonu
 
+    public AudioClip openSound; // Kapı açılma sesi
+    private AudioSource audioSource; // AudioSource bileşeni
+
     private void Start()
     {
         closedRotation = door.rotation;
         openRotation = closedRotation * Quaternion.Euler(0, 0, openAngle); // Y ekseninde açılacak
+
+        // AudioSource bileşenini ekle
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.clip = openSound; // Ses kaynağını ayarla
     }
 
     private void Update()
@@ -38,6 +45,7 @@ public class DoorController : MonoBehaviour
 
     public void ToggleDoor(Vector3 playerPosition)
     {
+        audioSource.volume = PlayerPrefs.GetFloat("SFXVolume");
         // Oyuncunun kapının hangi tarafında olduğunu kontrol et
         Vector3 doorPosition = door.position;
         if (playerPosition.x < doorPosition.x) // Oyuncu kapının sol tarafındaysa
@@ -50,5 +58,11 @@ public class DoorController : MonoBehaviour
         }
 
         isOpen = !isOpen; // Kapının durumunu değiştir
+
+        // Kapı açıldığında ses çal
+        if (isOpen && openSound != null)
+        {
+            audioSource.Play();
+        }
     }
 }

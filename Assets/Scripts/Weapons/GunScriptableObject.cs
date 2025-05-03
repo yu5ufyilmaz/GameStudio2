@@ -249,18 +249,6 @@ namespace DotGalacticos.Guns
             return Model.transform.forward;
         }
 
-        private void PlayShootSound()
-        {
-            if (shootSound != null)
-            {
-                AudioSource.PlayClipAtPoint(
-                    shootSound,
-                    ShootSystem.transform.position,
-                    shootAudioVolume
-                );
-            }
-        }
-
         private IEnumerator PlayTrail(Vector3 StartPoint, Vector3 EndPoint, RaycastHit Hit)
         {
             TrailRenderer instance = TrailPool.Get();
