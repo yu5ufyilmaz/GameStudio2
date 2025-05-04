@@ -24,10 +24,10 @@ MonoBehaviour:
     m_Value: 1
   fixedExposure:
     m_OverrideState: 1
-    m_Value: 3.5
+    m_Value: 4.23
   compensation:
     m_OverrideState: 1
-    m_Value: -8.53
+    m_Value: -8.46
   limitMin:
     m_OverrideState: 1
     m_Value: -3
@@ -682,8 +682,8 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.131
   aerosolTint:
-    m_OverrideState: 0
-    m_Value: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 0, g: 0, b: 0.19607843, a: 1}
   aerosolMaximumAltitude:
     m_OverrideState: 0
     m_Value: 8289.296
@@ -701,7 +701,7 @@ MonoBehaviour:
     m_Value: 20000
   groundTint:
     m_OverrideState: 1
-    m_Value: {r: 0.040500473, g: 0.12049607, b: 0.45609158, a: 1}
+    m_Value: {r: 0, g: 0, b: 0.03189603, a: 1}
   groundColorTexture:
     m_OverrideState: 0
     m_Value: {fileID: 0}
@@ -734,7 +734,7 @@ MonoBehaviour:
     m_Value: 1
   horizonTint:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_Value: {r: 0, g: 0, b: 0.19607843, a: 1}
   zenithTint:
     m_OverrideState: 0
     m_Value: {r: 1, g: 1, b: 1, a: 1}
@@ -913,13 +913,13 @@ MonoBehaviour:
     m_Value: 1000
   baseHeight:
     m_OverrideState: 1
-    m_Value: 6.2
+    m_Value: 4.3
   maximumHeight:
     m_OverrideState: 1
-    m_Value: 120
+    m_Value: 118.17
   meanFreePath:
     m_OverrideState: 1
-    m_Value: 400
+    m_Value: 150
   enableVolumetricFog:
     m_OverrideState: 1
     m_Value: 1
