@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefabs/WorldSettings/BackgroundMusicManager.prefab.meta
 guid: 6cf6929f0c593d243821c7c917d40c3c
+========
+guid: d98752363e32eba41aa484eb707974e7
+>>>>>>>> Oğuz:Assets/Prefabs/Probs/StreetLamp.prefab.meta
 PrefabImporter:
   externalObjects: {}
   userData: 

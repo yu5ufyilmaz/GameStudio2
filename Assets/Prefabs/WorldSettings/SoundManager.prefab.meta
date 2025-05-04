@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefabs/WorldSettings/SoundManager.prefab.meta
 guid: 49b9bbac061c1314f845242be81a4472
 PrefabImporter:
+========
+guid: fe11e84f214deb24faada1060d62d4ea
+DefaultImporter:
+>>>>>>>> Oğuz:Assets/Scenes/Ouz/LevelCopyForOsman.unity.meta
   externalObjects: {}
   userData: 
   assetBundleName: 
