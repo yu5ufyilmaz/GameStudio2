@@ -72,4 +72,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Ignore specific large package
-/[Aa]ssets/MyLargePackage/  # <-- Buraya kendi paket adınızı ekleyin
+/Assets/TerrainDemoScene_HDRP/
+/Assets/TextMesh Pro/
+/Assets/TextMesh Pro.meta/
