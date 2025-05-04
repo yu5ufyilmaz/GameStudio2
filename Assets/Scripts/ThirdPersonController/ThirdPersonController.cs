@@ -198,6 +198,8 @@ namespace DotGalacticos
             // re  set our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            // Time.timeScale = 0f;
         }
 
         private void Update()
@@ -211,6 +213,8 @@ namespace DotGalacticos
 
             Dodge();
             OpenDoor();
+
+            UpdateAimRigWeight();
         }
 
         private void LateUpdate()
@@ -278,7 +282,7 @@ namespace DotGalacticos
             );
         }
 
-        public void Move()
+        private void Move()
         {
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
@@ -372,6 +376,25 @@ namespace DotGalacticos
                 // Hareket yoksa hızlı dönüşü engellemek için rotationVelocity sıfırlanabilir
                 _rotationVelocity = 0f;
             }
+        }
+
+        private void UpdateAimRigWeight()
+        {
+            // Koşma durumuna göre Aim Rig ağırlığını güncelle
+            if (isRunning)
+            {
+                // Koşarken ağırlığı 0'a doğru azalt
+                targetWeight = Mathf.Lerp(currentWeight, 0f, Time.deltaTime * weightChangeRate);
+            }
+            else
+            {
+                // Koşmadığında ağırlığı 1'e doğru artır
+                targetWeight = Mathf.Lerp(currentWeight, 1f, Time.deltaTime * weightChangeRate);
+            }
+
+            // Ağırlığı güncelle
+            currentWeight = targetWeight;
+            _aimRig.weight = currentWeight;
         }
 
         private void OpenDoor()

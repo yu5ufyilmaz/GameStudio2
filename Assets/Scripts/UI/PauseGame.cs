@@ -10,6 +10,8 @@ public class PauseGame : MonoBehaviour
     {
         pauseMenu = GameObject.Find("PauseMenu");
         pauseMenuAnimator = pauseMenu.GetComponent<Animator>();
+        Time.timeScale = 1f;
+        isPaused = false;
     }
 
     void Update()
