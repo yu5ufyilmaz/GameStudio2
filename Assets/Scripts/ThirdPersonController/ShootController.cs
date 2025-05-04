@@ -116,7 +116,7 @@ namespace DotGalacticos.Guns.Demo
             }
             else
             {
-                if (isAiming)
+                if (isAiming && thirdPersonController.isRunning == false)
                 {
                     IKWeight(rig1, targetWeight);
                     if (GunSelector != null)

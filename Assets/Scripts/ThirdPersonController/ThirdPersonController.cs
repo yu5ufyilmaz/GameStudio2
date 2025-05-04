@@ -38,6 +38,9 @@ namespace DotGalacticos
         [Range(0, 1)]
         public float FootstepAudioVolume = 0.5f;
 
+        [Range(0, 1)]
+        public float DieAudioVolume = 0.5f;
+
         [Space(10)]
         [Tooltip("The height the player can jump")]
         public float JumpHeight = 1.2f;
@@ -101,7 +104,11 @@ namespace DotGalacticos
 
         [SerializeField]
         AudioClip dodgeAuido;
-        bool isDodging;
+
+        [SerializeField]
+        AudioClip[] DieAudioClips;
+
+        // bool isDodging;
         bool isJumpAway;
         float dodgeTimer;
         public bool isRunning => _input != null && _input.sprint && _input.move != Vector2.zero;
@@ -113,8 +120,9 @@ namespace DotGalacticos
         // player
         private float _speed;
         private float _animationBlend;
-        private float _animationBlendZ;
-        private float _targetRotation = 0.0f;
+
+        // private float _animationBlendZ;
+        // private float _targetRotation = 0.0f;
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
@@ -211,7 +219,7 @@ namespace DotGalacticos
             if (isJumpAway == false)
                 Move();
 
-            Dodge();
+            //Dodge();
             OpenDoor();
 
             UpdateAimRigWeight();
@@ -428,53 +436,54 @@ namespace DotGalacticos
             }
         }
 
-        private void Dodge()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // Eğer karakter zaten dodging veya jumping durumundaysa, işlemi durdur
-                if (isDodging || isJumpAway)
-                    return;
-
-                Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
-                float currentHorizontalSpeed = localVelocity.z;
-                float currentVerticalSpeed = localVelocity.x;
-
-                // Yana kayma işlemi
-                if (currentVerticalSpeed > 1.9f)
-                    StartCoroutine(JumpAwayRoutine(true));
-                else if (currentVerticalSpeed < -1.9f)
-                    StartCoroutine(JumpAwayRoutine(false));
-            }
-        }
-
-        IEnumerator DodgeRoutine()
-        {
-            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
-            _shootController.DodgeIK(0f);
-            _animator.SetTrigger("Dodge");
-            isDodging = true;
-            float timer = 0;
-            AudioSource.PlayClipAtPoint(
-                dodgeAuido,
-                transform.TransformPoint(_controller.center),
-                FootstepAudioVolume
-            );
-            _controller.center = new Vector3(0f, 0.49f, 0f);
-            _controller.height = 0.9f;
-            while (timer < dodgeTimer)
-            {
-                float speed = dodgeCurve.Evaluate(timer);
-                Vector3 dir = (transform.forward * speed) + (Vector3.up * _verticalVelocity);
-                _controller.Move(dir * Time.deltaTime);
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            //_shootController.DodgeIK(1f);
-            isDodging = false;
-            _controller.center = new Vector3(0f, 0.9f, 0f);
-            _controller.height = 1.8f;
-        }
+        /*
+                private void Dodge()
+                {
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        // Eğer karakter zaten dodging veya jumping durumundaysa, işlemi durdur
+                        if (isDodging || isJumpAway)
+                            return;
+        
+                        Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
+                        float currentHorizontalSpeed = localVelocity.z;
+                        float currentVerticalSpeed = localVelocity.x;
+        
+                        // Yana kayma işlemi
+                        if (currentVerticalSpeed > 1.9f)
+                            StartCoroutine(JumpAwayRoutine(true));
+                        else if (currentVerticalSpeed < -1.9f)
+                            StartCoroutine(JumpAwayRoutine(false));
+                    }
+                }
+        
+                IEnumerator DodgeRoutine()
+                {
+                    FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
+                    _shootController.DodgeIK(0f);
+                    _animator.SetTrigger("Dodge");
+                    isDodging = true;
+                    float timer = 0;
+                    AudioSource.PlayClipAtPoint(
+                        dodgeAuido,
+                        transform.TransformPoint(_controller.center),
+                        FootstepAudioVolume
+                    );
+                    _controller.center = new Vector3(0f, 0.49f, 0f);
+                    _controller.height = 0.9f;
+                    while (timer < dodgeTimer)
+                    {
+                        float speed = dodgeCurve.Evaluate(timer);
+                        Vector3 dir = (transform.forward * speed) + (Vector3.up * _verticalVelocity);
+                        _controller.Move(dir * Time.deltaTime);
+                        timer += Time.deltaTime;
+                        yield return null;
+                    }
+                    //_shootController.DodgeIK(1f);
+                    isDodging = false;
+                    _controller.center = new Vector3(0f, 0.9f, 0f);
+                    _controller.height = 1.8f;
+                }*/
 
         IEnumerator JumpAwayRoutine(bool isRight)
         {
@@ -633,7 +642,7 @@ namespace DotGalacticos
             );
         }
 
-        private void OnFootstep(AnimationEvent animationEvent)
+        private void OnFootStep(AnimationEvent animationEvent)
         {
             FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -645,6 +654,23 @@ namespace DotGalacticos
                         FootstepAudioClips[index],
                         transform.TransformPoint(_controller.center),
                         FootstepAudioVolume
+                    );
+                }
+            }
+        }
+
+        private void OnDieSound(AnimationEvent animationEvent)
+        {
+            DieAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
+            if (animationEvent.animatorClipInfo.weight > 0.5f)
+            {
+                if (DieAudioClips.Length > 0)
+                {
+                    var index = Random.Range(0, DieAudioClips.Length);
+                    AudioSource.PlayClipAtPoint(
+                        DieAudioClips[index],
+                        transform.TransformPoint(_controller.center),
+                        DieAudioVolume
                     );
                 }
             }

@@ -12524,6 +12524,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
   - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
   FootstepAudioVolume: 0.5
+  DieAudioVolume: 0.5
   JumpHeight: 1.2
   Gravity: -15
   JumpTimeout: 0.3
@@ -12597,6 +12598,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   dodgeAuido: {fileID: 8300000, guid: 033b0b48fd5744b438d432f8a8b5f6a5, type: 3}
+  DieAudioClips: []
   interactionRadius: 1
   _input: {fileID: 0}
 --- !u!114 &1269183297
@@ -29875,6 +29877,26 @@ PrefabInstance:
       propertyPath: virtualCamera
       value: 
       objectReference: {fileID: 2070925443028286826}
+    - target: {fileID: 3235470420963276453, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: DieAudioClips.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235470420963276453, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: 'DieAudioClips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 85d368f6b43852942ab02ee01ba1c943, type: 3}
+    - target: {fileID: 3235470420963276453, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: 'DieAudioClips.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 361d4ba8685213c47b32ca10233e1b00, type: 3}
+    - target: {fileID: 3235470420963276453, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: 'DieAudioClips.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: f20c852defd831543b6144565699436c, type: 3}
     - target: {fileID: 3777385560539239364, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
       propertyPath: m_LocalPosition.x

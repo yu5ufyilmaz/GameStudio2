@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour
     private void Die(Vector3 Position)
     {
         painResponse.HandleDeath();
+        controller.OnDieSound();
         controller.isDie = true;
     }
 }

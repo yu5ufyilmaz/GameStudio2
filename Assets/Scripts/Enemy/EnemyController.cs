@@ -25,9 +25,6 @@ public class EnemyController : MonoBehaviour
     // Düşman Özellikleri
     [Header("Düşman Özellikleri")]
     [SerializeField]
-    private float health = 100f;
-
-    [SerializeField]
     private float detectionRange = 10f;
 
     [SerializeField]
@@ -61,9 +58,13 @@ public class EnemyController : MonoBehaviour
 
     [Header("Sesler")]
     public AudioClip[] FootstepAudioClips;
+    public AudioClip[] DieAudioClips;
 
     [Range(0, 1)]
     public float FootstepAudioVolume = 0.5f;
+
+    [Range(0, 1)]
+    public float DieAudioVolume = 0.5f;
 
     [SerializeField]
     private AudioClip shootSound;
@@ -93,10 +94,12 @@ public class EnemyController : MonoBehaviour
     private float distanceToPlayer;
     private Vector3 lastKnownPlayerPosition;
     private bool playerVisible = false;
-    private float _targetSpeed;
-    private float _currentSpeed;
+
+    //private float _targetSpeed;
+    //private float _currentSpeed;
     private float _animationBlend;
     public bool isDie = false;
+    private CharacterController characterController;
 
     private void Start()
     {
@@ -125,6 +128,7 @@ public class EnemyController : MonoBehaviour
         // Animator parametrelerini ayarla
         AssignAnimationIDs();
 
+        characterController = GetComponent<CharacterController>();
         // Başlangıç durumu
         ChangeState(EnemyState.Patrol);
     }
@@ -170,8 +174,8 @@ public class EnemyController : MonoBehaviour
     private void EnemyDieActions()
     {
         navMeshAgent.enabled = false;
+        characterController.enabled = false;
         animator.SetLayerWeight(1, 0f);
-        //Destroy(gameObject, 4f);
     }
 
     public bool IsStopEnemy()
@@ -179,7 +183,18 @@ public class EnemyController : MonoBehaviour
         return isDie;
     }
 
-    private void OnFootstep(AnimationEvent animationEvent)
+    public void OnDieSound()
+    {
+        DieAudioVolume = PlayerPrefs.GetFloat("SFXVolume");
+
+        if (DieAudioClips.Length > 0)
+        {
+            var index = Random.Range(0, DieAudioClips.Length);
+            AudioSource.PlayClipAtPoint(DieAudioClips[index], transform.position, DieAudioVolume);
+        }
+    }
+
+    private void OnFootStep(AnimationEvent animationEvent)
     {
         FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
         if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -209,16 +224,16 @@ public class EnemyController : MonoBehaviour
         switch (currentState)
         {
             case EnemyState.Idle:
-                _targetSpeed = 0f; // Idle = 0
+                //_targetSpeed = 0f; // Idle = 0
                 break;
             case EnemyState.Patrol:
-                _targetSpeed = 2f; // Walk = 2
+                //_targetSpeed = 2f; // Walk = 2
                 break;
             case EnemyState.Chase:
-                _targetSpeed = 6f; // Run = 6
+                // _targetSpeed = 6f; // Run = 6
                 break;
             case EnemyState.Attack:
-                _targetSpeed = 0f; // Idle = 0
+                //_targetSpeed = 0f; // Idle = 0
                 break;
         }
 
