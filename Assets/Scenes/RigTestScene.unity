@@ -12427,7 +12427,7 @@ MonoBehaviour:
   Gun: 1
   SecondGun: 0
   GunParent: {fileID: 7274611535958952962}
-  SecondHandTargetParent: {fileID: 0}
+  SecondHandTarget: {fileID: 0}
   Guns:
   - {fileID: 11400000, guid: 0e8f2aa8ade87594382fba24c05432be, type: 2}
   - {fileID: 11400000, guid: cd7e6d67478295046b459d59da9e4cc3, type: 2}
@@ -12736,12 +12736,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 897
   GunSelector: {fileID: 1269183291}
-  _leftHandReferans: {fileID: 524259441306200553}
-  _leftElbowReferans: {fileID: 5325395737252070334}
-  leftElbowTarget: {fileID: 0}
-  leftHandTarget: {fileID: 0}
-  leftIdleHandTarget: {fileID: 0}
-  leftIdleElbowTarget: {fileID: 0}
   HandIKAmount: 1
   ElbowIKAmount: 1
   autoReload: 0
@@ -15172,6 +15166,12 @@ Transform:
   - {fileID: 1126474876}
   m_Father: {fileID: 186352720}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1638125972 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6237894603160391444, guid: 48baa914034bc774685148412f9e1412,
+    type: 3}
+  m_PrefabInstance: {fileID: 5777168874828529822}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1645787955 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
@@ -30139,10 +30139,25 @@ PrefabInstance:
       propertyPath: slider
       value: 
       objectReference: {fileID: 719932217}
+    - target: {fileID: 5967192952388275885, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: SecondHandTarget
+      value: 
+      objectReference: {fileID: 1638125972}
     - target: {fileID: 7219647728185360154, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
       propertyPath: m_Name
       value: PlayerArmature
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107012633522743706, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: m_Data.m_MaxLimit
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 9107012633522743706, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: m_Data.m_MinLimit
+      value: -45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -26,7 +26,7 @@ namespace DotGalacticos.Guns.Demo
         private Transform GunParent;
 
         [SerializeField]
-        private Transform SecondHandTargetParent;
+        private GameObject SecondHandTarget;
 
         [SerializeField]
         private List<GunScriptableObject> Guns;
@@ -69,17 +69,22 @@ namespace DotGalacticos.Guns.Demo
         {
             GunScriptableObject firstGun = Guns.Find(gun => gun.Type == Gun);
             GunScriptableObject secondGun = Guns.Find(gun => gun.Type == SecondGun);
+
             if (Guns == null || Guns.Count == 0)
             {
                 Debug.LogError("No GunScriptableObject found.");
                 return;
             }
+
             rig2 = GameObject.Find("Left Hand Rig").GetComponent<Rig>();
             ik = rig2.GetComponentInChildren<TwoBoneIKConstraint>();
             animator = GetComponent<Animator>();
+
             ActiveBaseGun = firstGun; // Başlangıçta aktif silahı birinci el silahı olarak ayarla
+
             SetupGun(ActiveBaseGun);
             SetupHandGuns(firstGun, secondGun);
+
             if (FirstHandGun != null)
                 ammoStates[1] = new AmmoState(
                     FirstHandGun.AmmoConfig.CurrentClipAmmo,
@@ -113,7 +118,7 @@ namespace DotGalacticos.Guns.Demo
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
             ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştier
 
-            ik.data.target = ActiveGun.secondHandTarget;
+            SecondHandTarget.transform.Translate(ActiveGun.secondHandTarget.transform.position);
 
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
@@ -208,6 +213,7 @@ namespace DotGalacticos.Guns.Demo
                 DespawnActiveGun();
 
                 ActiveBaseGun = FirstHandGun;
+
                 SetupGun(FirstHandGun);
 
                 // Ammo durumunu yükle

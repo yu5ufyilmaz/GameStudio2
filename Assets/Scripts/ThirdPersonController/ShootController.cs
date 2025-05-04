@@ -22,14 +22,6 @@ namespace DotGalacticos.Guns.Demo
         [Space(10)]
         [SerializeField]
         private PlayerGunSelector GunSelector;
-        public Transform _leftHandReferans;
-        public Transform _leftElbowReferans;
-
-        public Transform leftElbowTarget;
-        public Transform leftHandTarget;
-
-        public Transform leftIdleHandTarget;
-        public Transform leftIdleElbowTarget;
 
         [Range(0, 1f)]
         public float HandIKAmount = 1f;
@@ -111,21 +103,6 @@ namespace DotGalacticos.Guns.Demo
             layerMask = LayerMask.GetMask("Default", "Obstacle", "Ground", "Enemy");
             aimImage.enabled = true; // Crosshair başlangıçta görünür
             Cursor.visible = false;
-
-            // DoIKMagic();
-        }
-
-        void DoIKMagic()
-        {
-            Transform[] allChildren = GetComponentsInChildren<Transform>();
-            leftHandTarget = allChildren.FirstOrDefault(child => child.name == "LeftHandTarget");
-            leftElbowTarget = allChildren.FirstOrDefault(child => child.name == "LeftElbowTarget");
-            leftIdleHandTarget = allChildren.FirstOrDefault(child =>
-                child.name == "LeftIdleHandTarget"
-            );
-            leftIdleElbowTarget = allChildren.FirstOrDefault(child =>
-                child.name == "LeftIdleElbowTarget"
-            );
         }
 
         void Update()

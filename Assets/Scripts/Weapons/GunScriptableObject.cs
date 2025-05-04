@@ -32,9 +32,9 @@ namespace DotGalacticos.Guns
         public ICollisionHandler[] BulletImpactEffects = new ICollisionHandler[0];
 
         private MonoBehaviour ActiveMonoBehaviour;
-        private GameObject Model;
+        public GameObject Model;
         private AudioSource modelAudioSource;
-        public Transform secondHandTarget;
+        public GameObject secondHandTarget;
 
         private float LastShootTime;
         private float InitialClickTime;
@@ -74,7 +74,7 @@ namespace DotGalacticos.Guns
             Model.transform.localPosition = SpawnPosition;
             Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
 
-            secondHandTarget = Model.transform.GetChild(0);
+            secondHandTarget = Model.transform.GetChild(0).gameObject;
 
             ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
             modelAudioSource = Model.GetComponentInChildren<AudioSource>();
