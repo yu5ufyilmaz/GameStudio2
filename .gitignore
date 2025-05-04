@@ -71,5 +71,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-.fake
-Assets/Prefabs/BuildingModels/casino_chair2.prefab.meta
+# Ignore specific large package
+/[Aa]ssets/MyLargePackage/  # <-- Buraya kendi paket adınızı ekleyin
