@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,53 +7,53 @@ public class EnemyController : MonoBehaviour
     // Referanslar
     [Header("Referanslar")]
     [SerializeField]
-    private Transform playerTransform;
+    protected Transform playerTransform;
 
     [SerializeField]
-    private Animator animator;
+    protected Animator animator;
 
     [SerializeField]
-    private NavMeshAgent navMeshAgent;
+    protected NavMeshAgent navMeshAgent;
 
     [SerializeField]
-    private Transform weaponMuzzle;
+    protected Transform weaponMuzzle;
 
     [SerializeField]
-    private GameObject bulletPrefab;
+    protected GameObject bulletPrefab;
 
     // Düşman Özellikleri
     [Header("Düşman Özellikleri")]
     [SerializeField]
-    private float detectionRange = 10f;
+    protected float detectionRange = 10f;
 
     [SerializeField]
-    private float attackRange = 8f;
+    protected float attackRange = 8f;
 
     [SerializeField]
-    private float fireRate = 1f;
+    protected float fireRate = 1f;
 
     [SerializeField]
-    private float patrolSpeed = 2f;
+    protected float patrolSpeed = 2f;
 
     [SerializeField]
-    private float chaseSpeed = 6f;
+    protected float chaseSpeed = 6f;
 
     [SerializeField]
-    private float bulletSpeed = 20f;
+    protected float bulletSpeed = 20f;
 
     [SerializeField]
-    private float speedChangeRate = 10.0f;
+    protected float speedChangeRate = 10.0f;
 
     // Devriye Noktaları
     [Header("Devriye")]
     [SerializeField]
-    private Transform[] patrolPoints;
+    protected Transform[] patrolPoints;
 
     [SerializeField]
-    private float waypointStopDistance = 0.5f;
+    protected float waypointStopDistance = 0.5f;
 
     [SerializeField]
-    private float waitTime = 2f;
+    protected float waitTime = 2f;
 
     [Header("Sesler")]
     public AudioClip[] FootstepAudioClips;
@@ -67,17 +66,17 @@ public class EnemyController : MonoBehaviour
     public float DieAudioVolume = 0.5f;
 
     [SerializeField]
-    private AudioClip shootSound;
+    protected AudioClip shootSound;
 
     [Range(0, 1)]
     public float shootAudioVolume = 0.5f;
 
     // Animator Parametreleri
-    private int _animIDSpeed;
-    private int _animIDFire;
+    protected int _animIDSpeed;
+    protected int _animIDFire;
 
     // Durum Yönetimi
-    private enum EnemyState
+    protected enum EnemyState
     {
         Idle,
         Patrol,
@@ -85,23 +84,20 @@ public class EnemyController : MonoBehaviour
         Attack,
     }
 
-    private EnemyState currentState = EnemyState.Idle;
+    protected EnemyState currentState = EnemyState.Idle;
 
     // Özel Değişkenler
-    private int currentPatrolIndex = 0;
-    private bool canFire = true;
-    private bool isWaiting = false;
-    private float distanceToPlayer;
-    private Vector3 lastKnownPlayerPosition;
-    private bool playerVisible = false;
+    protected int currentPatrolIndex = 0;
+    protected bool canFire = true;
+    protected bool isWaiting = false;
+    protected float distanceToPlayer;
+    protected Vector3 lastKnownPlayerPosition;
+    protected bool playerVisible = false;
 
-    //private float _targetSpeed;
-    //private float _currentSpeed;
-    private float _animationBlend;
+    protected float _animationBlend;
     public bool isDie = false;
-    private CharacterController characterController;
 
-    private void Start()
+    protected virtual void Start()
     {
         // Eğer player referansı verilmediyse, tag ile bulma
         if (playerTransform == null)
@@ -128,26 +124,26 @@ public class EnemyController : MonoBehaviour
         // Animator parametrelerini ayarla
         AssignAnimationIDs();
 
-        characterController = GetComponent<CharacterController>();
         // Başlangıç durumu
         ChangeState(EnemyState.Patrol);
     }
 
-    private void AssignAnimationIDs()
+    protected virtual void AssignAnimationIDs()
     {
         _animIDSpeed = Animator.StringToHash("Speed");
         _animIDFire = Animator.StringToHash("isShooting");
     }
 
-    private void Update()
+    protected virtual void Update()
     {
-        if (IsStopEnemy() == false)
+        if (!IsStopEnemy())
         {
             distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
 
             // Oyuncuyu görüş kontrolü
             CheckPlayerVisibility();
             UpdateAnimation();
+
             // Durum makinesi
             switch (currentState)
             {
@@ -171,19 +167,18 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void EnemyDieActions()
+    protected virtual void EnemyDieActions()
     {
         navMeshAgent.enabled = false;
-        characterController.enabled = false;
         animator.SetLayerWeight(1, 0f);
     }
 
-    public bool IsStopEnemy()
+    public virtual bool IsStopEnemy()
     {
         return isDie;
     }
 
-    public void OnDieSound()
+    public virtual void OnDieSound()
     {
         DieAudioVolume = PlayerPrefs.GetFloat("SFXVolume");
 
@@ -194,7 +189,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void OnFootStep(AnimationEvent animationEvent)
+    protected virtual void OnFootStep(AnimationEvent animationEvent)
     {
         FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
         if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -211,57 +206,32 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void UpdateAnimation()
+    protected virtual void UpdateAnimation()
     {
-        // Mevcut hızı hesapla
         float currentHorizontalSpeed = new Vector3(
             navMeshAgent.velocity.x,
             0f,
             navMeshAgent.velocity.z
         ).magnitude;
 
-        // Duruma göre hedef hızı ayarla
-        switch (currentState)
-        {
-            case EnemyState.Idle:
-                //_targetSpeed = 0f; // Idle = 0
-                break;
-            case EnemyState.Patrol:
-                //_targetSpeed = 2f; // Walk = 2
-                break;
-            case EnemyState.Chase:
-                // _targetSpeed = 6f; // Run = 6
-                break;
-            case EnemyState.Attack:
-                //_targetSpeed = 0f; // Idle = 0
-                break;
-        }
-
-        // Gerçek hızdan animasyon hızını hesapla (0-6 arasında)
         float animSpeed = currentHorizontalSpeed;
-        // Eğer 0.1'den küçükse tamamen durduğunu varsay
         if (currentHorizontalSpeed < 0.1f)
             animSpeed = 0f;
-        // 6'dan büyükse 6 ile sınırla
         if (currentHorizontalSpeed > 6f)
             animSpeed = 6f;
 
         _animationBlend = Mathf.Lerp(_animationBlend, animSpeed, Time.deltaTime * speedChangeRate);
-
-        // Animatör parametresini güncelle
         animator.SetFloat(_animIDSpeed, _animationBlend);
     }
 
-    private void CheckPlayerVisibility()
+    protected virtual void CheckPlayerVisibility()
     {
         playerVisible = false;
 
         if (distanceToPlayer <= detectionRange)
         {
-            // Oyuncuya yönelik bir ray (ışın) oluşturma
             Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
 
-            // Ray ile görüş kontrolü
             if (
                 Physics.Raycast(
                     transform.position + Vector3.up * 0.4f,
@@ -276,7 +246,6 @@ public class EnemyController : MonoBehaviour
                     playerVisible = true;
                     lastKnownPlayerPosition = playerTransform.position;
 
-                    // Oyuncu görüldüğünde durum değişimi
                     if (distanceToPlayer <= attackRange)
                     {
                         if (currentState != EnemyState.Attack)
@@ -295,20 +264,17 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        // Oyuncu görünmüyorsa ve şu an kovalama veya saldırı durumunda isek
         if (
-            playerVisible == false
+            !playerVisible
             && (currentState == EnemyState.Chase || currentState == EnemyState.Attack)
         )
         {
-            // Oyuncunun son görüldüğü konuma git
             if (currentState == EnemyState.Attack)
             {
                 ChangeState(EnemyState.Chase);
                 navMeshAgent.SetDestination(lastKnownPlayerPosition);
             }
 
-            // Son konum yakınına geldiysek veya yol bulunamadıysa devriyeye geri dön
             if (
                 Vector3.Distance(transform.position, lastKnownPlayerPosition) < waypointStopDistance
                 || !navMeshAgent.hasPath
@@ -319,21 +285,19 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void UpdateIdleState()
+    protected virtual void UpdateIdleState()
     {
-        // Bekleme süresini kontrol et
         if (!isWaiting)
         {
             StartCoroutine(WaitAndTransition(waitTime, EnemyState.Patrol));
         }
     }
 
-    private void UpdatePatrolState()
+    protected virtual void UpdatePatrolState()
     {
         if (patrolPoints.Length == 0)
             return;
 
-        // Eğer hedef noktaya yeterince yaklaştıysak
         if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= waypointStopDistance)
         {
             if (!isWaiting)
@@ -343,13 +307,12 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void UpdateChaseState()
+    protected virtual void UpdateChaseState()
     {
         if (playerVisible)
         {
             navMeshAgent.SetDestination(playerTransform.position);
 
-            // Eğer oyuncu atak menzilinde ise
             if (distanceToPlayer <= attackRange)
             {
                 ChangeState(EnemyState.Attack);
@@ -357,11 +320,10 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void UpdateAttackState()
+    protected virtual void UpdateAttackState()
     {
         if (playerVisible)
         {
-            // Düşmanı oyuncuya doğru döndür
             Vector3 direction = (playerTransform.position - transform.position).normalized;
             direction.y = 0;
             Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -371,7 +333,6 @@ public class EnemyController : MonoBehaviour
                 Time.deltaTime * 5f
             );
 
-            // Ateş etme
             if (canFire)
             {
                 StartCoroutine(FireRoutine());
@@ -383,15 +344,13 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void ChangeState(EnemyState newState)
+    protected virtual void ChangeState(EnemyState newState)
     {
-        // Önceki durum temizliği
         if (currentState == EnemyState.Attack)
         {
             animator.SetBool(_animIDFire, false);
         }
 
-        // Yeni durum ayarları
         currentState = newState;
 
         switch (currentState)
@@ -422,7 +381,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void SetNextPatrolPoint()
+    protected virtual void SetNextPatrolPoint()
     {
         if (patrolPoints.Length == 0)
             return;
@@ -431,11 +390,10 @@ public class EnemyController : MonoBehaviour
         navMeshAgent.SetDestination(patrolPoints[currentPatrolIndex].position);
     }
 
-    private IEnumerator WaitAndTransition(float time, EnemyState nextState)
+    protected virtual IEnumerator WaitAndTransition(float time, EnemyState nextState)
     {
         isWaiting = true;
         yield return new WaitForSeconds(time);
-
         isWaiting = false;
 
         if (currentState == EnemyState.Idle || currentState == EnemyState.Patrol)
@@ -444,16 +402,12 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private IEnumerator FireRoutine()
+    protected virtual IEnumerator FireRoutine()
     {
         canFire = false;
 
-        // Ateş etme animasyonu tetiklenir (animator'da Fire parametresi true yapıldı)
-
-        // Mermi oluşturma
         if (bulletPrefab != null && weaponMuzzle != null)
         {
-            // Mermi oluşturma işlemi
             GameObject bullet = Instantiate(
                 bulletPrefab,
                 weaponMuzzle.position,
@@ -466,18 +420,15 @@ public class EnemyController : MonoBehaviour
                 bulletRb.linearVelocity = bullet.transform.forward * bulletSpeed;
             }
 
-            // Belirli süre sonra yok et
             PlayShootSound();
             Destroy(bullet, 3f);
         }
 
-        // Ateş hızı kadar bekle
         yield return new WaitForSeconds(1f / fireRate);
-
         canFire = true;
     }
 
-    private void PlayShootSound()
+    protected virtual void PlayShootSound()
     {
         shootAudioVolume = PlayerPrefs.GetFloat("SFXVolume");
         if (shootSound != null)
@@ -486,8 +437,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    // Gizmo ile görüş ve ateş menzillerini görselleştirme
-    private void OnDrawGizmosSelected()
+    protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
