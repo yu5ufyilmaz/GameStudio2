@@ -13,6 +13,8 @@ public class BossController : EnemyController
     [Tooltip("Bossun savaşabilir olup olmadığını belirler.")]
     public bool canFight = true; // Bu değer Unity Inspector'da değiştirilebilir
 
+    private bool nerfApplied = false;
+
     protected override void Start()
     {
         base.Start();
@@ -34,6 +36,11 @@ public class BossController : EnemyController
         }
         else
         {
+            if (!nerfApplied) // Eğer nerf uygulanmadıysa
+            {
+                ApplyNerf(); // Nerf'i uygula
+                nerfApplied = true; // Nerf'in uygulandığını işaretle
+            }
             EnemyDieActions(); // Boss öldüğünde yapılacak işlemler
         }
     }
@@ -48,48 +55,29 @@ public class BossController : EnemyController
         }
     }
 
-    public void TakeDamage(int damage)
+    public void ApplyNerf()
     {
-        currentHealth -= damage;
-        if (currentHealth <= 0)
+        switch (sin)
         {
-            Die();
+            case Sin.Kıskançlık:
+                PlayerStats.Instance.IncreaseEnemyDamage();
+                break;
+            case Sin.Kibir:
+                // Kibir için özel etki ekleyebilirsiniz
+                break;
+            case Sin.Açgözlülük:
+                PlayerStats.Instance.DecreaseAmmoCapacityAllGuns();
+                break;
+            case Sin.Şehvet:
+                PlayerStats.Instance.IncreaseAimDifficulty();
+                break;
+            case Sin.Oburluk:
+                PlayerStats.Instance.DecreaseMovementSpeed();
+                break;
+            case Sin.Tembellik:
+                PlayerStats.Instance.DecreaseReloadSpeed();
+                break;
         }
-    }
-
-    private void Die()
-    {
-        ApplyNerf();
-        OnDieSound();
-        isDie = true;
-        navMeshAgent.enabled = false;
-        animator.SetTrigger("Die");
-        Destroy(gameObject, 2f);
-    }
-
-    private void ApplyNerf()
-    {
-        /* switch (sin)
-         {
-             case Sin.Kıskançlık:
-                 PlayerStats.Instance.IncreaseEnemyDamage();
-                 break;
-             case Sin.Kibir:
-                 // Kibir için özel etki ekleyebilirsiniz
-                 break;
-             case Sin.Açgözlülük:
-                 PlayerStats.Instance.DecreaseAmmoCapacity();
-                 break;
-             case Sin.Şehvet:
-                 PlayerStats.Instance.IncreaseAimDifficulty();
-                 break;
-             case Sin.Oburluk:
-                 PlayerStats.Instance.DecreaseMovementSpeed();
-                 break;
-             case Sin.Tembellik:
-                 PlayerStats.Instance.DecreaseReloadSpeed();
-                 break;
-         }*/
     }
 
     protected override void UpdateAttackState()

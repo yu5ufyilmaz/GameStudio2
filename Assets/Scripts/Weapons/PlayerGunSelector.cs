@@ -28,8 +28,7 @@ namespace DotGalacticos.Guns.Demo
         [SerializeField]
         private GameObject SecondHandTarget;
 
-        [SerializeField]
-        private List<GunScriptableObject> Guns;
+        public List<GunScriptableObject> Guns;
 
         [Space]
         [Header("Runtime Filled")]
