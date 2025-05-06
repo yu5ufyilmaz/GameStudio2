@@ -23,22 +23,33 @@ public class PlayerStats : MonoBehaviour
 
         playerGunSelector = GetComponent<PlayerGunSelector>();
         thirdPersonController = GetComponent<ThirdPersonController>();
+
+        //StoreOriginalGunAmmoValues();
+        //SetOriginalAmmoValues();
     }
 
-    public void DecreaseMovementSpeed()
+    private void Start()
     {
-        if (thirdPersonController != null)
+        // Oyun başladığında orijinal değerleri ayarla
+    }
+
+    private void StoreOriginalGunAmmoValues()
+    {
+        if (playerGunSelector == null || playerGunSelector.Guns == null)
+            return;
+
+        foreach (var gun in playerGunSelector.Guns)
         {
-            thirdPersonController.MoveSpeed *= speedMultiplier;
-            thirdPersonController.SprintSpeed *= speedMultiplier;
+            if (gun != null && gun.AmmoConfig != null)
+            {
+                // Orijinal değerleri sakla
+                gun.AmmoConfig.OriginalMaxAmmo = gun.AmmoConfig.MaxAmmo;
+                gun.AmmoConfig.OriginalClipSize = gun.AmmoConfig.ClipSize;
+            }
         }
     }
 
-    public void IncreaseEnemyDamage(float amount = 5f)
-    {
-        enemyDamage += amount; // Düşman hasarını artır
-    }
-
+    // Örnek nerf metodu
     public void DecreaseAmmoCapacityAllGuns()
     {
         // Oyundaki tüm silahlara erişip MaxAmmo ve ClipSize değerlerini yarıya düşür
@@ -52,11 +63,16 @@ public class PlayerStats : MonoBehaviour
                 {
                     if (gun != null && gun.AmmoConfig != null)
                     {
-                        // MaxAmmo'yu yarıya düşür
-                        gun.AmmoConfig.MaxAmmo = Mathf.Max(0, gun.AmmoConfig.MaxAmmo / 2);
+                        // MaxAmmo ve ClipSize değerlerini yarıya düşürmeden önce kontrol et
+                        if (gun.AmmoConfig.MaxAmmo > 0)
+                        {
+                            gun.AmmoConfig.MaxAmmo = Mathf.Max(0, gun.AmmoConfig.MaxAmmo / 2);
+                        }
 
-                        // ClipSize'ı yarıya düşür
-                        gun.AmmoConfig.ClipSize = Mathf.Max(0, gun.AmmoConfig.ClipSize / 2);
+                        if (gun.AmmoConfig.ClipSize > 0)
+                        {
+                            gun.AmmoConfig.ClipSize = Mathf.Max(0, gun.AmmoConfig.ClipSize / 2);
+                        }
 
                         // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
                         if (gun.AmmoConfig.CurrentAmmo > gun.AmmoConfig.MaxAmmo)
@@ -77,11 +93,16 @@ public class PlayerStats : MonoBehaviour
             var activeGun = playerGunSelector.ActiveGun; // Aktif silahı al
             if (activeGun != null && activeGun.AmmoConfig != null)
             {
-                // MaxAmmo'yu yarıya düşür
-                activeGun.AmmoConfig.MaxAmmo = Mathf.Max(0, activeGun.AmmoConfig.MaxAmmo / 2);
+                // MaxAmmo ve ClipSize değerlerini yarıya düşürmeden önce kontrol et
+                if (activeGun.AmmoConfig.MaxAmmo > 0)
+                {
+                    activeGun.AmmoConfig.MaxAmmo = Mathf.Max(0, activeGun.AmmoConfig.MaxAmmo / 2);
+                }
 
-                // ClipSize'ı yarıya düşür
-                activeGun.AmmoConfig.ClipSize = Mathf.Max(0, activeGun.AmmoConfig.ClipSize / 2);
+                if (activeGun.AmmoConfig.ClipSize > 0)
+                {
+                    activeGun.AmmoConfig.ClipSize = Mathf.Max(0, activeGun.AmmoConfig.ClipSize / 2);
+                }
 
                 // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
                 if (activeGun.AmmoConfig.CurrentAmmo > activeGun.AmmoConfig.MaxAmmo)
@@ -93,38 +114,6 @@ public class PlayerStats : MonoBehaviour
                 if (activeGun.AmmoConfig.CurrentClipAmmo > activeGun.AmmoConfig.ClipSize)
                 {
                     activeGun.AmmoConfig.CurrentClipAmmo = activeGun.AmmoConfig.ClipSize;
-                }
-            }
-        }
-
-        // Dünya üzerindeki silahları kontrol et
-        var allGunsInWorld = FindObjectsOfType<GunPickup>(); // Tüm silahları bul
-        foreach (var gunPickup in allGunsInWorld)
-        {
-            if (gunPickup != null && gunPickup.Gun != null && gunPickup.Gun.AmmoConfig != null)
-            {
-                // MaxAmmo'yu yarıya düşür
-                gunPickup.Gun.AmmoConfig.MaxAmmo = Mathf.Max(
-                    0,
-                    gunPickup.Gun.AmmoConfig.MaxAmmo / 2
-                );
-
-                // ClipSize'ı yarıya düşür
-                gunPickup.Gun.AmmoConfig.ClipSize = Mathf.Max(
-                    0,
-                    gunPickup.Gun.AmmoConfig.ClipSize / 2
-                );
-
-                // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
-                if (gunPickup.Gun.AmmoConfig.CurrentAmmo > gunPickup.Gun.AmmoConfig.MaxAmmo)
-                {
-                    gunPickup.Gun.AmmoConfig.CurrentAmmo = gunPickup.Gun.AmmoConfig.MaxAmmo;
-                }
-
-                // Eğer mevcut şarjör mermisi sayısı ClipSize'dan fazlaysa, onu da sınırla
-                if (gunPickup.Gun.AmmoConfig.CurrentClipAmmo > gunPickup.Gun.AmmoConfig.ClipSize)
-                {
-                    gunPickup.Gun.AmmoConfig.CurrentClipAmmo = gunPickup.Gun.AmmoConfig.ClipSize;
                 }
             }
         }
@@ -140,5 +129,19 @@ public class PlayerStats : MonoBehaviour
     {
         // Reload hızını azaltma işlemi
         // Örneğin, reload süresini artırabilirsiniz
+    }
+
+    public void DecreaseMovementSpeed()
+    {
+        if (thirdPersonController != null)
+        {
+            thirdPersonController.MoveSpeed *= speedMultiplier;
+            thirdPersonController.SprintSpeed *= speedMultiplier;
+        }
+    }
+
+    public void IncreaseEnemyDamage(float amount = 5f)
+    {
+        enemyDamage += amount; // Düşman hasarını artır
     }
 }

@@ -1732,7 +1732,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5521780328064044724, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -2401,7 +2401,7 @@ MonoBehaviour:
     roomCollider: {fileID: 1015023011}
     wallRenderers:
     - {fileID: 6389748778506228290}
-    - {fileID: 470709211853450388}
+    - {fileID: 5554311866711634455}
     - {fileID: 8150838487100576589}
 --- !u!4 &278935749
 Transform:
@@ -5220,7 +5220,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5521780328064044724, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -5723,7 +5723,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5521780328064044724, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -8106,7 +8106,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2199741092781521748, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -10635,7 +10635,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5521780328064044724, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -13717,7 +13717,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5026176752393603449, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -15304,7 +15304,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5521780328064044724, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -16756,7 +16756,7 @@ PrefabInstance:
     - target: {fileID: 1189741114049858862, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2199741092781521748, guid: 6fc315069ace92f41832bfe90087a074,
         type: 3}
@@ -20219,7 +20219,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147540219397}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -27.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
@@ -20232,7 +20232,7 @@ Transform:
   - {fileID: 149414276}
   - {fileID: 112561707}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &543450652210019036
 Transform:
   m_ObjectHideFlags: 0
@@ -21045,7 +21045,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!195 &919132148540039271
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -22319,7 +22319,7 @@ GameObject:
   - component: {fileID: 8980540089419790864}
   m_Layer: 7
   m_Name: wall_1
-  m_TagString: Wall
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -24390,7 +24390,7 @@ MonoBehaviour:
   m_NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
   m_AmplitudeGain: 0
-  m_FrequencyGain: 1
+  m_FrequencyGain: 0.5
   mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!33 &2073921712319143427
 MeshFilter:
@@ -34260,7 +34260,7 @@ GameObject:
   - component: {fileID: 6012588794778121631}
   m_Layer: 7
   m_Name: wall_3
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

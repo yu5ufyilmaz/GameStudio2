@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b02e84a177afae40afe6ec48fa17213, type: 3}
   m_Name: Pistol
   m_EditorClassIdentifier: 
-  MaxAmmo: 200
-  ClipSize: 14
-  CurrentAmmo: 200
-  CurrentClipAmmo: 14
+  OriginalMaxAmmo: 200
+  OriginalClipSize: 14
+  MaxAmmo: 100
+  ClipSize: 7
+  CurrentAmmo: 100
+  CurrentClipAmmo: 7

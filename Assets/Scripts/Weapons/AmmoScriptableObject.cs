@@ -5,11 +5,31 @@ namespace DotGalacticos.Guns
     [CreateAssetMenu(fileName = "Ammo Config", menuName = "Guns/Ammo Config", order = 1)]
     public class AmmoScriptableObject : ScriptableObject, System.ICloneable
     {
+        public int OriginalMaxAmmo;
+        public int OriginalClipSize;
+
+        [Header("Değiştirilebilir Değerler")]
         public int MaxAmmo;
         public int ClipSize;
 
         public int CurrentAmmo = 120;
         public int CurrentClipAmmo = 30;
+
+        private void OnEnable()
+        {
+            // Oyun başladığında veya sahne yüklendiğinde orijinal değerlere geri yükle
+            ResetAmmoValues();
+        }
+
+        public void ResetAmmoValues()
+        {
+            MaxAmmo = OriginalMaxAmmo;
+            ClipSize = OriginalClipSize;
+
+            // Mevcut mermi sayısını orijinal değerlere göre sınırla
+            CurrentAmmo = Mathf.Clamp(CurrentAmmo, 0, MaxAmmo);
+            CurrentClipAmmo = Mathf.Clamp(CurrentClipAmmo, 0, ClipSize);
+        }
 
         public void Reload()
         {
@@ -17,7 +37,7 @@ namespace DotGalacticos.Guns
             int availableBulletsInCurrentClip = ClipSize - CurrentClipAmmo;
             int reloadAmount = Mathf.Min(maxReloadAmount, availableBulletsInCurrentClip);
 
-            CurrentClipAmmo = CurrentClipAmmo + reloadAmount;
+            CurrentClipAmmo += reloadAmount;
             CurrentAmmo -= reloadAmount;
         }
 

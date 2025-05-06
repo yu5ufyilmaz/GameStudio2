@@ -80,7 +80,7 @@ namespace DotGalacticos.Guns.Demo
             animator = GetComponent<Animator>();
 
             ActiveBaseGun = firstGun; // Başlangıçta aktif silahı birinci el silahı olarak ayarla
-
+            SetOriginalAmmoValues();
             SetupGun(ActiveBaseGun);
             SetupHandGuns(firstGun, secondGun);
 
@@ -147,6 +147,34 @@ namespace DotGalacticos.Guns.Demo
         {
             DespawnActiveGun();
             SetupHandGuns(firstHandGun, secondHandGun);
+        }
+
+        private void SetOriginalAmmoValues()
+        {
+            foreach (var gun in Guns)
+            {
+                if (gun != null && gun.AmmoConfig != null)
+                {
+                    // Orijinal değerleri geri yükle
+                    gun.AmmoConfig.MaxAmmo = gun.AmmoConfig.OriginalMaxAmmo;
+                    gun.AmmoConfig.ClipSize = gun.AmmoConfig.OriginalClipSize;
+
+                    // Mevcut mermi sayısını orijinal değerlere göre ayarla
+                    gun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.MaxAmmo; // Başlangıçta tam mermi
+                    gun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.ClipSize; // Başlangıçta tam şarjör
+
+                    if (gun == ActiveGun)
+                    { // Orijinal değerleri sakla
+                        ActiveGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.OriginalMaxAmmo;
+                        ActiveGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.OriginalClipSize;
+                    }
+                    if (gun == SecondHandGun)
+                    {
+                        SecondHandGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.OriginalMaxAmmo;
+                        SecondHandGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.OriginalClipSize;
+                    }
+                }
+            }
         }
 
         public void ApplyModifier(IModifiers[] modifier)
