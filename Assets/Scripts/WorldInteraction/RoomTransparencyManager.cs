@@ -1,9 +1,10 @@
-using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RoomTransparencyManager : MonoBehaviour
 {
+    public static RoomTransparencyManager Instance { get; private set; }
     public Transform player;
     public LayerMask buildingLayer; // Bina katmanı
     public string transparentLayerName = "TransparentWalls";
@@ -12,8 +13,23 @@ public class RoomTransparencyManager : MonoBehaviour
     public float transparencyAmount = 0.3f;
 
     public List<Room> rooms = new List<Room>();
-
     private Room currentRoom;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        // Sahne yüklendiğinde odaları bul
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
     void Start()
     {
@@ -22,10 +38,12 @@ public class RoomTransparencyManager : MonoBehaviour
             player = GameObject.FindGameObjectWithTag("Player").transform;
         }
 
-        foreach (Room room in rooms)
-        {
-            SetRoomWallsOpaque(room);
-        }
+        FindRoomsAutomatically();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        FindRoomsAutomatically();
     }
 
     void Update()
@@ -36,20 +54,19 @@ public class RoomTransparencyManager : MonoBehaviour
         {
             if (currentRoom != null)
             {
+                Debug.Log($"Nssın");
                 SetRoomWallsOpaque(currentRoom);
-
             }
 
             if (newRoom != null)
             {
+                Debug.Log($"MÜdrü müdr müdür");
                 SetRoomWallsTransparent(newRoom);
-
             }
 
             currentRoom = newRoom;
         }
     }
-
 
     private Room GetRoomContainingPlayer()
     {
@@ -64,29 +81,60 @@ public class RoomTransparencyManager : MonoBehaviour
         return null;
     }
 
+    public void FindRoomsAutomatically()
+    {
+        rooms.Clear();
+
+        GameObject[] roomObjects = GameObject.FindGameObjectsWithTag("Room");
+
+        foreach (GameObject roomObj in roomObjects)
+        {
+            Collider roomCollider = roomObj.GetComponent<Collider>();
+            if (roomCollider != null)
+            {
+                Room room = new Room();
+                room.roomName = roomObj.name;
+                room.roomCollider = roomCollider;
+
+                foreach (Transform child in roomObj.transform)
+                {
+                    if (child.CompareTag("Wall"))
+                    {
+                        Renderer wallRenderer = child.GetComponent<Renderer>();
+                        if (wallRenderer != null)
+                        {
+                            room.wallRenderers.Add(wallRenderer);
+                        }
+                    }
+                }
+                rooms.Add(room);
+            }
+        }
+    }
+
     private void SetRoomWallsOpaque(Room room)
     {
         foreach (Renderer wallRenderer in room.wallRenderers)
         {
-            SetWallOpacity(wallRenderer, 1.0f,"Obstacle");
+            SetWallOpacity(wallRenderer, 1.0f, "Obstacle");
         }
     }
+
     private void SetRoomWallsTransparent(Room room)
     {
         foreach (Renderer wallRenderer in room.wallRenderers)
         {
-            SetWallOpacity(wallRenderer, transparencyAmount,"TransparentWalls");
+            SetWallOpacity(wallRenderer, transparencyAmount, "TransparentWalls");
         }
     }
 
-
-    private void SetWallOpacity(Renderer wallRenderer, float opacity,string transparentLayerName)
+    private void SetWallOpacity(Renderer wallRenderer, float opacity, string transparentLayerName)
     {
         int layer = LayerMask.NameToLayer(transparentLayerName);
-        
+
         Material[] materials = wallRenderer.materials;
         int defLayer = LayerMask.NameToLayer(transparentLayerName);
-       if (wallRenderer.gameObject.layer == defLayer)
+        if (wallRenderer.gameObject.layer == defLayer)
             wallRenderer.gameObject.layer = layer;
         else
             wallRenderer.gameObject.layer = defLayer;
@@ -102,8 +150,6 @@ public class RoomTransparencyManager : MonoBehaviour
                 mat.EnableKeyword("_ALPHABLEND_ON");
                 mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                 mat.renderQueue = 3000;
-
-
             }
             else if (opacity >= 1.0f && mat.renderQueue >= 3000)
             {
@@ -125,18 +171,12 @@ public class RoomTransparencyManager : MonoBehaviour
     }
 }
 
-
 [System.Serializable]
 public class Room
 {
     public string roomName;
-
-
     public Collider roomCollider;
-
-
     public List<Renderer> wallRenderers = new List<Renderer>();
-
 
     public bool IsPlayerInside(Vector3 playerPosition)
     {
@@ -148,21 +188,15 @@ public class Room
     }
 }
 
-
 [System.Serializable]
 public class Door
 {
-
     public Room room1;
     public Room room2;
 
-
     public bool isOpen = false;
 
-
     public Renderer doorRenderer;
-
-
     public Animator doorAnimator;
 
     public void ToggleDoor()
@@ -187,40 +221,7 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
 
         if (GUILayout.Button("Find Colliders Automatically for Rooms"))
         {
-            FindRoomsAutomatically(script);
-        }
-    }
-    // OSMAAAAAANNNNNNNNNNNNNNNNNNNN
-    void FindRoomsAutomatically(RoomTransparencyManager script)
-    {
-        script.rooms.Clear();
-
-        GameObject[] roomObjects = GameObject.FindGameObjectsWithTag("Room");
-
-        foreach (GameObject roomObj in roomObjects)
-        {
-            Collider roomCollider = roomObj.GetComponent<Collider>();
-            if (roomCollider != null)
-            {
-                Room room = new Room();
-                room.roomName = roomObj.name;
-                room.roomCollider = roomCollider;
-
-
-                foreach (Transform child in roomObj.transform)
-                {
-                    if (child.CompareTag("Wall"))
-                    {
-                        Renderer wallRenderer = child.GetComponent<Renderer>();
-                        if (wallRenderer != null)
-                        {
-                            room.wallRenderers.Add(wallRenderer);
-                        }
-                    }
-                }
-
-                script.rooms.Add(room);
-            }
+            script.FindRoomsAutomatically();
         }
     }
 }

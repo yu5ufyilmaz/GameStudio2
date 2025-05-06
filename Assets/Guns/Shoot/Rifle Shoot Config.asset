@@ -17,8 +17,10 @@ MonoBehaviour:
     m_Bits: 905
   FireRate: 0.1
   RecoilRecoverySpeed: 1
-  MaxSpreadTime: 1
+  MaxSpreadTime: 10
   BulletPerShoot: 1
+  ShakeIntensity: 0.5
+  ShakeTime: 0.1
   SpreadType: 2
   Spread: {x: 0.1, y: 0.1, z: 0.1}
   MinSpread: {x: 0, y: 0, z: 0}

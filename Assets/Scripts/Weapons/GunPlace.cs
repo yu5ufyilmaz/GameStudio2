@@ -1,6 +1,5 @@
-
 public enum GunPlace
 {
-FirstHand,
-SecondHand
+    FirstHand,
+    SecondHand,
 }

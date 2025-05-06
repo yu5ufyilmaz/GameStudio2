@@ -26,10 +26,9 @@ namespace DotGalacticos.Guns.Demo
         private Transform GunParent;
 
         [SerializeField]
-        private Transform SecondHandTargetParent;
+        private GameObject SecondHandTarget;
 
-        [SerializeField]
-        private List<GunScriptableObject> Guns;
+        public List<GunScriptableObject> Guns;
 
         [Space]
         [Header("Runtime Filled")]
@@ -48,7 +47,7 @@ namespace DotGalacticos.Guns.Demo
         [SerializeField]
         public GunScriptableObject SecondHandBaseGun;
         private Rig rig2;
-
+        private TwoBoneIKConstraint ik;
         private int activeGunIndex = 1;
 
         private class AmmoState
@@ -69,16 +68,22 @@ namespace DotGalacticos.Guns.Demo
         {
             GunScriptableObject firstGun = Guns.Find(gun => gun.Type == Gun);
             GunScriptableObject secondGun = Guns.Find(gun => gun.Type == SecondGun);
+
             if (Guns == null || Guns.Count == 0)
             {
                 Debug.LogError("No GunScriptableObject found.");
                 return;
             }
-            rig2 = GameObject.Find("Rig 2").GetComponent<Rig>();
+
+            rig2 = GameObject.Find("Left Hand Rig").GetComponent<Rig>();
+            ik = rig2.GetComponentInChildren<TwoBoneIKConstraint>();
             animator = GetComponent<Animator>();
+
             ActiveBaseGun = firstGun; // Başlangıçta aktif silahı birinci el silahı olarak ayarla
+            SetOriginalAmmoValues();
             SetupGun(ActiveBaseGun);
             SetupHandGuns(firstGun, secondGun);
+
             if (FirstHandGun != null)
                 ammoStates[1] = new AmmoState(
                     FirstHandGun.AmmoConfig.CurrentClipAmmo,
@@ -110,10 +115,13 @@ namespace DotGalacticos.Guns.Demo
 
             ActiveBaseGun = gun;
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
-            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştir
-            SecondHandTargetParent.position = ActiveGun.secondHandTarget.position;
+            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştier
+
+            SecondHandTarget.transform.Translate(ActiveGun.secondHandTarget.transform.position);
+
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
+
             UpdateAnimator(gun); // Animatörü güncelle
         }
 
@@ -139,6 +147,34 @@ namespace DotGalacticos.Guns.Demo
         {
             DespawnActiveGun();
             SetupHandGuns(firstHandGun, secondHandGun);
+        }
+
+        private void SetOriginalAmmoValues()
+        {
+            foreach (var gun in Guns)
+            {
+                if (gun != null && gun.AmmoConfig != null)
+                {
+                    // Orijinal değerleri geri yükle
+                    gun.AmmoConfig.MaxAmmo = gun.AmmoConfig.OriginalMaxAmmo;
+                    gun.AmmoConfig.ClipSize = gun.AmmoConfig.OriginalClipSize;
+
+                    // Mevcut mermi sayısını orijinal değerlere göre ayarla
+                    gun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.MaxAmmo; // Başlangıçta tam mermi
+                    gun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.ClipSize; // Başlangıçta tam şarjör
+
+                    if (gun == ActiveGun)
+                    { // Orijinal değerleri sakla
+                        ActiveGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.OriginalMaxAmmo;
+                        ActiveGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.OriginalClipSize;
+                    }
+                    if (gun == SecondHandGun)
+                    {
+                        SecondHandGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.OriginalMaxAmmo;
+                        SecondHandGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.OriginalClipSize;
+                    }
+                }
+            }
         }
 
         public void ApplyModifier(IModifiers[] modifier)
@@ -204,6 +240,7 @@ namespace DotGalacticos.Guns.Demo
                 DespawnActiveGun();
 
                 ActiveBaseGun = FirstHandGun;
+
                 SetupGun(FirstHandGun);
 
                 // Ammo durumunu yükle
@@ -246,23 +283,29 @@ namespace DotGalacticos.Guns.Demo
 
             foreach (var hitCollider in hitColliders)
             {
-                GunPickup gunPickupScript = hitCollider.GetComponent<GunPickup>();
-                GunScriptableObject gunToPickup = gunPickupScript.Gun; // Silahın verisini al
-
-                if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
+                if (hitCollider != null)
                 {
-                    // Silahın pozisyonu ile oyuncunun pozisyonu arasındaki mesafeyi hesapla
-                    float distance = Vector3.Distance(
-                        transform.position,
-                        hitCollider.transform.position
-                    );
-
-                    // Eğer bu silah, şu ana kadar bulduğumuz en yakın silah ise, güncelle
-                    if (distance < closestDistance)
+                    GunPickup gunPickupScript = hitCollider.GetComponent<GunPickup>();
+                    if (gunPickupScript != null)
                     {
-                        closestDistance = distance;
-                        closestGun = gunToPickup;
-                        gunPickup = gunPickupScript;
+                        GunScriptableObject gunToPickup = gunPickupScript.Gun; // Silahın verisini al
+
+                        if (gunToPickup != null && (ActiveGun.Place == gunToPickup.Place))
+                        {
+                            // Silahın pozisyonu ile oyuncunun pozisyonu arasındaki mesafeyi hesapla
+                            float distance = Vector3.Distance(
+                                transform.position,
+                                hitCollider.transform.position
+                            );
+
+                            // Eğer bu silah, şu ana kadar bulduğumuz en yakın silah ise, güncelle
+                            if (distance < closestDistance)
+                            {
+                                closestDistance = distance;
+                                closestGun = gunToPickup;
+                                gunPickup = gunPickupScript;
+                            }
+                        }
                     }
                 }
             }

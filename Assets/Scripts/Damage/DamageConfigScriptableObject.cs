@@ -1,5 +1,6 @@
 using UnityEngine;
 using static UnityEngine.ParticleSystem;
+
 namespace DotGalacticos.Guns
 {
     [CreateAssetMenu(fileName = "Damage Config", menuName = "Guns/Damage Config", order = 1)]

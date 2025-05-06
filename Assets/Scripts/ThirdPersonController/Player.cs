@@ -1,5 +1,6 @@
 using DotGalacticos.Guns.Demo;
 using UnityEngine;
+
 namespace DotGalacticos
 {
     public class Player : MonoBehaviour
@@ -12,6 +13,12 @@ namespace DotGalacticos
         void Start()
         {
             health.OnDeath += Die;
+            health.OnTakeDamage += HitResponse;
+        }
+
+        private void HitResponse(int Damage)
+        {
+            painResponse.HandlePain();
         }
 
         private void Die(Vector3 Position)

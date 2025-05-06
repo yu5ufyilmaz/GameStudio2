@@ -4,6 +4,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [SerializeField]
     private int _MaxHealth = 100;
+
     [SerializeField]
     private int _Health;
 
@@ -12,15 +13,25 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     [SerializeField]
     private Animator _animator;
-    public int CurrentHealth { get => _Health; set => _Health = value; }
-    public int MaxHealth { get => _MaxHealth; set => _MaxHealth = value; }
+    public int CurrentHealth
+    {
+        get => _Health;
+        set => _Health = value;
+    }
+    public int MaxHealth
+    {
+        get => _MaxHealth;
+        set => _MaxHealth = value;
+    }
 
     public event IDamageable.TakeDamageEvent OnTakeDamage;
     public event IDamageable.DeathEvent OnDeath;
+
     private void OnEnable()
     {
         CurrentHealth = MaxHealth;
     }
+
     public void TakeDamage(int Damage, Vector3 hitPoint)
     {
         int damageTaken = Mathf.Clamp(Damage, 0, CurrentHealth);
@@ -40,6 +51,4 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             //Destroy(gameObject);
         }
     }
-
-
 }

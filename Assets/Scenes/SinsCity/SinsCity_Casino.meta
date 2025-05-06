@@ -1,6 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scenes/Settings.unity.meta
+guid: a96e1b7fba5d1dc47a61f642861615bb
+========
 guid: 5bcf46a48fe2b114194c9618dd14ef9f
 folderAsset: yes
+>>>>>>>> Oğuz:Assets/Scenes/SinsCity/SinsCity_Casino.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

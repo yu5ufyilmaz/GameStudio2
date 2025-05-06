@@ -11,7 +11,12 @@ namespace DotGalacticos.Guns.ImpactEffects
 
         private Collider[] HitObjects;
 
-        public Explode(float Radius, AnimationCurve DamageFalloff, int BaseDamage, int MaxEnemiesAffected)
+        public Explode(
+            float Radius,
+            AnimationCurve DamageFalloff,
+            int BaseDamage,
+            int MaxEnemiesAffected
+        )
         {
             this.Radius = Radius;
             this.DamageFalloff = DamageFalloff;
@@ -20,24 +25,33 @@ namespace DotGalacticos.Guns.ImpactEffects
             HitObjects = new Collider[MaxEnemiesAffected];
         }
 
-        public void HandleImpact(Collider ImpactedObjects, Vector3 HitPosition, Vector3 HitNormal, GunScriptableObject Gun)
+        public void HandleImpact(
+            Collider ImpactedObjects,
+            Vector3 HitPosition,
+            Vector3 HitNormal,
+            GunScriptableObject Gun
+        )
         {
-           int hits = Physics.OverlapSphereNonAlloc(
-            HitPosition,
-            Radius,
-            HitObjects,
-            Gun.ShootConfig.HitMask
-           );
-           for(int i =0;i<hits;i++)
-           {
-            if(HitObjects[i].TryGetComponent(out IDamageable damageable))
+            int hits = Physics.OverlapSphereNonAlloc(
+                HitPosition,
+                Radius,
+                HitObjects,
+                Gun.ShootConfig.HitMask
+            );
+            for (int i = 0; i < hits; i++)
             {
-                float distance = Vector3.Distance(HitPosition,HitObjects[i].ClosestPoint(HitPosition));
-                damageable.TakeDamage(
-                    Mathf.CeilToInt(BaseDamage* DamageFalloff.Evaluate(distance/ Radius)),HitPosition
-                );
+                if (HitObjects[i].TryGetComponent(out IDamageable damageable))
+                {
+                    float distance = Vector3.Distance(
+                        HitPosition,
+                        HitObjects[i].ClosestPoint(HitPosition)
+                    );
+                    damageable.TakeDamage(
+                        Mathf.CeilToInt(BaseDamage * DamageFalloff.Evaluate(distance / Radius)),
+                        HitPosition
+                    );
+                }
             }
-           }
         }
     }
 }

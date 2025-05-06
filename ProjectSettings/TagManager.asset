@@ -9,6 +9,8 @@ TagManager:
   - Wall
   - Door
   - Pickups
+  - Music Area
+  - Music
   layers:
   - Default
   - TransparentFX
@@ -23,7 +25,7 @@ TagManager:
   - Bones
   - Pickups
   - Streaming Volumes
-  - 
+  - Music Area
   - 
   - 
   - 

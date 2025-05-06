@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using DotGalacticos.Guns.Demo;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -36,6 +37,9 @@ namespace DotGalacticos
 
         [Range(0, 1)]
         public float FootstepAudioVolume = 0.5f;
+
+        [Range(0, 1)]
+        public float DieAudioVolume = 0.5f;
 
         [Space(10)]
         [Tooltip("The height the player can jump")]
@@ -100,9 +104,14 @@ namespace DotGalacticos
 
         [SerializeField]
         AudioClip dodgeAuido;
-        bool isDodging;
+
+        [SerializeField]
+        AudioClip[] DieAudioClips;
+
+        // bool isDodging;
         bool isJumpAway;
         float dodgeTimer;
+        public bool isRunning => _input != null && _input.sprint && _input.move != Vector2.zero;
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -111,8 +120,9 @@ namespace DotGalacticos
         // player
         private float _speed;
         private float _animationBlend;
-        private float _animationBlendZ;
-        private float _targetRotation = 0.0f;
+
+        // private float _animationBlendZ;
+        // private float _targetRotation = 0.0f;
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
@@ -122,7 +132,7 @@ namespace DotGalacticos
         private float _fallTimeoutDelta;
 
         // animation IDs
-        private int _animIDSpeed;
+        private int _animIDSpeedX;
         private int _animIDSpeedZ;
         private int _animIDGrounded;
         private int _animIDJump;
@@ -137,7 +147,7 @@ namespace DotGalacticos
 #endif
         private Animator _animator;
         private CharacterController _controller;
-        private StarterAssetsInputs _input;
+        public StarterAssetsInputs _input;
         private GameObject _mainCamera;
         private ShootController _shootController;
 
@@ -146,6 +156,12 @@ namespace DotGalacticos
         private bool _hasAnimator;
 
         public bool IsAiming { get; set; }
+
+        //Animation Rig Variables
+        private Rig _aimRig;
+        private float targetWeight; // Hedef ağırlık
+        private float currentWeight; // Mevcut ağırlık
+        private float weightChangeRate = 5f; // Ağırlık değişim hızı
 
         private bool IsCurrentDeviceMouse
         {
@@ -175,6 +191,7 @@ namespace DotGalacticos
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
+            _aimRig = GameObject.Find("Aim Rig").GetComponent<Rig>();
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -189,6 +206,8 @@ namespace DotGalacticos
             // re  set our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            // Time.timeScale = 0f;
         }
 
         private void Update()
@@ -200,8 +219,10 @@ namespace DotGalacticos
             if (isJumpAway == false)
                 Move();
 
-            Dodge();
+            //Dodge();
             OpenDoor();
+
+            UpdateAimRigWeight();
         }
 
         private void LateUpdate()
@@ -211,7 +232,7 @@ namespace DotGalacticos
 
         private void AssignAnimationIDs()
         {
-            _animIDSpeed = Animator.StringToHash("Speed X");
+            _animIDSpeedX = Animator.StringToHash("Speed X");
             _animIDSpeedZ = Animator.StringToHash("Speed Z");
             _animIDGrounded = Animator.StringToHash("Grounded");
             _animIDJump = Animator.StringToHash("Jump");
@@ -269,30 +290,28 @@ namespace DotGalacticos
             );
         }
 
-        public void Move()
+        private void Move()
         {
             float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
-            // Aiming halinde hızı azaltma
-            if (IsAiming)
-            {
-                targetSpeed *= 1f; // Nişan alırken hızı azalt
-            }
-            Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
-            float speedX = localVelocity.x; // X eksenindeki hız
-            float speedZ = localVelocity.z; // Z eksenindeki hız
 
-            // Mevcut yatay hız
-            // float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+            float currentHorizontalSpeed = new Vector3(
+                _controller.velocity.x,
+                0.0f,
+                _controller.velocity.z
+            ).magnitude;
+
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            // Hızın yumuşak geçişi
-            if (Mathf.Abs(localVelocity.magnitude - targetSpeed) > speedOffset)
+            if (
+                currentHorizontalSpeed < targetSpeed - speedOffset
+                || currentHorizontalSpeed > targetSpeed + speedOffset
+            )
             {
                 _speed = Mathf.Lerp(
-                    localVelocity.magnitude,
+                    currentHorizontalSpeed,
                     targetSpeed * inputMagnitude,
                     Time.deltaTime * SpeedChangeRate
                 );
@@ -303,51 +322,87 @@ namespace DotGalacticos
                 _speed = targetSpeed;
             }
 
-            // Animasyon blend değerlerini güncelle
-            _animationBlend = speedX; // X eksenindeki hızı kullan
-            _animationBlendZ = speedZ; // Z eksenindeki hızı kullan
-            if (Mathf.Abs(_animationBlend) < 0.01f)
+            _animationBlend = Mathf.Lerp(
+                _animationBlend,
+                targetSpeed,
+                Time.deltaTime * SpeedChangeRate
+            );
+            if (_animationBlend < 0.01f)
                 _animationBlend = 0f;
-            if (Mathf.Abs(_animationBlendZ) < 0.01f)
-                _animationBlendZ = 0f;
 
-            Vector3 targetDirection = Vector3.zero;
-
+            // Input yönü: x ve z (y yok)
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-            if (inputDirection != Vector3.zero)
-            {
-                _targetRotation =
-                    Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg
-                    + _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(
-                    transform.eulerAngles.y,
-                    _targetRotation,
-                    ref _rotationVelocity,
-                    RotationSmoothTime
-                );
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
-                targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            if (inputDirection.magnitude > 0)
+            {
+                // Kameradan sadece Y rotasyonunu alıyoruz
+                float cameraYaw = _mainCamera.transform.eulerAngles.y;
+                Quaternion cameraRotation = Quaternion.Euler(0, cameraYaw, 0);
+
+                // Hareket yönünü kamera Y rotasyonuna göre döndür
+                Vector3 targetDirection = cameraRotation * inputDirection;
+
+                if (_input.sprint)
+                {
+                    // Kayarak dönüş için smooth zamanı biraz artırıldı
+                    float smoothTime = 0.3f;
+                    float rotation = Mathf.SmoothDampAngle(
+                        transform.eulerAngles.y,
+                        Mathf.Atan2(targetDirection.x, targetDirection.z) * Mathf.Rad2Deg,
+                        ref _rotationVelocity,
+                        smoothTime
+                    );
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                }
+
+                Vector3 moveVector =
+                    targetDirection * (_speed * Time.deltaTime)
+                    + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+
+                _controller.Move(moveVector);
+
+                Vector3 localVelocity = transform.InverseTransformDirection(targetDirection);
+
+                if (_hasAnimator)
+                {
+                    float speedX = localVelocity.x * _speed;
+                    float speedZ = localVelocity.z * _speed;
+
+                    _animator.SetFloat("Speed X", speedX);
+                    _animator.SetFloat("Speed Z", speedZ);
+                    _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+                }
             }
             else
             {
-                // Eğer hareket yoksa, karakterin açısını değiştirme
-                targetDirection = transform.forward; // Mevcut yönü koru
+                if (_hasAnimator)
+                {
+                    _animator.SetFloat("Speed X", 0);
+                    _animator.SetFloat("Speed Z", 0);
+                    _animator.SetFloat(_animIDMotionSpeed, 0);
+                }
+                // Hareket yoksa hızlı dönüşü engellemek için rotationVelocity sıfırlanabilir
+                _rotationVelocity = 0f;
             }
+        }
 
-            // Hareket vektörünü hesapla
-            Vector3 moveVector =
-                targetDirection * (_speed * Time.deltaTime)
-                + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
-            _controller.Move(moveVector);
-
-            // Animasyon güncellemeleri
-            if (_hasAnimator)
+        private void UpdateAimRigWeight()
+        {
+            // Koşma durumuna göre Aim Rig ağırlığını güncelle
+            if (isRunning)
             {
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDSpeedZ, _animationBlendZ);
-                _animator.SetFloat(_animIDMotionSpeed, _input.move.magnitude);
+                // Koşarken ağırlığı 0'a doğru azalt
+                targetWeight = Mathf.Lerp(currentWeight, 0f, Time.deltaTime * weightChangeRate);
             }
+            else
+            {
+                // Koşmadığında ağırlığı 1'e doğru artır
+                targetWeight = Mathf.Lerp(currentWeight, 1f, Time.deltaTime * weightChangeRate);
+            }
+
+            // Ağırlığı güncelle
+            currentWeight = targetWeight;
+            _aimRig.weight = currentWeight;
         }
 
         private void OpenDoor()
@@ -381,55 +436,58 @@ namespace DotGalacticos
             }
         }
 
-        private void Dodge()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // Eğer karakter zaten dodging veya jumping durumundaysa, işlemi durdur
-                if (isDodging || isJumpAway)
-                    return;
-
-                Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
-                float currentHorizontalSpeed = localVelocity.z;
-                float currentVerticalSpeed = localVelocity.x;
-
-                // Yana kayma işlemi
-                if (currentVerticalSpeed > 1.9f)
-                    StartCoroutine(JumpAwayRoutine(true));
-                else if (currentVerticalSpeed < -1.9f)
-                    StartCoroutine(JumpAwayRoutine(false));
-            }
-        }
-
-        IEnumerator DodgeRoutine()
-        {
-            _shootController.DodgeIK(0f);
-            _animator.SetTrigger("Dodge");
-            isDodging = true;
-            float timer = 0;
-            AudioSource.PlayClipAtPoint(
-                dodgeAuido,
-                transform.TransformPoint(_controller.center),
-                FootstepAudioVolume
-            );
-            _controller.center = new Vector3(0f, 0.49f, 0f);
-            _controller.height = 0.9f;
-            while (timer < dodgeTimer)
-            {
-                float speed = dodgeCurve.Evaluate(timer);
-                Vector3 dir = (transform.forward * speed) + (Vector3.up * _verticalVelocity);
-                _controller.Move(dir * Time.deltaTime);
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            //_shootController.DodgeIK(1f);
-            isDodging = false;
-            _controller.center = new Vector3(0f, 0.9f, 0f);
-            _controller.height = 1.8f;
-        }
+        /*
+                private void Dodge()
+                {
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        // Eğer karakter zaten dodging veya jumping durumundaysa, işlemi durdur
+                        if (isDodging || isJumpAway)
+                            return;
+        
+                        Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
+                        float currentHorizontalSpeed = localVelocity.z;
+                        float currentVerticalSpeed = localVelocity.x;
+        
+                        // Yana kayma işlemi
+                        if (currentVerticalSpeed > 1.9f)
+                            StartCoroutine(JumpAwayRoutine(true));
+                        else if (currentVerticalSpeed < -1.9f)
+                            StartCoroutine(JumpAwayRoutine(false));
+                    }
+                }
+        
+                IEnumerator DodgeRoutine()
+                {
+                    FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
+                    _shootController.DodgeIK(0f);
+                    _animator.SetTrigger("Dodge");
+                    isDodging = true;
+                    float timer = 0;
+                    AudioSource.PlayClipAtPoint(
+                        dodgeAuido,
+                        transform.TransformPoint(_controller.center),
+                        FootstepAudioVolume
+                    );
+                    _controller.center = new Vector3(0f, 0.49f, 0f);
+                    _controller.height = 0.9f;
+                    while (timer < dodgeTimer)
+                    {
+                        float speed = dodgeCurve.Evaluate(timer);
+                        Vector3 dir = (transform.forward * speed) + (Vector3.up * _verticalVelocity);
+                        _controller.Move(dir * Time.deltaTime);
+                        timer += Time.deltaTime;
+                        yield return null;
+                    }
+                    //_shootController.DodgeIK(1f);
+                    isDodging = false;
+                    _controller.center = new Vector3(0f, 0.9f, 0f);
+                    _controller.height = 1.8f;
+                }*/
 
         IEnumerator JumpAwayRoutine(bool isRight)
         {
+            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             if (isJumpAway)
                 yield break; // Eğer zaten jumping durumundaysak, işlemi durdur
 
@@ -584,8 +642,9 @@ namespace DotGalacticos
             );
         }
 
-        private void OnFootstep(AnimationEvent animationEvent)
+        private void OnFootStep(AnimationEvent animationEvent)
         {
+            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 if (FootstepAudioClips.Length > 0)
@@ -600,8 +659,26 @@ namespace DotGalacticos
             }
         }
 
+        private void OnDieSound(AnimationEvent animationEvent)
+        {
+            DieAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
+            if (animationEvent.animatorClipInfo.weight > 0.5f)
+            {
+                if (DieAudioClips.Length > 0)
+                {
+                    var index = Random.Range(0, DieAudioClips.Length);
+                    AudioSource.PlayClipAtPoint(
+                        DieAudioClips[index],
+                        transform.TransformPoint(_controller.center),
+                        DieAudioVolume
+                    );
+                }
+            }
+        }
+
         private void OnLand(AnimationEvent animationEvent)
         {
+            FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(

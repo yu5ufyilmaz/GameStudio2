@@ -32,9 +32,9 @@ namespace DotGalacticos.Guns
         public ICollisionHandler[] BulletImpactEffects = new ICollisionHandler[0];
 
         private MonoBehaviour ActiveMonoBehaviour;
-        private GameObject Model;
+        public GameObject Model;
         private AudioSource modelAudioSource;
-        public Transform secondHandTarget;
+        public GameObject secondHandTarget;
 
         private float LastShootTime;
         private float InitialClickTime;
@@ -74,10 +74,12 @@ namespace DotGalacticos.Guns
             Model.transform.localPosition = SpawnPosition;
             Model.transform.localRotation = Quaternion.Euler(SpawnRotation);
 
-            secondHandTarget = Model.transform.GetChild(0);
+            secondHandTarget = Model.transform.GetChild(0).gameObject;
 
             ShootSystem = Model.GetComponentInChildren<ParticleSystem>();
             modelAudioSource = Model.GetComponentInChildren<AudioSource>();
+
+            SoundManager.instance.RegisterAudioSource(modelAudioSource);
         }
 
         public void Despawn()
@@ -89,6 +91,7 @@ namespace DotGalacticos.Guns
             Destroy(Model);
             TrailPool.Clear();
 
+            SoundManager.instance.UnregisterAudioSource(modelAudioSource);
             modelAudioSource = null;
             ShootSystem = null;
         }
@@ -158,7 +161,10 @@ namespace DotGalacticos.Guns
                 if (AmmoConfig.CurrentClipAmmo > 0 && canShoot == true)
                 {
                     LastShootTime = Time.time;
-                    CameraShake.Instance.ShakeCamera(2f, 0.5f);
+                    CameraShake.Instance.ShakeCamera(
+                        ShootConfig.ShakeIntensity,
+                        ShootConfig.ShakeTime
+                    );
                     ShootSystem.Play();
                     AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
 
@@ -241,18 +247,6 @@ namespace DotGalacticos.Guns
         public Vector3 GetGunForward()
         {
             return Model.transform.forward;
-        }
-
-        private void PlayShootSound()
-        {
-            if (shootSound != null)
-            {
-                AudioSource.PlayClipAtPoint(
-                    shootSound,
-                    ShootSystem.transform.position,
-                    shootAudioVolume
-                );
-            }
         }
 
         private IEnumerator PlayTrail(Vector3 StartPoint, Vector3 EndPoint, RaycastHit Hit)

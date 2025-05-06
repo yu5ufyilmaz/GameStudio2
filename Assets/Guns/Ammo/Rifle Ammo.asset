@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b02e84a177afae40afe6ec48fa17213, type: 3}
   m_Name: Rifle Ammo
   m_EditorClassIdentifier: 
+  OriginalMaxAmmo: 300
+  OriginalClipSize: 30
   MaxAmmo: 300
   ClipSize: 30
-  CurrentAmmo: 210
-  CurrentClipAmmo: 30
+  CurrentAmmo: 300
+  CurrentClipAmmo: 15
