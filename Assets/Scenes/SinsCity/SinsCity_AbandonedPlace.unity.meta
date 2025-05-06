@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: f509431719e09b54dbc8c0ca9dcc51d0
 PrefabImporter:
+=======
+guid: 744219bb24243304cb7b6be291e20fdb
+DefaultImporter:
+>>>>>>> parent of c842d8e (Merge branch 'Osman' into Oğuz)
   externalObjects: {}
   userData: 
   assetBundleName: 
