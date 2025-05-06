@@ -29,6 +29,24 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DemoLevels/DemoLevel_LosPollos.unity
     guid: 6e1816207727aad4d829b3ccd23489f8
+  - enabled: 1
+    path: Assets/Scenes/SinsCity/SinsCity_P.unity
+    guid: 9227f686761ab164e82faecc7e7c8384
+  - enabled: 1
+    path: Assets/Scenes/SinsCity/SinsCity_Common.unity
+    guid: 12709f8dde67abb47833510ec8041345
+  - enabled: 1
+    path: Assets/Scenes/SinsCity/SinsCity_Casino.unity
+    guid: 5d608704bd6e99f40b8b2e458f0d1cef
+  - enabled: 1
+    path: Assets/Scenes/SinsCity/SinsCity_AbandonedPlace.unity
+    guid: 744219bb24243304cb7b6be291e20fdb
+  - enabled: 1
+    path: Assets/Scenes/SinsCity/SinsCity_LosPollos.unity
+    guid: 62cbc57e0c067814aa3139e7065eaeba
+  - enabled: 1
+    path: Assets/Scenes/SinsCity/SinsCity_Theatre.unity
+    guid: 9c762999303786646a5bd17d1ecddeb8
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3,
       type: 2}
