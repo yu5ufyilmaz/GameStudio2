@@ -71,7 +71,12 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+<<<<<<< HEAD
 # Ignore specific large package
 /Assets/TerrainDemoScene_HDRP/
 /Assets/TextMesh Pro/
 /Assets/TextMesh Pro.meta/
+=======
+.fake
+Assets/Prefabs/BuildingModels/casino_chair2.prefab.meta
+>>>>>>> parent of ce31405 (TerrainUpdate)
