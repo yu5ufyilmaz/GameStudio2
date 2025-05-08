@@ -117,7 +117,7 @@ namespace DotGalacticos.Guns.Demo
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
             ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştier
 
-            SecondHandTarget.transform.Translate(ActiveGun.secondHandTarget.transform.position);
+            //            SecondHandTarget.transform.Translate(ActiveGun.secondHandTarget.transform.position);
 
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
