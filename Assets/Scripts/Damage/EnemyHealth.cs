@@ -5,16 +5,32 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 {
     [SerializeField]
     private int _MaxHealth = 100;
+
     [SerializeField]
     private int _Health;
-    public int CurrentHealth { get => _Health; set => _Health = value; }
-    public int MaxHealth { get => _MaxHealth; set => _MaxHealth = value; }
+    public int CurrentHealth
+    {
+        get => _Health;
+        set => _Health = value;
+    }
+    public int MaxHealth
+    {
+        get => _MaxHealth;
+        set => _MaxHealth = value;
+    }
 
-    [SerializeField] private RagdollEnabler ragdollEnabler;
-    [SerializeField] private float fadeOutDelay = 10f;
+    [SerializeField]
+    private RagdollEnabler ragdollEnabler;
+
+    [SerializeField]
+    private float fadeOutDelay = 10f;
 
     // Kan partikül prefab'ı için referans
-    [SerializeField] private GameObject bloodParticlePrefab;
+    [SerializeField]
+    private GameObject bloodParticlePrefab;
+
+    [SerializeField]
+    private GameObject Icon;
 
     public event IDamageable.TakeDamageEvent OnTakeDamage;
     public event IDamageable.DeathEvent OnDeath;
@@ -42,6 +58,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             if (ragdollEnabler != null)
             {
                 ragdollEnabler.EnableRagdoll();
+                Icon.SetActive(false);
                 StartCoroutine(FadeOut());
             }
         }
@@ -52,7 +69,11 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         // Vurulduğu noktada kan partikülünü oluştur
         if (bloodParticlePrefab != null)
         {
-            GameObject bloodEffect = Instantiate(bloodParticlePrefab, hitPoint, Quaternion.identity);
+            GameObject bloodEffect = Instantiate(
+                bloodParticlePrefab,
+                hitPoint,
+                Quaternion.identity
+            );
             Destroy(bloodEffect, 2f); // 2 saniye sonra yok et
         }
     }

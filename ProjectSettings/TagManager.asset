@@ -11,6 +11,8 @@ TagManager:
   - Pickups
   - Music Area
   - Music
+  - Roof
+  - AdditionalWall
   layers:
   - Default
   - TransparentFX
@@ -26,8 +28,8 @@ TagManager:
   - Pickups
   - Streaming Volumes
   - Music Area
-  - 
-  - 
+  - MiniMap
+  - Icons
   - 
   - 
   - 

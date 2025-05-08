@@ -158,7 +158,7 @@ namespace DotGalacticos.Guns.Demo
 
                 float targetX = transform.position.x + orbitRadius * Mathf.Cos(angle);
                 float targetZ = transform.position.z + orbitRadius * Mathf.Sin(angle);
-                float targetY = fixedAimHeight;
+                float targetY = transform.position.y + fixedAimHeight;
 
                 Vector3 targetPosition = new Vector3(targetX, targetY, targetZ);
                 float distanceToCharacter = Vector3.Distance(targetPosition, transform.position);
