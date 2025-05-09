@@ -25,7 +25,6 @@ public class PlayerStats : MonoBehaviour
         thirdPersonController = GetComponent<ThirdPersonController>();
 
         //StoreOriginalGunAmmoValues();
-        //SetOriginalAmmoValues();
     }
 
     private void Start()
@@ -71,7 +70,10 @@ public class PlayerStats : MonoBehaviour
 
                         if (gun.AmmoConfig.ClipSize > 0)
                         {
-                            gun.AmmoConfig.ClipSize = Mathf.Max(0, gun.AmmoConfig.ClipSize / 2);
+                            gun.AmmoConfig.ClipSize = Mathf.Max(
+                                0,
+                                gun.AmmoConfig.OriginalClipSize / 2
+                            );
                         }
 
                         // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
@@ -101,7 +103,10 @@ public class PlayerStats : MonoBehaviour
 
                 if (activeGun.AmmoConfig.ClipSize > 0)
                 {
-                    activeGun.AmmoConfig.ClipSize = Mathf.Max(0, activeGun.AmmoConfig.ClipSize / 2);
+                    activeGun.AmmoConfig.ClipSize = Mathf.Max(
+                        0,
+                        activeGun.AmmoConfig.OriginalClipSize / 2
+                    );
                 }
 
                 // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
@@ -114,6 +119,38 @@ public class PlayerStats : MonoBehaviour
                 if (activeGun.AmmoConfig.CurrentClipAmmo > activeGun.AmmoConfig.ClipSize)
                 {
                     activeGun.AmmoConfig.CurrentClipAmmo = activeGun.AmmoConfig.ClipSize;
+                }
+            }
+            var secondHandGun = playerGunSelector.SecondHandGun; // Ikinci el silahı al
+            if (secondHandGun != null && secondHandGun.AmmoConfig != null)
+            {
+                // MaxAmmo ve ClipSize değerlerini yarıya düşürmeden önce kontrol et
+                if (secondHandGun.AmmoConfig.MaxAmmo > 0)
+                {
+                    secondHandGun.AmmoConfig.MaxAmmo = Mathf.Max(
+                        0,
+                        secondHandGun.AmmoConfig.MaxAmmo / 2
+                    );
+                }
+
+                if (secondHandGun.AmmoConfig.ClipSize > 0)
+                {
+                    secondHandGun.AmmoConfig.ClipSize = Mathf.Max(
+                        0,
+                        secondHandGun.AmmoConfig.OriginalClipSize / 2
+                    );
+                }
+
+                // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
+                if (secondHandGun.AmmoConfig.CurrentAmmo > secondHandGun.AmmoConfig.MaxAmmo)
+                {
+                    secondHandGun.AmmoConfig.CurrentAmmo = secondHandGun.AmmoConfig.MaxAmmo;
+                }
+
+                // Eğer mevcut şarjör mermisi sayısı ClipSize'dan fazlaysa, onu da sınırla
+                if (secondHandGun.AmmoConfig.CurrentClipAmmo > secondHandGun.AmmoConfig.ClipSize)
+                {
+                    secondHandGun.AmmoConfig.CurrentClipAmmo = secondHandGun.AmmoConfig.ClipSize;
                 }
             }
         }

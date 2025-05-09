@@ -105,8 +105,9 @@ namespace DotGalacticos.Guns.Demo
             FirstHandBaseGun = firstHandGun;
             SecondHandBaseGun = secondHandGun;
 
-            FirstHandGun = firstHandGun.Clone() as GunScriptableObject; // Birinci el silahını klonla
-            SecondHandGun = secondHandGun.Clone() as GunScriptableObject; // İkinci el silahını klonla
+            FirstHandGun = firstHandGun.Clone() as GunScriptableObject;
+
+            SecondHandGun = secondHandGun.Clone() as GunScriptableObject;
         }
 
         private void SetupGun(GunScriptableObject gun)

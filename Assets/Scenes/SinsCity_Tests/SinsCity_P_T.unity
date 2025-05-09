@@ -563,7 +563,7 @@ PrefabInstance:
     - target: {fileID: 5686157718454928320, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_FrequencyGain
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
@@ -893,6 +893,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7219647728185360154, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
+      insertIndex: 14
+      addedObject: {fileID: 1187473465}
+    - targetCorrespondingSourceObject: {fileID: 7219647728185360154, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
       insertIndex: -1
       addedObject: {fileID: 1187473449}
   m_SourcePrefab: {fileID: 100100000, guid: 48baa914034bc774685148412f9e1412, type: 3}
@@ -1104,6 +1108,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DistanceToMoveToBecomeDirty: 1
+--- !u!114 &1187473465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059251389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e9409f1ae1346d4487526afeaac60b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  reloadSpeed: 1
+  enemyDamage: 10
+  speedMultiplier: 0.1
 --- !u!1001 &1354779387
 PrefabInstance:
   m_ObjectHideFlags: 0
