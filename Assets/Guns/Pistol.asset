@@ -19,13 +19,19 @@ MonoBehaviour:
     type: 3}
   PickupPrefab: {fileID: 2959661137238905750, guid: 22321b0189bb87f4f80b4bd9e150e338,
     type: 3}
+  impactPrefab: {fileID: 3548588485384254792, guid: 5126c5aca5b9c7c47aa72914aa99a389,
+    type: 3}
   SpawnPosition: {x: 1.48, y: -2.68, z: -2.74}
   SpawnRotation: {x: 100, y: 0, z: 0}
+  SecondHandPositionOffset: {x: 0, y: 0, z: 0}
+  SecondHandRotationOffset: {x: 0, y: 0, z: 0}
   DamageConfig: {fileID: 11400000, guid: 3501aac3ed45d3844828047fbf218fb1, type: 2}
   AmmoConfig: {fileID: 11400000, guid: bcc28c0d24da2624ca7f5690e08f6776, type: 2}
   ShootConfig: {fileID: 11400000, guid: 20e316b679e3cf343afcc7d51a29316e, type: 2}
   TrailConfig: {fileID: 11400000, guid: a0ca7ad773ed7ee4b9c4eae183703ba4, type: 2}
   AudioConfig: {fileID: 11400000, guid: ef8eaa07062a23b4b8a73fa15d8a6d59, type: 2}
+  Model: {fileID: 0}
+  secondHandTarget: {fileID: 0}
   canShoot: 1
   shootSound: {fileID: 8300000, guid: def08657925575c47ab3a4a37156b5bf, type: 3}
   shootAudioVolume: 0.5

@@ -1,4 +1,5 @@
 using System.Collections;
+using DotGalacticos;
 using UnityEngine;
 
 public class BossController : EnemyController
@@ -63,13 +64,14 @@ public class BossController : EnemyController
                 PlayerStats.Instance.IncreaseEnemyDamage();
                 break;
             case Sin.Kibir:
+                PlayerStats.Instance.PrideDebuff();
                 // Kibir için özel etki ekleyebilirsiniz
                 break;
             case Sin.Açgözlülük:
                 PlayerStats.Instance.DecreaseAmmoCapacityAllGuns();
                 break;
             case Sin.Şehvet:
-                PlayerStats.Instance.IncreaseAimDifficulty();
+                PlayerStats.Instance.IncreaseAimDifficulty(0.5f);
                 break;
             case Sin.Oburluk:
                 PlayerStats.Instance.DecreaseMovementSpeed();

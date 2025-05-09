@@ -50,15 +50,19 @@ namespace DotGalacticos.Guns.Demo
         private TwoBoneIKConstraint ik;
         private int activeGunIndex = 1;
 
-        private class AmmoState
+        public class AmmoState
         {
             public int CurrentClipAmmo;
             public int CurrentAmmo;
+            public int MaxAmmo;
+            public int ClipSize;
 
-            public AmmoState(int clipAmmo, int totalAmmo)
+            public AmmoState(int clipAmmo, int totalAmmo, int maxAmmo, int clipSize)
             {
                 CurrentClipAmmo = clipAmmo;
                 CurrentAmmo = totalAmmo;
+                MaxAmmo = maxAmmo;
+                ClipSize = clipSize;
             }
         }
 
@@ -83,18 +87,6 @@ namespace DotGalacticos.Guns.Demo
             SetOriginalAmmoValues();
             SetupGun(ActiveBaseGun);
             SetupHandGuns(firstGun, secondGun);
-
-            if (FirstHandGun != null)
-                ammoStates[1] = new AmmoState(
-                    FirstHandGun.AmmoConfig.CurrentClipAmmo,
-                    FirstHandGun.AmmoConfig.CurrentAmmo
-                );
-
-            if (SecondHandGun != null)
-                ammoStates[2] = new AmmoState(
-                    SecondHandGun.AmmoConfig.CurrentClipAmmo,
-                    SecondHandGun.AmmoConfig.CurrentAmmo
-                );
         }
 
         private void SetupHandGuns(
@@ -227,13 +219,7 @@ namespace DotGalacticos.Guns.Demo
         private void SwitchGun(int gunNumber)
         {
             // İlk önce mevcut silahın ammo durumunu kaydet
-            if (activeGunIndex != 0 && ActiveGun != null)
-            {
-                ammoStates[activeGunIndex] = new AmmoState(
-                    ActiveGun.AmmoConfig.CurrentClipAmmo,
-                    ActiveGun.AmmoConfig.CurrentAmmo
-                );
-            }
+
 
             if (gunNumber == 1 && FirstHandGun != null)
             {
@@ -345,6 +331,32 @@ namespace DotGalacticos.Guns.Demo
             GunScriptableObject newGun = gun;
             newGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.CurrentClipAmmo;
             newGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.CurrentAmmo;
+        }
+
+        public void SaveAmmoState(
+            int gunIndex,
+            int clipAmmo,
+            int totalAmmo,
+            int maxAmmo,
+            int clipSize
+        )
+        {
+            ammoStates[gunIndex] = new AmmoState(clipAmmo, totalAmmo, maxAmmo, clipSize);
+        }
+
+        // 3. Alternatif olarak, PlayerStats sınıfındaki SaveAmmoState metodunu PlayerGunSelector'a
+        // çağırabilecek bir metod eklemek için:
+        public void SaveAmmoStateForGun(int index, GunScriptableObject gun)
+        {
+            if (gun != null && gun.AmmoConfig != null)
+            {
+                ammoStates[index] = new AmmoState(
+                    gun.AmmoConfig.CurrentClipAmmo,
+                    gun.AmmoConfig.CurrentAmmo,
+                    gun.AmmoConfig.MaxAmmo,
+                    gun.AmmoConfig.ClipSize
+                );
+            }
         }
 
         private void DropGun(GunScriptableObject gunToDrop)
