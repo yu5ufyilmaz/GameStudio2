@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using DotGalacticos;
 using UnityEngine;
 
 public class BossController : EnemyController
@@ -14,10 +16,13 @@ public class BossController : EnemyController
     public bool canFight = true; // Bu değer Unity Inspector'da değiştirilebilir
 
     private bool nerfApplied = false;
+    private SinMenu sinMenu;
+    public event Action<Sin> OnBossDefeated; // Boss öldüğünde tetiklenecek olay
 
     protected override void Start()
     {
         base.Start();
+        sinMenu = GameObject.Find("SinMenu").GetComponent<SinMenu>();
     }
 
     protected override void Update()
@@ -40,6 +45,10 @@ public class BossController : EnemyController
             {
                 ApplyNerf(); // Nerf'i uygula
                 nerfApplied = true; // Nerf'in uygulandığını işaretle
+                if (sinMenu != null)
+                {
+                    sinMenu.RevealCardForSin(sin);
+                }
             }
             EnemyDieActions(); // Boss öldüğünde yapılacak işlemler
         }
@@ -63,13 +72,14 @@ public class BossController : EnemyController
                 PlayerStats.Instance.IncreaseEnemyDamage();
                 break;
             case Sin.Kibir:
+                PlayerStats.Instance.PrideDebuff();
                 // Kibir için özel etki ekleyebilirsiniz
                 break;
             case Sin.Açgözlülük:
                 PlayerStats.Instance.DecreaseAmmoCapacityAllGuns();
                 break;
             case Sin.Şehvet:
-                PlayerStats.Instance.IncreaseAimDifficulty();
+                PlayerStats.Instance.IncreaseAimDifficulty(0.5f);
                 break;
             case Sin.Oburluk:
                 PlayerStats.Instance.DecreaseMovementSpeed();

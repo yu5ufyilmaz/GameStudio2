@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField]
-    private int _MaxHealth = 100;
+    public int _MaxHealth = 100;
 
     [SerializeField]
     private int _Health;
@@ -76,6 +75,12 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             );
             Destroy(bloodEffect, 2f); // 2 saniye sonra yok et
         }
+    }
+
+    public void IncreaseHealth(float amount)
+    {
+        int amountInt = Mathf.CeilToInt(amount);
+        MaxHealth *= amountInt;
     }
 
     private IEnumerator FadeOut()

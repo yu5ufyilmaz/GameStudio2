@@ -17,6 +17,7 @@ namespace DotGalacticos.Guns
         public string Name;
         public GameObject ModelPrefab;
         public GameObject PickupPrefab;
+        public GameObject impactPrefab;
         public Vector3 SpawnPosition;
         public Vector3 SpawnRotation;
 
@@ -92,6 +93,7 @@ namespace DotGalacticos.Guns
             TrailPool.Clear();
 
             SoundManager.instance.UnregisterAudioSource(modelAudioSource);
+
             modelAudioSource = null;
             ShootSystem = null;
         }
@@ -277,6 +279,13 @@ namespace DotGalacticos.Guns
                 if (Hit.collider.TryGetComponent<IDamageable>(out IDamageable damageable))
                 {
                     damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
+                }
+                else
+                {
+                    if (impactPrefab != null)
+                    {
+                        Instantiate(impactPrefab, EndPoint, Quaternion.identity);
+                    }
                 }
             }
 

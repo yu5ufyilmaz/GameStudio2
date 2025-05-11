@@ -4,11 +4,16 @@ public class PauseGame : MonoBehaviour
 {
     private GameObject pauseMenu; // Pause menüsünü tutan GameObject
     private Animator pauseMenuAnimator; // Pause menüsünün Animator bileşeni
+    private GameObject sinMenu;
+    private Animator sinMenuAnimator;
     private bool isPaused = false; // Oyun duraklatma durumu
+    private bool isTab = false;
 
     void Start()
     {
         pauseMenu = GameObject.Find("PauseMenu");
+        sinMenu = GameObject.Find("SinMenu");
+        sinMenuAnimator = sinMenu.GetComponent<Animator>();
         pauseMenuAnimator = pauseMenu.GetComponent<Animator>();
         Time.timeScale = 1f;
         isPaused = false;
@@ -26,6 +31,17 @@ public class PauseGame : MonoBehaviour
             else
             {
                 PauseGameMenu();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (isPaused == false && isTab == true)
+            {
+                ResumeGame2();
+            }
+            else if (isPaused == false && isTab == false)
+            {
+                PauseGameMenu2();
             }
         }
     }
@@ -53,6 +69,41 @@ public class PauseGame : MonoBehaviour
         // Pause menüsünü kapat
         pauseMenuAnimator.SetTrigger("Close"); // Kapatma animasyonunu başlat
         StartCoroutine(DisableMenuAfterAnimation());
+    }
+
+    void ResumeGame2()
+    {
+        // Zamanı devam ettir
+        Time.timeScale = 1f;
+        isTab = false;
+        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        // Pause menüsünü kapat
+        Animator[] childs = sinMenu.GetComponentsInChildren<Animator>();
+        foreach (Animator child in childs)
+        {
+            child.ResetTrigger("Selected");
+        }
+        sinMenuAnimator.SetTrigger("Close"); // Kapatma animasyonunu başlat
+    }
+
+    public void PauseGameMenu2()
+    {
+        Time.timeScale = 0f;
+        isTab = true;
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
+        // Pause menüsünü aç
+        //pauseMenu.SetActive(true);
+        Animator[] childs = sinMenu.GetComponentsInChildren<Animator>();
+
+        foreach (Animator child in childs)
+        {
+            if (child != null)
+                child.SetTrigger("Normal");
+        }
+        sinMenuAnimator.SetTrigger("Open"); // Açılma animasyonunu başlat
     }
 
     private System.Collections.IEnumerator DisableMenuAfterAnimation()

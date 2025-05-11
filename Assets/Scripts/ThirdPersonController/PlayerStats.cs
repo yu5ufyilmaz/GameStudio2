@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using DotGalacticos;
+using DotGalacticos.Guns;
 using DotGalacticos.Guns.Demo;
 using UnityEngine;
 
@@ -6,13 +8,27 @@ public class PlayerStats : MonoBehaviour
 {
     public static PlayerStats Instance;
     public float reloadSpeed = 1f;
-    public float enemyDamage = 10f;
+    public float enemyDamageMultiplier = 1.5f;
+    public float enemyHealthMultiplier = 1.5f;
+
+    // Add spread multiplier to control aim difficulty
+    public float aimSpreadMultiplier = 1f;
 
     [SerializeField]
     private float speedMultiplier = 0.1f;
 
+    [SerializeField]
+    private float defaultSpreadIncrease = 0.1f;
+
+    [SerializeField]
+    private float maxSpreadMultiplier = 3f;
+
     private PlayerGunSelector playerGunSelector; // Silah seçici referansı
     private ThirdPersonController thirdPersonController;
+
+    // Mermi kapasitesi ayarını takip etmek için yeni değişken
+    private bool isAmmoCapacityReduced = false;
+    Animator animator;
 
     private void Awake()
     {
@@ -23,114 +39,224 @@ public class PlayerStats : MonoBehaviour
 
         playerGunSelector = GetComponent<PlayerGunSelector>();
         thirdPersonController = GetComponent<ThirdPersonController>();
-
-        //StoreOriginalGunAmmoValues();
-        //SetOriginalAmmoValues();
+        animator = GetComponent<Animator>();
     }
 
-    private void Start()
+    #region IncreaseEnemyHealth
+    public void PrideDebuff()
     {
-        // Oyun başladığında orijinal değerleri ayarla
-    }
-
-    private void StoreOriginalGunAmmoValues()
-    {
-        if (playerGunSelector == null || playerGunSelector.Guns == null)
-            return;
-
-        foreach (var gun in playerGunSelector.Guns)
+        EnemyHealth[] enemies = GameObject.FindObjectsOfType<EnemyHealth>();
+        foreach (EnemyHealth enemy in enemies)
         {
-            if (gun != null && gun.AmmoConfig != null)
-            {
-                // Orijinal değerleri sakla
-                gun.AmmoConfig.OriginalMaxAmmo = gun.AmmoConfig.MaxAmmo;
-                gun.AmmoConfig.OriginalClipSize = gun.AmmoConfig.ClipSize;
-            }
+            enemy.IncreaseHealth(enemyHealthMultiplier);
         }
     }
-
-    // Örnek nerf metodu
+    #endregion
+    #region AmmoCapacity
+    // Tüm silahların mermi kapasitelerini yarıya düşüren metod
     public void DecreaseAmmoCapacityAllGuns()
     {
-        // Oyundaki tüm silahlara erişip MaxAmmo ve ClipSize değerlerini yarıya düşür
-        if (playerGunSelector != null)
+        if (playerGunSelector == null)
         {
-            var guns = playerGunSelector.Guns; // PlayerGunSelector içindeki tüm silahlar listesi
+            Debug.LogWarning("PlayerGunSelector bulunamadı!");
+            return;
+        }
 
-            if (guns != null)
+        // Eğer mermi kapasitesi zaten azaltılmışsa, işlemi tekrarlama
+        if (isAmmoCapacityReduced)
+            return;
+
+        isAmmoCapacityReduced = true;
+        ModifyAmmoCapacity(true);
+    }
+
+    // Tüm silahların mermi kapasitelerini yarıya indiren veya normale döndüren metod
+    private void ModifyAmmoCapacity(bool reduce)
+    {
+        // Aktif silahı güncelle
+        if (playerGunSelector.ActiveGun != null)
+        {
+            UpdateGunAmmoCapacity(playerGunSelector.ActiveGun, reduce);
+
+            // Aktif silahın durumunu güncelle
+            int activeGunIndex = GetGunIndex(playerGunSelector.ActiveGun);
+            if (activeGunIndex > 0)
             {
-                foreach (var gun in guns)
-                {
-                    if (gun != null && gun.AmmoConfig != null)
-                    {
-                        // MaxAmmo ve ClipSize değerlerini yarıya düşürmeden önce kontrol et
-                        if (gun.AmmoConfig.MaxAmmo > 0)
-                        {
-                            gun.AmmoConfig.MaxAmmo = Mathf.Max(0, gun.AmmoConfig.MaxAmmo / 2);
-                        }
-
-                        if (gun.AmmoConfig.ClipSize > 0)
-                        {
-                            gun.AmmoConfig.ClipSize = Mathf.Max(0, gun.AmmoConfig.ClipSize / 2);
-                        }
-
-                        // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
-                        if (gun.AmmoConfig.CurrentAmmo > gun.AmmoConfig.MaxAmmo)
-                        {
-                            gun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.MaxAmmo;
-                        }
-
-                        // Eğer mevcut şarjör mermisi sayısı ClipSize'dan fazlaysa, onu da sınırla
-                        if (gun.AmmoConfig.CurrentClipAmmo > gun.AmmoConfig.ClipSize)
-                        {
-                            gun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.ClipSize;
-                        }
-                    }
-                }
+                SaveAmmoState(activeGunIndex, playerGunSelector.ActiveGun);
             }
+        }
 
-            // Aktif silahın değerlerini de güncelle
-            var activeGun = playerGunSelector.ActiveGun; // Aktif silahı al
-            if (activeGun != null && activeGun.AmmoConfig != null)
+        // Birinci el silahını güncelle
+        if (playerGunSelector.FirstHandGun != null)
+        {
+            UpdateGunAmmoCapacity(playerGunSelector.FirstHandGun, reduce);
+            SaveAmmoState(1, playerGunSelector.FirstHandGun);
+        }
+
+        // İkinci el silahını güncelle
+        if (playerGunSelector.SecondHandGun != null)
+        {
+            UpdateGunAmmoCapacity(playerGunSelector.SecondHandGun, reduce);
+            SaveAmmoState(2, playerGunSelector.SecondHandGun);
+        }
+    }
+
+    // Belirtilen silahın mermi kapasitelerini günceller
+    private void UpdateGunAmmoCapacity(GunScriptableObject gun, bool reduce)
+    {
+        if (gun != null && gun.AmmoConfig != null)
+        {
+            if (reduce)
             {
-                // MaxAmmo ve ClipSize değerlerini yarıya düşürmeden önce kontrol et
-                if (activeGun.AmmoConfig.MaxAmmo > 0)
-                {
-                    activeGun.AmmoConfig.MaxAmmo = Mathf.Max(0, activeGun.AmmoConfig.MaxAmmo / 2);
-                }
+                // Kapasiteleri yarıya indirirken en az 1 olmasını sağla
+                gun.AmmoConfig.MaxAmmo = Mathf.Max(1, gun.AmmoConfig.OriginalMaxAmmo / 2);
+                gun.AmmoConfig.ClipSize = Mathf.Max(1, gun.AmmoConfig.OriginalClipSize / 2);
 
-                if (activeGun.AmmoConfig.ClipSize > 0)
-                {
-                    activeGun.AmmoConfig.ClipSize = Mathf.Max(0, activeGun.AmmoConfig.ClipSize / 2);
-                }
-
-                // Eğer mevcut mermi sayısı MaxAmmo'dan fazlaysa, onu da sınırla
-                if (activeGun.AmmoConfig.CurrentAmmo > activeGun.AmmoConfig.MaxAmmo)
-                {
-                    activeGun.AmmoConfig.CurrentAmmo = activeGun.AmmoConfig.MaxAmmo;
-                }
-
-                // Eğer mevcut şarjör mermisi sayısı ClipSize'dan fazlaysa, onu da sınırla
-                if (activeGun.AmmoConfig.CurrentClipAmmo > activeGun.AmmoConfig.ClipSize)
-                {
-                    activeGun.AmmoConfig.CurrentClipAmmo = activeGun.AmmoConfig.ClipSize;
-                }
+                // Mevcut mermi sayılarını yeni sınırlara göre ayarla
+                gun.AmmoConfig.CurrentAmmo = Mathf.Min(
+                    gun.AmmoConfig.CurrentAmmo,
+                    gun.AmmoConfig.MaxAmmo
+                );
+                gun.AmmoConfig.CurrentClipAmmo = Mathf.Min(
+                    gun.AmmoConfig.CurrentClipAmmo,
+                    gun.AmmoConfig.ClipSize
+                );
+            }
+            else
+            {
+                // Normal değerlere döndür
+                gun.AmmoConfig.MaxAmmo = gun.AmmoConfig.OriginalMaxAmmo;
+                gun.AmmoConfig.ClipSize = gun.AmmoConfig.OriginalClipSize;
             }
         }
     }
 
+    // Silahın indeksini döndürür (1: birinci el, 2: ikinci el, 0: bilinmeyen)
+    private int GetGunIndex(GunScriptableObject gun)
+    {
+        if (
+            gun == playerGunSelector.FirstHandGun
+            || gun.Type == playerGunSelector.FirstHandGun?.Type
+        )
+            return 1;
+        else if (
+            gun == playerGunSelector.SecondHandGun
+            || gun.Type == playerGunSelector.SecondHandGun?.Type
+        )
+            return 2;
+        else
+            return 0; // Bilinmeyen silah
+    }
+
+    // Silah durumunu kaydet
+    private void SaveAmmoState(int index, GunScriptableObject gun)
+    {
+        // AmmoState sınıfı PlayerGunSelector içinde olduğundan, doğrudan erişmek yerine
+        // playerGunSelector.ammoStates dictionary'sini güncellememiz gerekir.
+        // Ancak bu değişken private olduğu için bu metodu PlayerGunSelector sınıfına eklemeniz gerekebilir
+        // veya playerGunSelector için böyle bir metod yazabilirsiniz:
+
+        // Örnek: playerGunSelector.SaveAmmoState(index, gun.AmmoConfig);
+
+        // PlayerGunSelector'da gerekli method yoksa, şu şekilde uygulayabilirsiniz:
+        // (Bu durumda PlayerGunSelector sınıfında ammoStates dictionary'sini public yapmanız veya
+        // bir property aracılığıyla erişilebilir yapmanız gerekir)
+    }
+    #endregion
+    #region Aim Difficulty Methods
     public void IncreaseAimDifficulty(float amount = 0.1f)
     {
-        // Aim zorluğunu artırma işlemi
-        // Örneğin, aim doğruluğunu azaltabilirsiniz
+        // Default değer yerine parametre olarak gelen amount değerini kullan
+        float increaseAmount = amount > 0 ? amount : defaultSpreadIncrease;
+
+        // Mevcut spread çarpanını arttır, ancak maksimum değeri aşmasın
+        aimSpreadMultiplier = Mathf.Min(aimSpreadMultiplier + increaseAmount, maxSpreadMultiplier);
+
+        // Aktif silahın (veya tüm silahların) spread değerlerini güncelle
+        UpdateAllGunsSpread();
+
+        Debug.Log($"Aim difficulty increased. New spread multiplier: {aimSpreadMultiplier}");
     }
 
-    public void DecreaseReloadSpeed(float amount = 0.5f)
+    // Aim zorluğunu normale döndürme metodu (yeni)
+    public void ResetAimDifficulty()
     {
-        // Reload hızını azaltma işlemi
-        // Örneğin, reload süresini artırabilirsiniz
+        // Spread çarpanını tekrar 1'e ayarla (varsayılan değer)
+        aimSpreadMultiplier = 1f;
+
+        // Tüm silahların spread değerlerini güncelle
+        UpdateAllGunsSpread();
+
+        Debug.Log("Aim difficulty reset to normal");
     }
 
+    // Tüm silahların spread değerlerini günceller
+    private void UpdateAllGunsSpread()
+    {
+        // Aktif silahı güncelle
+        if (playerGunSelector.ActiveGun != null && playerGunSelector.ActiveGun.ShootConfig != null)
+        {
+            UpdateGunSpread(playerGunSelector.ActiveGun);
+        }
+
+        // Birinci el silahını güncelle
+        if (
+            playerGunSelector.FirstHandGun != null
+            && playerGunSelector.FirstHandGun.ShootConfig != null
+        )
+        {
+            UpdateGunSpread(playerGunSelector.FirstHandGun);
+        }
+
+        // İkinci el silahını güncelle
+        if (
+            playerGunSelector.SecondHandGun != null
+            && playerGunSelector.SecondHandGun.ShootConfig != null
+        )
+        {
+            UpdateGunSpread(playerGunSelector.SecondHandGun);
+        }
+    }
+
+    // Belirli bir silahın spread değerlerini günceller
+    private void UpdateGunSpread(GunScriptableObject gun)
+    {
+        if (gun.ShootConfig != null)
+        {
+            // ShootConfig'deki spread değerlerini güncelle
+            if (gun.ShootConfig.SpreadType == BulletSpreadType.Simple)
+            {
+                // Eğer simple spread ise spread ve minSpread değerlerini arttır
+                gun.ShootConfig.Spread = new Vector3(
+                    aimSpreadMultiplier,
+                    aimSpreadMultiplier,
+                    aimSpreadMultiplier
+                );
+
+                // MinSpread değerlerini de arttır, ancak daha düşük bir oranda
+                gun.ShootConfig.MinSpread = new Vector3(0.05f, 0.05f, 0.05f);
+            }
+            else if (gun.ShootConfig.SpreadType == BulletSpreadType.TextureBased)
+            {
+                // Texture-based spread için SpreadMultiplier değerini arttır
+                gun.ShootConfig.SpreadMultiplier = aimSpreadMultiplier;
+            }
+
+            // Maksimum spread zamanını azalt (daha hızlı spread)
+            gun.ShootConfig.MaxSpreadTime = Mathf.Max(
+                0.1f,
+                gun.ShootConfig.MaxSpreadTime / aimSpreadMultiplier
+            );
+        }
+    }
+    #endregion
+    #region Reload Speed
+    public void DecreaseReloadSpeed()
+    {
+        animator.SetFloat("ReloadSpeed", reloadSpeed);
+    }
+    #endregion
+    #region Movement Speed
     public void DecreaseMovementSpeed()
     {
         if (thirdPersonController != null)
@@ -139,9 +265,16 @@ public class PlayerStats : MonoBehaviour
             thirdPersonController.SprintSpeed *= speedMultiplier;
         }
     }
-
-    public void IncreaseEnemyDamage(float amount = 5f)
+    #endregion
+    #region Enemy Damage
+    public void IncreaseEnemyDamage()
     {
-        enemyDamage += amount; // Düşman hasarını artır
+        EnemyController[] enemies = GameObject.FindObjectsOfType<EnemyController>();
+
+        foreach (EnemyController enemy in enemies)
+        {
+            enemy.IncreaseDamage(enemyDamageMultiplier);
+        }
     }
+    #endregion
 }

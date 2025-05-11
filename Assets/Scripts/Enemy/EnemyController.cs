@@ -1,4 +1,5 @@
 using System.Collections;
+using DotGalacticos.Enemy;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,6 +24,9 @@ public class EnemyController : MonoBehaviour
 
     // Düşman Özellikleri
     [Header("Düşman Özellikleri")]
+    [SerializeField]
+    protected float Damage = 1;
+
     [SerializeField]
     protected float detectionRange = 10f;
 
@@ -413,8 +417,10 @@ public class EnemyController : MonoBehaviour
                 weaponMuzzle.position,
                 weaponMuzzle.rotation
             );
-            Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
 
+            Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
+            EnemyProjectile enemyProjectile = bullet.GetComponent<EnemyProjectile>();
+            enemyProjectile.Damage = Damage;
             if (bulletRb != null)
             {
                 bulletRb.linearVelocity = bullet.transform.forward * bulletSpeed;
@@ -435,6 +441,11 @@ public class EnemyController : MonoBehaviour
         {
             AudioSource.PlayClipAtPoint(shootSound, transform.position, shootAudioVolume);
         }
+    }
+
+    public void IncreaseDamage(float amount)
+    {
+        Damage *= amount;
     }
 
     protected virtual void OnDrawGizmosSelected()
