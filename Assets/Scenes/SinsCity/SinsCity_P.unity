@@ -627,7 +627,7 @@ GameObject:
   - component: {fileID: 1014601612}
   - component: {fileID: 1014601611}
   - component: {fileID: 1014601610}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MansionArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1305,7 +1305,7 @@ GameObject:
   - component: {fileID: 1695596027}
   - component: {fileID: 1695596026}
   - component: {fileID: 1695596025}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: BankArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1346,8 +1346,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 93.78366, y: 14.493178, z: 87.62329}
-  m_Center: {x: 17.682083, y: 6.746383, z: 11.064197}
+  m_Size: {x: 96.10662, y: 14.493178, z: 109.57828}
+  m_Center: {x: 18.843563, y: 6.746242, z: 0.0866316}
 --- !u!4 &1695596027
 Transform:
   m_ObjectHideFlags: 0
