@@ -51,4 +51,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             //Destroy(gameObject);
         }
     }
+
+    public void GainHealth(int amount)
+    {
+        if (amount <= 0)
+            return; // Negatif veya sıfır sağlık artışı yok sayılır
+        CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
+        healthBar.SetHealth(CurrentHealth); // Sağlık çubuğunu güncelle
+    }
 }

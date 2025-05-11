@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,9 @@ public class SinMenu : MonoBehaviour
     [SerializeField]
     private GameObject[] cards; // Kart GameObjectleri
     private PauseGame pauseGame;
+
+    [SerializeField]
+    private TextMeshProUGUI _sinCountText;
 
     private void Start()
     {
@@ -73,6 +77,7 @@ public class SinMenu : MonoBehaviour
     {
         yield return new WaitForSeconds(3f); // OpenFirstTime animasyon süresine göre ayarlayın
         card.SetActive(true);
+        SetSinCount();
         pauseGame.PauseGameMenu2();
     }
 
@@ -147,5 +152,24 @@ public class SinMenu : MonoBehaviour
                 }
             }
         }
+    }
+
+    public int GetActiveCardCount()
+    {
+        int activeCount = 0;
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.activeSelf) // Eğer çocuk aktifse
+            {
+                activeCount++; // Sayacı artır
+            }
+        }
+        return activeCount; // Aktif çocuk sayısını döndür
+    }
+
+    public void SetSinCount()
+    {
+        int sinCount = GetActiveCardCount();
+        _sinCountText.SetText($"{sinCount}/" + $"{6}");
     }
 }

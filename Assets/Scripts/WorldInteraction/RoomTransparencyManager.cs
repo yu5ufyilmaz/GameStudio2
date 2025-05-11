@@ -85,6 +85,7 @@ public class RoomTransparencyManager : MonoBehaviour
     {
         rooms.Clear();
         GameObject[] roomObjects = GameObject.FindGameObjectsWithTag("Room");
+
         foreach (GameObject roomObj in roomObjects)
         {
             Collider roomCollider = roomObj.GetComponent<Collider>();
@@ -94,39 +95,29 @@ public class RoomTransparencyManager : MonoBehaviour
                 room.roomName = roomObj.name;
                 room.roomCollider = roomCollider;
                 // Odanın altındaki tüm nesneleri kontrol et
-                foreach (Transform child in roomObj.transform)
-                {
-                    if (child.CompareTag("Wall"))
-                    {
-                        Renderer wallRenderer = child.GetComponent<Renderer>();
-                        if (wallRenderer != null)
-                        {
-                            room.wallRenderers.Add(wallRenderer);
-                            room.allWalls.Add(wallRenderer); // Tüm duvarları ekle
-                        }
-                    }
-                }
-                // Odanın altındaki ilk nesneyi bul
-                Transform firstChild = roomObj.transform.GetChild(0);
-                if (firstChild != null)
-                {
-                    // Eğer ilk nesne bir "Room" ise, onun altındaki duvarları da ekle
-                    if (firstChild.CompareTag("Room"))
-                    {
-                        foreach (Transform grandChild in firstChild)
-                        {
-                            if (grandChild.CompareTag("Wall"))
-                            {
-                                Renderer wallRenderer = grandChild.GetComponent<Renderer>();
-                                if (wallRenderer != null)
-                                {
-                                    room.allWalls.Add(wallRenderer); // Ekstra duvarları ekle
-                                }
-                            }
-                        }
-                    }
-                }
+                FindWallsInChildren(roomObj.transform, room);
                 rooms.Add(room);
+            }
+        }
+    }
+
+    private void FindWallsInChildren(Transform parent, Room room)
+    {
+        foreach (Transform child in parent)
+        {
+            // Eğer çocuk nesne bir "Wall" ise, onu ekle
+            if (child.CompareTag("Wall"))
+            {
+                Renderer wallRenderer = child.GetComponent<Renderer>();
+                if (wallRenderer != null)
+                {
+                    room.allWalls.Add(wallRenderer); // Tüm duvarları ekle
+                }
+            }
+            // Eğer çocuk nesne bir "Room" ise, onun altındaki duvarları da bul
+            if (child.CompareTag("Room"))
+            {
+                FindWallsInChildren(child, room); // Rekürsif olarak alt odaları kontrol et
             }
         }
     }

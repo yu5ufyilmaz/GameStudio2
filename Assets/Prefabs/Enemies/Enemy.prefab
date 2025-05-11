@@ -845,6 +845,7 @@ MonoBehaviour:
   weaponMuzzle: {fileID: 3261042488501365894}
   bulletPrefab: {fileID: 5671858156844636114, guid: 61503162f17f0cf479107f23771e97be,
     type: 3}
+  Damage: 1
   detectionRange: 15
   attackRange: 8
   fireRate: 1
@@ -852,6 +853,20 @@ MonoBehaviour:
   chaseSpeed: 6
   bulletSpeed: 15
   speedChangeRate: 10
+  dropChanceOverall: 100
+  ammoDrops:
+  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+      type: 3}
+    dropChance: 23
+  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+      type: 3}
+    dropChance: 23
+  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+      type: 3}
+    dropChance: 23
+  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+      type: 3}
+    dropChance: 23
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}

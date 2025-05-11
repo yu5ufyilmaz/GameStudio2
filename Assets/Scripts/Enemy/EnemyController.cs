@@ -48,6 +48,14 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     protected float speedChangeRate = 10.0f;
 
+    [Header("Mermi Düşürme")]
+    [Range(0f, 100f)]
+    [SerializeField]
+    protected float dropChanceOverall = 50f; // Genel düşürme olasılığı (örn %50)
+
+    [SerializeField]
+    private AmmoDrop[] ammoDrops; // Düşman öldüğünde düşürülecek mermiler
+
     // Devriye Noktaları
     [Header("Devriye")]
     [SerializeField]
@@ -225,7 +233,7 @@ public class EnemyController : MonoBehaviour
             animSpeed = 6f;
 
         _animationBlend = Mathf.Lerp(_animationBlend, animSpeed, Time.deltaTime * speedChangeRate);
-        animator.SetFloat(_animIDSpeed, _animationBlend);
+        animator.SetFloat("Speed", _animationBlend);
     }
 
     protected virtual void CheckPlayerVisibility()
@@ -446,6 +454,33 @@ public class EnemyController : MonoBehaviour
     public void IncreaseDamage(float amount)
     {
         Damage *= amount;
+    }
+
+    public void DropAmmo()
+    {
+        float roll = Random.Range(0f, 100f);
+        if (roll > dropChanceOverall)
+        {
+            // Düşürme şansı tutmadı, çık.
+            return;
+        }
+        // Weighted random seçim için toplam ağırlığı hesapla
+        float totalWeight = 0f;
+        foreach (var ammoDrop in ammoDrops)
+        {
+            totalWeight += ammoDrop.dropChance;
+        }
+        float randomWeight = Random.Range(0f, totalWeight);
+        float currentSum = 0f;
+        foreach (var ammoDrop in ammoDrops)
+        {
+            currentSum += ammoDrop.dropChance;
+            if (randomWeight <= currentSum)
+            {
+                Instantiate(ammoDrop.ammoPrefab, transform.position, Quaternion.identity);
+                break;
+            }
+        }
     }
 
     protected virtual void OnDrawGizmosSelected()

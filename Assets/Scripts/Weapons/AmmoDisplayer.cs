@@ -20,7 +20,7 @@ namespace DotGalacticos.Guns.Demo
         void Update()
         {
             _ammoText.SetText(
-                $"{GunSelector.ActiveGun.AmmoConfig.CurrentClipAmmo} / "
+                $"{GunSelector.ActiveGun.AmmoConfig.CurrentClipAmmo}/"
                     + $"{GunSelector.ActiveGun.AmmoConfig.CurrentAmmo}"
             );
         }

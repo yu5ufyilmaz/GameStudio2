@@ -30,6 +30,9 @@ namespace DotGalacticos.Guns.Demo
 
         public List<GunScriptableObject> Guns;
 
+        [SerializeField]
+        private GameObject[] gunUIs;
+
         [Space]
         [Header("Runtime Filled")]
         public GunScriptableObject ActiveGun;
@@ -104,17 +107,18 @@ namespace DotGalacticos.Guns.Demo
 
         private void SetupGun(GunScriptableObject gun)
         {
-            SaveAmmoAmount(gun);
-
+            // Mevcut silahın ammo durumunu kaydet
+            // SaveAmmoAmount(ActiveGun);
             ActiveBaseGun = gun;
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
-            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştier
-
-            //            SecondHandTarget.transform.Translate(ActiveGun.secondHandTarget.transform.position);
-
+            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştir
+            foreach (var gunUI in gunUIs)
+            {
+                gunUI.SetActive(gunUI.name == gun.name);
+            }
+            // Yeni silahın mermi durumunu ayarla
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
-
             UpdateAnimator(gun); // Animatörü güncelle
         }
 
@@ -218,14 +222,15 @@ namespace DotGalacticos.Guns.Demo
 
         private void SwitchGun(int gunNumber)
         {
-            // İlk önce mevcut silahın ammo durumunu kaydet
-
+            // Mevcut silahın ammo durumunu kaydet
+            SaveAmmoAmount(ActiveGun);
 
             if (gunNumber == 1 && FirstHandGun != null)
             {
+                //SaveAmmoAmount(SecondHandGun);
                 activeGunIndex = 1;
-                DespawnActiveGun();
 
+                DespawnActiveGun();
                 ActiveBaseGun = FirstHandGun;
 
                 SetupGun(FirstHandGun);
@@ -239,10 +244,12 @@ namespace DotGalacticos.Guns.Demo
             }
             else if (gunNumber == 2 && SecondHandGun != null)
             {
+                //SaveAmmoAmount(FirstHandGun);
                 activeGunIndex = 2;
-                DespawnActiveGun();
 
+                DespawnActiveGun();
                 ActiveBaseGun = SecondHandGun;
+
                 SetupGun(SecondHandGun);
 
                 // Ammo durumunu yükle
@@ -328,34 +335,24 @@ namespace DotGalacticos.Guns.Demo
 
         private void SaveAmmoAmount(GunScriptableObject gun)
         {
-            GunScriptableObject newGun = gun;
-            newGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.CurrentClipAmmo;
-            newGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.CurrentAmmo;
-        }
-
-        public void SaveAmmoState(
-            int gunIndex,
-            int clipAmmo,
-            int totalAmmo,
-            int maxAmmo,
-            int clipSize
-        )
-        {
-            ammoStates[gunIndex] = new AmmoState(clipAmmo, totalAmmo, maxAmmo, clipSize);
-        }
-
-        // 3. Alternatif olarak, PlayerStats sınıfındaki SaveAmmoState metodunu PlayerGunSelector'a
-        // çağırabilecek bir metod eklemek için:
-        public void SaveAmmoStateForGun(int index, GunScriptableObject gun)
-        {
-            if (gun != null && gun.AmmoConfig != null)
+            if (gun != null)
             {
-                ammoStates[index] = new AmmoState(
-                    gun.AmmoConfig.CurrentClipAmmo,
-                    gun.AmmoConfig.CurrentAmmo,
-                    gun.AmmoConfig.MaxAmmo,
-                    gun.AmmoConfig.ClipSize
-                );
+                if (ammoStates.ContainsKey(activeGunIndex))
+                {
+                    // Mevcut silahın ammo durumunu güncelle
+                    ammoStates[activeGunIndex].CurrentClipAmmo = gun.AmmoConfig.CurrentClipAmmo;
+                    ammoStates[activeGunIndex].CurrentAmmo = gun.AmmoConfig.CurrentAmmo;
+                }
+                else
+                {
+                    // Yeni bir AmmoState oluştur ve kaydet
+                    ammoStates[activeGunIndex] = new AmmoState(
+                        gun.AmmoConfig.CurrentClipAmmo,
+                        gun.AmmoConfig.CurrentAmmo,
+                        gun.AmmoConfig.MaxAmmo,
+                        gun.AmmoConfig.ClipSize
+                    );
+                }
             }
         }
 

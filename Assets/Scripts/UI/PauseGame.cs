@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PauseGame : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject TutorialImage;
     private GameObject pauseMenu; // Pause menüsünü tutan GameObject
     private Animator pauseMenuAnimator; // Pause menüsünün Animator bileşeni
     private GameObject sinMenu;
@@ -80,15 +82,13 @@ public class PauseGame : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
         // Pause menüsünü kapat
         Animator[] childs = sinMenu.GetComponentsInChildren<Animator>();
-        foreach (Animator child in childs)
-        {
-            child.ResetTrigger("Selected");
-        }
+
         sinMenuAnimator.SetTrigger("Close"); // Kapatma animasyonunu başlat
     }
 
     public void PauseGameMenu2()
     {
+        TutorialImage.SetActive(false);
         Time.timeScale = 0f;
         isTab = true;
 
