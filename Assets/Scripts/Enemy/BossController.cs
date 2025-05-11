@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using DotGalacticos;
 using UnityEngine;
@@ -15,10 +16,13 @@ public class BossController : EnemyController
     public bool canFight = true; // Bu değer Unity Inspector'da değiştirilebilir
 
     private bool nerfApplied = false;
+    private SinMenu sinMenu;
+    public event Action<Sin> OnBossDefeated; // Boss öldüğünde tetiklenecek olay
 
     protected override void Start()
     {
         base.Start();
+        sinMenu = GameObject.Find("SinMenu").GetComponent<SinMenu>();
     }
 
     protected override void Update()
@@ -41,6 +45,10 @@ public class BossController : EnemyController
             {
                 ApplyNerf(); // Nerf'i uygula
                 nerfApplied = true; // Nerf'in uygulandığını işaretle
+                if (sinMenu != null)
+                {
+                    sinMenu.RevealCardForSin(sin);
+                }
             }
             EnemyDieActions(); // Boss öldüğünde yapılacak işlemler
         }

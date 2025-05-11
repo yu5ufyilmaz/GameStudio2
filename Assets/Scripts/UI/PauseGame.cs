@@ -7,6 +7,7 @@ public class PauseGame : MonoBehaviour
     private GameObject sinMenu;
     private Animator sinMenuAnimator;
     private bool isPaused = false; // Oyun duraklatma durumu
+    private bool isTab = false;
 
     void Start()
     {
@@ -34,11 +35,11 @@ public class PauseGame : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (isPaused)
+            if (isPaused == false && isTab == true)
             {
                 ResumeGame2();
             }
-            else
+            else if (isPaused == false && isTab == false)
             {
                 PauseGameMenu2();
             }
@@ -58,11 +59,23 @@ public class PauseGame : MonoBehaviour
         pauseMenuAnimator.SetTrigger("Open"); // Açılma animasyonunu başlat
     }
 
-    void ResumeGame2()
+    public void ResumeGame()
     {
         // Zamanı devam ettir
         Time.timeScale = 1f;
         isPaused = false;
+        Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
+        // Pause menüsünü kapat
+        pauseMenuAnimator.SetTrigger("Close"); // Kapatma animasyonunu başlat
+        StartCoroutine(DisableMenuAfterAnimation());
+    }
+
+    void ResumeGame2()
+    {
+        // Zamanı devam ettir
+        Time.timeScale = 1f;
+        isTab = false;
         Cursor.visible = false;
         //Cursor.lockState = CursorLockMode.Locked;
         // Pause menüsünü kapat
@@ -74,10 +87,10 @@ public class PauseGame : MonoBehaviour
         sinMenuAnimator.SetTrigger("Close"); // Kapatma animasyonunu başlat
     }
 
-    void PauseGameMenu2()
+    public void PauseGameMenu2()
     {
         Time.timeScale = 0f;
-        isPaused = true;
+        isTab = true;
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
@@ -91,18 +104,6 @@ public class PauseGame : MonoBehaviour
                 child.SetTrigger("Normal");
         }
         sinMenuAnimator.SetTrigger("Open"); // Açılma animasyonunu başlat
-    }
-
-    public void ResumeGame()
-    {
-        // Zamanı devam ettir
-        Time.timeScale = 1f;
-        isPaused = false;
-        Cursor.visible = false;
-        //Cursor.lockState = CursorLockMode.Locked;
-        // Pause menüsünü kapat
-        pauseMenuAnimator.SetTrigger("Close"); // Kapatma animasyonunu başlat
-        StartCoroutine(DisableMenuAfterAnimation());
     }
 
     private System.Collections.IEnumerator DisableMenuAfterAnimation()
