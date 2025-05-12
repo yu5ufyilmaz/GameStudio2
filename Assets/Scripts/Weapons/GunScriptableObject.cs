@@ -285,6 +285,7 @@ namespace DotGalacticos.Guns
                     if (impactPrefab != null)
                     {
                         Instantiate(impactPrefab, Hit.point, Quaternion.identity);
+                        //Mermi yere vurma sesi vuraya gelicek
                     }
                 }
             }

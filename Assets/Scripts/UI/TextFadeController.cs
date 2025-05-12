@@ -7,8 +7,6 @@ public class TextFadeController : MonoBehaviour
     public GameObject textParent; // TextMeshPro yazılarını içeren ana GameObject (tüm yazılar buranın altında olmalı)
     public BoxCollider triggerArea; // Oyuncunun izleneceği Box Collider (isTrigger olarak ayarlanmalı)
     public float fadeDuration = 2f; // Fade out süresi
-
-    private bool playerInside = true;
     private Coroutine fadeCoroutine;
 
     private TextMeshProUGUI[] texts;
@@ -29,8 +27,6 @@ public class TextFadeController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            playerInside = true;
-
             // Fade varsa iptal et ve yazıları görünür yap
             if (fadeCoroutine != null)
             {
@@ -47,7 +43,6 @@ public class TextFadeController : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            playerInside = false;
             if (fadeCoroutine == null)
                 fadeCoroutine = StartCoroutine(FadeOutAndDestroy());
         }

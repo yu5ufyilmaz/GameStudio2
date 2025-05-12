@@ -8,16 +8,11 @@ public class BossController : EnemyController
     [Header("Boss Özellikleri")]
     public Sin sin; // Bossun temsil ettiği günah
 
-    [SerializeField]
-    private int bossHealth = 200; // Bossun başlangıç canı
-    private int currentHealth; // Mevcut can
-
     [Tooltip("Bossun savaşabilir olup olmadığını belirler.")]
     public bool canFight = true; // Bu değer Unity Inspector'da değiştirilebilir
 
     private bool nerfApplied = false;
     private SinMenu sinMenu;
-    public event Action<Sin> OnBossDefeated; // Boss öldüğünde tetiklenecek olay
 
     protected override void Start()
     {

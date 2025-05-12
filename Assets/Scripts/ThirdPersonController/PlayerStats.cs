@@ -45,7 +45,9 @@ public class PlayerStats : MonoBehaviour
     #region IncreaseEnemyHealth
     public void PrideDebuff()
     {
-        EnemyHealth[] enemies = GameObject.FindObjectsOfType<EnemyHealth>();
+#pragma warning disable CS0618 // Type or member is obsolete
+        EnemyHealth[] enemies = FindObjectsOfType<EnemyHealth>();
+#pragma warning restore CS0618 // Type or member is obsolete
         foreach (EnemyHealth enemy in enemies)
         {
             enemy.IncreaseHealth(enemyHealthMultiplier);
@@ -269,7 +271,9 @@ public class PlayerStats : MonoBehaviour
     #region Enemy Damage
     public void IncreaseEnemyDamage()
     {
-        EnemyController[] enemies = GameObject.FindObjectsOfType<EnemyController>();
+#pragma warning disable CS0618 // Type or member is obsolete
+        EnemyController[] enemies = FindObjectsOfType<EnemyController>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         foreach (EnemyController enemy in enemies)
         {
