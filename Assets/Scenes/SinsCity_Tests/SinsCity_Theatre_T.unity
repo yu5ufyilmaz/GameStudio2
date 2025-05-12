@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 155957834}
   - component: {fileID: 155957835}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ForthWall_T
   m_TagString: Room
   m_Icon: {fileID: 0}
@@ -184,7 +184,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1022933996}
   - component: {fileID: 1022933997}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: SecondWall_T
   m_TagString: Room
   m_Icon: {fileID: 0}
@@ -228,8 +228,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 23.248259, y: 1.0550488, z: 23.694855}
-  m_Center: {x: 6.3271346, y: 0.3093223, z: 0.3262787}
+  m_Size: {x: 23.58457, y: 1.0550488, z: 23.694855}
+  m_Center: {x: 6.4952908, y: 0.3093222, z: 0.3262789}
 --- !u!1 &1203569151
 GameObject:
   m_ObjectHideFlags: 0

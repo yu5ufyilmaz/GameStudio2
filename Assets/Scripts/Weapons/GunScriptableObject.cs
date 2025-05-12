@@ -17,6 +17,7 @@ namespace DotGalacticos.Guns
         public string Name;
         public GameObject ModelPrefab;
         public GameObject PickupPrefab;
+        public GameObject impactPrefab;
         public Vector3 SpawnPosition;
         public Vector3 SpawnRotation;
 
@@ -92,6 +93,7 @@ namespace DotGalacticos.Guns
             TrailPool.Clear();
 
             SoundManager.instance.UnregisterAudioSource(modelAudioSource);
+
             modelAudioSource = null;
             ShootSystem = null;
         }
@@ -278,6 +280,14 @@ namespace DotGalacticos.Guns
                 {
                     damageable.TakeDamage(DamageConfig.GetDamage(distance), Hit.point); // Vurulduğu nokta
                 }
+                else
+                {
+                    if (impactPrefab != null)
+                    {
+                        Instantiate(impactPrefab, Hit.point, Quaternion.identity);
+                        //Mermi yere vurma sesi vuraya gelicek
+                    }
+                }
             }
 
             yield return new WaitForSeconds(TrailConfig.Duration);
@@ -310,12 +320,14 @@ namespace DotGalacticos.Guns
             config.Place = Place;
             config.Name = Name;
             config.name = name;
+
             config.DamageConfig = DamageConfig.Clone() as DamageConfigScriptableObject;
             config.ShootConfig = ShootConfig.Clone() as ShootScriptableObject;
             config.AmmoConfig = AmmoConfig.Clone() as AmmoScriptableObject;
             config.TrailConfig = TrailConfig.Clone() as TrailScriptableObject;
             config.AudioConfig = AudioConfig.Clone() as AudioScriptableObject;
 
+            config.impactPrefab = impactPrefab;
             config.ModelPrefab = ModelPrefab;
             config.PickupPrefab = PickupPrefab;
             config.SpawnPosition = SpawnPosition;

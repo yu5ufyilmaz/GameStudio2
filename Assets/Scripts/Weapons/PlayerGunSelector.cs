@@ -30,6 +30,9 @@ namespace DotGalacticos.Guns.Demo
 
         public List<GunScriptableObject> Guns;
 
+        [SerializeField]
+        private GameObject[] gunUIs;
+
         [Space]
         [Header("Runtime Filled")]
         public GunScriptableObject ActiveGun;
@@ -50,15 +53,19 @@ namespace DotGalacticos.Guns.Demo
         private TwoBoneIKConstraint ik;
         private int activeGunIndex = 1;
 
-        private class AmmoState
+        public class AmmoState
         {
             public int CurrentClipAmmo;
             public int CurrentAmmo;
+            public int MaxAmmo;
+            public int ClipSize;
 
-            public AmmoState(int clipAmmo, int totalAmmo)
+            public AmmoState(int clipAmmo, int totalAmmo, int maxAmmo, int clipSize)
             {
                 CurrentClipAmmo = clipAmmo;
                 CurrentAmmo = totalAmmo;
+                MaxAmmo = maxAmmo;
+                ClipSize = clipSize;
             }
         }
 
@@ -83,18 +90,6 @@ namespace DotGalacticos.Guns.Demo
             SetOriginalAmmoValues();
             SetupGun(ActiveBaseGun);
             SetupHandGuns(firstGun, secondGun);
-
-            if (FirstHandGun != null)
-                ammoStates[1] = new AmmoState(
-                    FirstHandGun.AmmoConfig.CurrentClipAmmo,
-                    FirstHandGun.AmmoConfig.CurrentAmmo
-                );
-
-            if (SecondHandGun != null)
-                ammoStates[2] = new AmmoState(
-                    SecondHandGun.AmmoConfig.CurrentClipAmmo,
-                    SecondHandGun.AmmoConfig.CurrentAmmo
-                );
         }
 
         private void SetupHandGuns(
@@ -105,23 +100,25 @@ namespace DotGalacticos.Guns.Demo
             FirstHandBaseGun = firstHandGun;
             SecondHandBaseGun = secondHandGun;
 
-            FirstHandGun = firstHandGun.Clone() as GunScriptableObject; // Birinci el silahını klonla
-            SecondHandGun = secondHandGun.Clone() as GunScriptableObject; // İkinci el silahını klonla
+            FirstHandGun = firstHandGun.Clone() as GunScriptableObject;
+
+            SecondHandGun = secondHandGun.Clone() as GunScriptableObject;
         }
 
         private void SetupGun(GunScriptableObject gun)
         {
-            SaveAmmoAmount(gun);
-
+            // Mevcut silahın ammo durumunu kaydet
+            // SaveAmmoAmount(ActiveGun);
             ActiveBaseGun = gun;
             ActiveGun = gun.Clone() as GunScriptableObject; // Aktif silahı klonla
-            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştier
-
-            //            SecondHandTarget.transform.Translate(ActiveGun.secondHandTarget.transform.position);
-
+            ActiveGun.Spawn(GunParent, this); // Silahı sahneye yerleştir
+            foreach (var gunUI in gunUIs)
+            {
+                gunUI.SetActive(gunUI.name == gun.name);
+            }
+            // Yeni silahın mermi durumunu ayarla
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
-
             UpdateAnimator(gun); // Animatörü güncelle
         }
 
@@ -225,20 +222,15 @@ namespace DotGalacticos.Guns.Demo
 
         private void SwitchGun(int gunNumber)
         {
-            // İlk önce mevcut silahın ammo durumunu kaydet
-            if (activeGunIndex != 0 && ActiveGun != null)
-            {
-                ammoStates[activeGunIndex] = new AmmoState(
-                    ActiveGun.AmmoConfig.CurrentClipAmmo,
-                    ActiveGun.AmmoConfig.CurrentAmmo
-                );
-            }
+            // Mevcut silahın ammo durumunu kaydet
+            SaveAmmoAmount(ActiveGun);
 
             if (gunNumber == 1 && FirstHandGun != null)
             {
+                //SaveAmmoAmount(SecondHandGun);
                 activeGunIndex = 1;
-                DespawnActiveGun();
 
+                DespawnActiveGun();
                 ActiveBaseGun = FirstHandGun;
 
                 SetupGun(FirstHandGun);
@@ -252,10 +244,12 @@ namespace DotGalacticos.Guns.Demo
             }
             else if (gunNumber == 2 && SecondHandGun != null)
             {
+                //SaveAmmoAmount(FirstHandGun);
                 activeGunIndex = 2;
-                DespawnActiveGun();
 
+                DespawnActiveGun();
                 ActiveBaseGun = SecondHandGun;
+
                 SetupGun(SecondHandGun);
 
                 // Ammo durumunu yükle
@@ -341,9 +335,25 @@ namespace DotGalacticos.Guns.Demo
 
         private void SaveAmmoAmount(GunScriptableObject gun)
         {
-            GunScriptableObject newGun = gun;
-            newGun.AmmoConfig.CurrentClipAmmo = gun.AmmoConfig.CurrentClipAmmo;
-            newGun.AmmoConfig.CurrentAmmo = gun.AmmoConfig.CurrentAmmo;
+            if (gun != null)
+            {
+                if (ammoStates.ContainsKey(activeGunIndex))
+                {
+                    // Mevcut silahın ammo durumunu güncelle
+                    ammoStates[activeGunIndex].CurrentClipAmmo = gun.AmmoConfig.CurrentClipAmmo;
+                    ammoStates[activeGunIndex].CurrentAmmo = gun.AmmoConfig.CurrentAmmo;
+                }
+                else
+                {
+                    // Yeni bir AmmoState oluştur ve kaydet
+                    ammoStates[activeGunIndex] = new AmmoState(
+                        gun.AmmoConfig.CurrentClipAmmo,
+                        gun.AmmoConfig.CurrentAmmo,
+                        gun.AmmoConfig.MaxAmmo,
+                        gun.AmmoConfig.ClipSize
+                    );
+                }
+            }
         }
 
         private void DropGun(GunScriptableObject gunToDrop)

@@ -22,5 +22,6 @@ public class Enemy : MonoBehaviour
         painResponse.HandleDeath();
         controller.OnDieSound();
         controller.isDie = true;
+        controller.DropAmmo();
     }
 }

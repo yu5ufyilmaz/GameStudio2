@@ -6,10 +6,12 @@ public class SpawnParticleSystemOnDeath : MonoBehaviour
     [SerializeField]
     private ParticleSystem DeathSystem;
     public IDamageable Damageable;
+
     private void Awake()
     {
         Damageable = GetComponent<IDamageable>();
     }
+
     private void OnEnable()
     {
         Damageable.OnDeath += Damageable_OnDeath;
