@@ -140,11 +140,17 @@ namespace DotGalacticos.Guns.Demo
 
         private void Aim()
         {
-            // Eğer zaten nişan alıyorsa, koşma tuşuna basılsa bile nişan alma devam eder
-            // Ancak yeni nişan alma başlatılmaz (koşmaya başladıysa)
-            if (thirdPersonController._input.sprint && !isAiming)
+            // İlk koşul: Koşarken nişan almaya çalışırsa
+            /*   if (thirdPersonController._input.sprint && !isAiming)
+               {
+                   return;
+               }*/
+
+            // İkinci koşul: Nişan almaya başladıysa ve daha sonra koşmaya çalışırsa
+            if (isAiming && thirdPersonController._input.sprint)
             {
-                return;
+                // Koşmayı engelle
+                thirdPersonController._input.sprint = false;
             }
 
             // Fare pozisyonunu al
@@ -163,7 +169,11 @@ namespace DotGalacticos.Guns.Demo
 
             if (horizontalPlane.Raycast(ray, out float enter))
             {
-                //isAiming = true;
+                // İlk nişan alma durumu
+                /*if (!isAiming)
+                {
+                    isAiming = true;
+                }*/
 
                 // Hedef noktayı hesapla
                 Vector3 hitPoint = ray.GetPoint(enter);
@@ -190,10 +200,15 @@ namespace DotGalacticos.Guns.Demo
                     aimTargetInstance.transform.position = targetPosition;
                 }
             }
-            else
-            {
-                isAiming = false;
-            }
+            /* else
+             {
+                 // Nişan bırakıldığında
+                 isAiming = false;
+                 if (aimTargetInstance != null)
+                 {
+                     aimTargetInstance.SetActive(false);
+                 }
+             }*/
         }
 
         private bool ShouldAutoReload()
@@ -251,16 +266,17 @@ namespace DotGalacticos.Guns.Demo
 
         private void OnAimPerformed(InputAction.CallbackContext context)
         {
-            /* _leftHandReferans.position = leftHandTarget.position;
-             _leftHandReferans.rotation = leftHandTarget.rotation;
-             _leftElbowReferans.position = leftElbowTarget.position;*/
+            // Koşarken nişan almayı engelle
+            if (thirdPersonController._input.sprint)
+            {
+                return;
+            }
 
             isAiming = true;
             if (thirdPersonController != null)
             {
                 thirdPersonController.IsAiming = true;
             }
-            //cameraTargetSwitcher.SwitchTargets();
 
             // Nişan alındığında hedef ağırlığı 1'e ayarla
             targetWeight = 1f;
@@ -270,7 +286,6 @@ namespace DotGalacticos.Guns.Demo
         private void OnAimCanceled(InputAction.CallbackContext context)
         {
             isAiming = false;
-
             if (thirdPersonController != null)
             {
                 thirdPersonController.IsAiming = false;
@@ -278,6 +293,7 @@ namespace DotGalacticos.Guns.Demo
 
             // Nişan alma sona erdiğinde hedef ağırlığı 0'a ayarla
             targetWeight = 0f;
+            IKWeight(rig1, targetWeight);
             animator.SetBool(IsAiming, false);
         }
 

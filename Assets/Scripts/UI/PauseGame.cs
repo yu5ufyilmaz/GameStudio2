@@ -8,8 +8,10 @@ public class PauseGame : MonoBehaviour
     private GameObject AimImage;
     private GameObject pauseMenu; // Pause menüsünü tutan GameObject
     private Animator pauseMenuAnimator; // Pause menüsünün Animator bileşeni
+    private Animator settingsMenuAnimator;
     private GameObject sinMenu;
     private Animator sinMenuAnimator;
+    private bool isSettingsMenuOpen = false;
     private bool isPaused = false; // Oyun duraklatma durumu
     private bool isTab = false;
 
@@ -18,6 +20,7 @@ public class PauseGame : MonoBehaviour
         AimImage = GameObject.Find("AimImage");
         pauseMenu = GameObject.Find("PauseMenu");
         sinMenu = GameObject.Find("SinMenu");
+        settingsMenuAnimator = GameObject.Find("SettingsMenu").GetComponent<Animator>();
         sinMenuAnimator = sinMenu.GetComponent<Animator>();
         pauseMenuAnimator = pauseMenu.GetComponent<Animator>();
         Time.timeScale = 1f;
@@ -111,6 +114,23 @@ public class PauseGame : MonoBehaviour
                 child.SetTrigger("Normal");
         }
         sinMenuAnimator.SetTrigger("Open"); // Açılma animasyonunu başlat
+    }
+
+    public void OpenSettings()
+    {
+        if (settingsMenuAnimator != null)
+        {
+            if (isSettingsMenuOpen == false)
+            {
+                settingsMenuAnimator.SetTrigger("Open");
+                isSettingsMenuOpen = true;
+            }
+            else
+            {
+                settingsMenuAnimator.SetTrigger("Close");
+                isSettingsMenuOpen = false;
+            }
+        }
     }
 
     private System.Collections.IEnumerator DisableMenuAfterAnimation()
