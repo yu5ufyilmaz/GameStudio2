@@ -2153,6 +2153,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2999303051859498263, guid: cb645f5acea05e14780ce8c07dd9d1bd,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3234651232664805377, guid: cb645f5acea05e14780ce8c07dd9d1bd,
         type: 3}
       propertyPath: GunSelector
