@@ -33,7 +33,7 @@ namespace DotGalacticos.Guns.Demo
         private static readonly int IsShooting = Animator.StringToHash("isShooting");
         private static readonly int IsAiming = Animator.StringToHash("isAiming");
         private Animator animator;
-        private bool isAiming;
+        public bool isAiming;
         private bool isShooting = false;
 
         //Reload
@@ -136,17 +136,36 @@ namespace DotGalacticos.Guns.Demo
             isReloading = false;
         }
 
+        public float _lastAimAngle;
+
         private void Aim()
         {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            RectTransform rectTransform = aimImage.GetComponent<RectTransform>();
-            rectTransform.position = mousePosition;
+            // Eğer zaten nişan alıyorsa, koşma tuşuna basılsa bile nişan alma devam eder
+            // Ancak yeni nişan alma başlatılmaz (koşmaya başladıysa)
+            if (thirdPersonController._input.sprint && !isAiming)
+            {
+                return;
+            }
 
+            // Fare pozisyonunu al
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+
+            // UI hedef imajını güncelle
+            if (aimImage != null)
+            {
+                RectTransform rectTransform = aimImage.GetComponent<RectTransform>();
+                rectTransform.position = mousePosition;
+            }
+
+            // Ray oluştur ve düzlemle kesişim noktasını bul
             Ray ray = mainCamera.ScreenPointToRay(mousePosition);
             Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, fixedAimHeight, 0));
 
             if (horizontalPlane.Raycast(ray, out float enter))
             {
+                //isAiming = true;
+
+                // Hedef noktayı hesapla
                 Vector3 hitPoint = ray.GetPoint(enter);
                 Vector3 direction = hitPoint - transform.position;
                 direction.y = 0;
@@ -154,74 +173,26 @@ namespace DotGalacticos.Guns.Demo
                 if (direction.sqrMagnitude < 0.001f)
                     return;
 
-                float angle = Mathf.Atan2(direction.z, direction.x);
+                // Nişan açısını hesapla ve sakla
+                _lastAimAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
 
-                float targetX = transform.position.x + orbitRadius * Mathf.Cos(angle);
-                float targetZ = transform.position.z + orbitRadius * Mathf.Sin(angle);
-                float targetY = transform.position.y + fixedAimHeight;
-
-                Vector3 targetPosition = new Vector3(targetX, targetY, targetZ);
-                float distanceToCharacter = Vector3.Distance(targetPosition, transform.position);
-                if (distanceToCharacter < 5f)
-                {
-                    Vector3 dirNormalized = (targetPosition - transform.position).normalized;
-                    targetPosition = transform.position + dirNormalized * 5f;
-                    targetPosition.y = fixedAimHeight; // Y sabit
-                }
-
+                // Nişan hedefini yerleştir
                 if (aimTargetInstance != null)
                 {
+                    aimTargetInstance.SetActive(true);
+
+                    // Sabit mesafede hedef pozisyonu hesapla
+                    float targetDistance = Mathf.Min(direction.magnitude, orbitRadius);
+                    Vector3 targetPosition =
+                        transform.position + direction.normalized * targetDistance;
+                    targetPosition.y = fixedAimHeight;
+
                     aimTargetInstance.transform.position = targetPosition;
                 }
-
-                Vector3 lookDirection;
-
-                // Koşma durumu kontrolü
-                if (thirdPersonController != null && thirdPersonController.isRunning)
-                {
-                    // Koşuyorsa karakter hareket yönüne dönsün
-                    Vector3 moveDir = thirdPersonController._input.move;
-                    if (moveDir.sqrMagnitude > 0.001f)
-                    {
-                        // Hareket yönünü dünya koordinatlarına çevir
-                        Vector3 worldMoveDir = new Vector3(moveDir.x, 0, moveDir.y).normalized;
-                        // Kamera yönüne göre düzelt
-                        lookDirection =
-                            Quaternion.Euler(0, mainCamera.transform.eulerAngles.y, 0)
-                            * worldMoveDir;
-                    }
-                    else
-                    {
-                        // Hareket yoksa nişan alınan noktaya bak
-                        lookDirection = targetPosition - transform.position;
-                    }
-                }
-                else
-                {
-                    // Koşmuyorsa (yürürken veya nişan alırken) nişan alınan hedefe dönsün
-                    lookDirection = targetPosition - transform.position;
-                }
-
-                lookDirection.y = 0;
-
-                if (lookDirection.sqrMagnitude > 0.001f)
-                {
-                    Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-                    float rotationSpeed = 25f;
-                    float angleDifference = Quaternion.Angle(transform.rotation, targetRotation);
-                    float speedMultiplier = Mathf.InverseLerp(0, 180, angleDifference);
-                    float adjustedRotationSpeed = Mathf.Lerp(
-                        rotationSpeed * 0.5f,
-                        rotationSpeed * 2f,
-                        speedMultiplier
-                    );
-
-                    transform.rotation = Quaternion.Slerp(
-                        transform.rotation,
-                        targetRotation,
-                        Time.deltaTime * adjustedRotationSpeed
-                    );
-                }
+            }
+            else
+            {
+                isAiming = false;
             }
         }
 

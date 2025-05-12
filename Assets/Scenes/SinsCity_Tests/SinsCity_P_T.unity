@@ -1728,12 +1728,12 @@ PrefabInstance:
     - target: {fileID: 5686157718454928320, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_AmplitudeGain
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5686157718454928320, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_FrequencyGain
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
@@ -2505,6 +2505,16 @@ PrefabInstance:
       propertyPath: virtualCamera
       value: 
       objectReference: {fileID: 740045798}
+    - target: {fileID: 3235470420963276453, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: SmoothInputSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3235470420963276453, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      propertyPath: RotationSmoothTime
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 3235470420963276453, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
       propertyPath: DieAudioClips.Array.size
@@ -8392,7 +8402,7 @@ GameObject:
   - component: {fileID: 4697150917577128911}
   - component: {fileID: 4988644498055312260}
   m_Layer: 5
-  m_Name: Aim
+  m_Name: AimImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

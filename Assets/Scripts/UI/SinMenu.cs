@@ -75,7 +75,7 @@ public class SinMenu : MonoBehaviour
 
     private IEnumerator PlayOpenAnimations(GameObject card)
     {
-        yield return new WaitForSeconds(3f); // OpenFirstTime animasyon süresine göre ayarlayın
+        yield return new WaitForSeconds(1f); // OpenFirstTime animasyon süresine göre ayarlayın
         card.SetActive(true);
         SetSinCount();
         pauseGame.PauseGameMenu2();

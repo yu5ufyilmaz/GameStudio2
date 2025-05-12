@@ -4,6 +4,8 @@ public class PauseGame : MonoBehaviour
 {
     [SerializeField]
     private GameObject TutorialImage;
+
+    private GameObject AimImage;
     private GameObject pauseMenu; // Pause menüsünü tutan GameObject
     private Animator pauseMenuAnimator; // Pause menüsünün Animator bileşeni
     private GameObject sinMenu;
@@ -13,6 +15,7 @@ public class PauseGame : MonoBehaviour
 
     void Start()
     {
+        AimImage = GameObject.Find("AimImage");
         pauseMenu = GameObject.Find("PauseMenu");
         sinMenu = GameObject.Find("SinMenu");
         sinMenuAnimator = sinMenu.GetComponent<Animator>();
@@ -51,6 +54,7 @@ public class PauseGame : MonoBehaviour
     void PauseGameMenu()
     {
         // Zamanı durdur
+        AimImage.SetActive(false);
         Time.timeScale = 0f;
         isPaused = true;
 
@@ -63,6 +67,7 @@ public class PauseGame : MonoBehaviour
 
     public void ResumeGame()
     {
+        AimImage.SetActive(true);
         // Zamanı devam ettir
         Time.timeScale = 1f;
         isPaused = false;
@@ -75,6 +80,7 @@ public class PauseGame : MonoBehaviour
 
     void ResumeGame2()
     {
+        AimImage.SetActive(true);
         // Zamanı devam ettir
         Time.timeScale = 1f;
         isTab = false;
@@ -88,6 +94,7 @@ public class PauseGame : MonoBehaviour
 
     public void PauseGameMenu2()
     {
+        AimImage.SetActive(false);
         TutorialImage.SetActive(false);
         Time.timeScale = 0f;
         isTab = true;

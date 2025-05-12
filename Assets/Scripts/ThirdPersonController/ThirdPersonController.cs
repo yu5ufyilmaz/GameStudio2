@@ -32,6 +32,9 @@ namespace DotGalacticos
         [Tooltip("Acceleration and deceleration")]
         public float SpeedChangeRate = 10.0f;
 
+        [Tooltip("Hareket girişini yumuşatma hızını ayarlayın")]
+        public float SmoothInputSpeed = 0.2f;
+
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
 
@@ -290,81 +293,87 @@ namespace DotGalacticos
             );
         }
 
+        private float _animationBlendSmoothVelocity; // Animasyon blend yumuşatma için değişken
+        private float _speedSmoothVelocity; // Hız yumuşatma için değişken
+        private float _rotationSmoothVelocity; // Dönüş yumuşatma için değişken
+
         private void Move()
         {
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            // Hedef hız hesaplama - Nişan alırken koşma hızı uygulanmaz
+            float targetSpeed =
+                (_input.sprint && !_shootController.isAiming) ? SprintSpeed : MoveSpeed;
             if (_input.move == Vector2.zero)
                 targetSpeed = 0.0f;
 
-            float currentHorizontalSpeed = new Vector3(
-                _controller.velocity.x,
-                0.0f,
-                _controller.velocity.z
-            ).magnitude;
-
-            float speedOffset = 0.1f;
+            // Input miktarını hesapla
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            if (
-                currentHorizontalSpeed < targetSpeed - speedOffset
-                || currentHorizontalSpeed > targetSpeed + speedOffset
-            )
-            {
-                _speed = Mathf.Lerp(
-                    currentHorizontalSpeed,
-                    targetSpeed * inputMagnitude,
-                    Time.deltaTime * SpeedChangeRate
-                );
-                _speed = Mathf.Round(_speed * 1000f) / 1000f;
-            }
-            else
-            {
-                _speed = targetSpeed;
-            }
+            // Hız yumuşatma
+            _speed = Mathf.SmoothDamp(
+                _speed,
+                targetSpeed * inputMagnitude,
+                ref _speedSmoothVelocity,
+                SpeedChangeRate * Time.deltaTime
+            );
 
-            _animationBlend = Mathf.Lerp(
+            // Animasyon blend yumuşatma
+            _animationBlend = Mathf.SmoothDamp(
                 _animationBlend,
                 targetSpeed,
-                Time.deltaTime * SpeedChangeRate
+                ref _animationBlendSmoothVelocity,
+                SmoothInputSpeed * Time.deltaTime
             );
-            if (_animationBlend < 0.01f)
-                _animationBlend = 0f;
 
-            // Input yönü: x ve z (y yok)
+            // Hareket yönünü hesapla (Top-down kontroller - kamera bağımsız)
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
+            // İlerleme yönü kontrolü
             if (inputDirection.magnitude > 0)
             {
-                // Kameradan sadece Y rotasyonunu alıyoruz
-                float cameraYaw = _mainCamera.transform.eulerAngles.y;
-                Quaternion cameraRotation = Quaternion.Euler(0, cameraYaw, 0);
+                // Top-down hareket için kamera bağımsız - HATRED tarzı
+                Vector3 moveDirection = Vector3.zero;
 
-                // Hareket yönünü kamera Y rotasyonuna göre döndür
-                Vector3 targetDirection = cameraRotation * inputDirection;
+                // WASD her zaman aynı dünya yönlerini kontrol eder
+                moveDirection.x = _input.move.x; // A-D sağ-sol
+                moveDirection.z = _input.move.y; // W-S ileri-geri
+                moveDirection.Normalize();
 
-                if (_input.sprint)
-                {
-                    // Kayarak dönüş için smooth zamanı biraz artırıldı
-                    float smoothTime = 0.3f;
-                    float rotation = Mathf.SmoothDampAngle(
-                        transform.eulerAngles.y,
-                        Mathf.Atan2(targetDirection.x, targetDirection.z) * Mathf.Rad2Deg,
-                        ref _rotationVelocity,
-                        smoothTime
-                    );
-                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-                }
-
+                // Hareket vektörünü hesapla
                 Vector3 moveVector =
-                    targetDirection * (_speed * Time.deltaTime)
+                    moveDirection * (_speed * Time.deltaTime)
                     + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
 
                 _controller.Move(moveVector);
 
-                Vector3 localVelocity = transform.InverseTransformDirection(targetDirection);
+                // Karakter dönüşünü yönet
+                float targetRotation = 0f;
 
+                if (_shootController.isAiming)
+                {
+                    // Nişan alıyorsa nişan açısını kullan
+                    targetRotation = _shootController._lastAimAngle;
+                }
+                else
+                {
+                    // Nişan almıyorsa hareket yönüne dön
+                    targetRotation = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+                }
+
+                // Dönüş yumuşatma
+                float rotation = Mathf.SmoothDampAngle(
+                    transform.eulerAngles.y,
+                    targetRotation,
+                    ref _rotationSmoothVelocity,
+                    RotationSmoothTime
+                );
+
+                // Dönüşü uygula
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+                // Animator güncelleme
                 if (_hasAnimator)
                 {
+                    Vector3 localVelocity = transform.InverseTransformDirection(moveDirection);
                     float speedX = localVelocity.x * _speed;
                     float speedZ = localVelocity.z * _speed;
 
@@ -375,14 +384,30 @@ namespace DotGalacticos
             }
             else
             {
+                // Hareket yoksa sadece yerinde dönüş yapabilir (nişan alırken)
+                if (_shootController.isAiming)
+                {
+                    float rotation = Mathf.SmoothDampAngle(
+                        transform.eulerAngles.y,
+                        _shootController._lastAimAngle,
+                        ref _rotationSmoothVelocity,
+                        RotationSmoothTime * 0.5f // Yerinde dönüş için daha hızlı
+                    );
+
+                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                }
+
+                // Yerçekimi etkisi
+                Vector3 moveVector = new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
+                _controller.Move(moveVector);
+
+                // Animator sıfırlama
                 if (_hasAnimator)
                 {
                     _animator.SetFloat("Speed X", 0);
                     _animator.SetFloat("Speed Z", 0);
                     _animator.SetFloat(_animIDMotionSpeed, 0);
                 }
-                // Hareket yoksa hızlı dönüşü engellemek için rotationVelocity sıfırlanabilir
-                _rotationVelocity = 0f;
             }
         }
 

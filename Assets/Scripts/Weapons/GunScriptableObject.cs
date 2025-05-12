@@ -284,7 +284,7 @@ namespace DotGalacticos.Guns
                 {
                     if (impactPrefab != null)
                     {
-                        Instantiate(impactPrefab, EndPoint, Quaternion.identity);
+                        Instantiate(impactPrefab, Hit.point, Quaternion.identity);
                     }
                 }
             }
@@ -319,12 +319,14 @@ namespace DotGalacticos.Guns
             config.Place = Place;
             config.Name = Name;
             config.name = name;
+
             config.DamageConfig = DamageConfig.Clone() as DamageConfigScriptableObject;
             config.ShootConfig = ShootConfig.Clone() as ShootScriptableObject;
             config.AmmoConfig = AmmoConfig.Clone() as AmmoScriptableObject;
             config.TrailConfig = TrailConfig.Clone() as TrailScriptableObject;
             config.AudioConfig = AudioConfig.Clone() as AudioScriptableObject;
 
+            config.impactPrefab = impactPrefab;
             config.ModelPrefab = ModelPrefab;
             config.PickupPrefab = PickupPrefab;
             config.SpawnPosition = SpawnPosition;
