@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 155957834}
   - component: {fileID: 155957835}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ForthWall_T
   m_TagString: Room
   m_Icon: {fileID: 0}
@@ -184,7 +184,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1022933996}
   - component: {fileID: 1022933997}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: SecondWall_T
   m_TagString: Room
   m_Icon: {fileID: 0}

@@ -2482,7 +2482,7 @@ PrefabInstance:
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 286.86
+      value: 286
       objectReference: {fileID: 0}
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
@@ -4000,7 +4000,7 @@ PrefabInstance:
     - target: {fileID: 3777385560539239364, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 290.36
+      value: 289.5
       objectReference: {fileID: 0}
     - target: {fileID: 3777385560539239364, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
@@ -4114,6 +4114,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1187473449}
+    - targetCorrespondingSourceObject: {fileID: 7219647728185360154, guid: 48baa914034bc774685148412f9e1412,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1187473466}
   m_SourcePrefab: {fileID: 100100000, guid: 48baa914034bc774685148412f9e1412, type: 3}
 --- !u!4 &1059251388 stripped
 Transform:
@@ -4845,6 +4849,23 @@ MonoBehaviour:
   speedMultiplier: 0.8
   defaultSpreadIncrease: 0.1
   maxSpreadMultiplier: 1
+--- !u!114 &1187473466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059251389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e86c6b2d81fe6d40b5f9ac2a4c3999b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 129
+  silhouetteColor: {r: 0.49056602, g: 0.0763617, b: 0.08932533, a: 1}
+  emissionIntensity: 5
 --- !u!1 &1299682516
 GameObject:
   m_ObjectHideFlags: 0
@@ -8343,7 +8364,7 @@ PrefabInstance:
     - target: {fileID: 7999375827312322011, guid: 24e389cd12d51c34e8fe7960df7ae923,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 286.86
+      value: 286
       objectReference: {fileID: 0}
     - target: {fileID: 7999375827312322011, guid: 24e389cd12d51c34e8fe7960df7ae923,
         type: 3}
