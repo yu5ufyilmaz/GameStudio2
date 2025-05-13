@@ -731,8 +731,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.0009736124, y: 0.0032415078, z: 0.008683985}
-  m_Center: {x: 0.000008758831, y: -0.001620851, z: 0.004371265}
+  m_Size: {x: 0.0000720888, y: 0.003241508, z: 0.008683984}
+  m_Center: {x: 0.00017909113, y: -0.0016208491, z: 0.0043712645}
 --- !u!1 &695345237
 GameObject:
   m_ObjectHideFlags: 0
@@ -793,7 +793,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.94871795, y: 0.94871795, z: 0.94871795}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2003455659}
@@ -1157,7 +1157,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 2.8168e-41, y: 2.524355e-29, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
+  m_UseViewFrustumForShadowCasterCull: 0
   m_ForceVisible: 0
   m_ShadowRadius: 0.025
   m_ShadowAngle: 0
@@ -1221,8 +1221,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.0009736124, y: 0.0032415078, z: 0.008683985}
-  m_Center: {x: 0.000008997443, y: 0.001620851, z: 0.004371265}
+  m_Size: {x: 0.00017845618, y: 0.0032415076, z: 0.008683984}
+  m_Center: {x: -0.000010130949, y: 0.0016208488, z: 0.004371265}
 --- !u!1 &1946333438
 GameObject:
   m_ObjectHideFlags: 0
@@ -1302,9 +1302,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1957125770}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.94871795, y: 0.94871795, z: 0.94871795}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6163453966085178846}
@@ -1545,7 +1545,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 3.6609e-41, y: 2.524355e-29, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
+  m_UseViewFrustumForShadowCasterCull: 0
   m_ForceVisible: 0
   m_ShadowRadius: 0.025
   m_ShadowAngle: 0
@@ -1785,7 +1785,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 3.4594e-41, y: 2.524355e-29, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
-  m_UseViewFrustumForShadowCasterCull: 1
+  m_UseViewFrustumForShadowCasterCull: 0
   m_ForceVisible: 0
   m_ShadowRadius: 0.025
   m_ShadowAngle: 0
@@ -1855,12 +1855,12 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.4601684, z: -0, w: 0.8878316}
   m_LocalPosition: {x: 338.63, y: 0.0028743744, z: 348.53}
-  m_LocalScale: {x: 2.22, y: 2.22, z: 2.22}
+  m_LocalScale: {x: 2.34, y: 2.34, z: 2.34}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1946333439}
   - {fileID: 800381147}
   - {fileID: 1957125771}
+  - {fileID: 1946333439}
   - {fileID: 695345238}
   - {fileID: 1243680699}
   m_Father: {fileID: 0}
@@ -3205,8 +3205,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.0045098057, y: 0.01168958, z: 0.0065951436}
-  m_Center: {x: -0.011877923, y: 0.02065566, z: 0.0063780905}
+  m_Size: {x: 0.0045098057, y: 0.01168958, z: 0.006280358}
+  m_Center: {x: -0.0118779065, y: 0.020655658, z: 0.0065354803}
 --- !u!65 &8980540089253315265
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3226,8 +3226,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.001151928, y: 0.0037122727, z: 0.015487001}
-  m_Center: {x: -0.013557167, y: 0.025310893, z: 0.001974018}
+  m_Size: {x: 0.0011519269, y: 0.0027660192, z: 0.015487001}
+  m_Center: {x: -0.013557092, y: 0.025783984, z: 0.001974018}
 --- !u!65 &8980540089253315266
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3387,7 +3387,7 @@ Transform:
   m_GameObject: {fileID: 7905974302553003712}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0.000000029802322, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -1.7240617, y: 0.39364251, z: 0.32495585}
+  m_LocalPosition: {x: -1.728, y: 0.39364251, z: 0.323}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []

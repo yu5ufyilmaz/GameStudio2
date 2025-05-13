@@ -855,18 +855,18 @@ MonoBehaviour:
   speedChangeRate: 10
   dropChanceOverall: 100
   ammoDrops:
-  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+  - ammoPrefab: {fileID: 305628814450900259, guid: ac737e595cb53d844bce7785fd4ec2f3,
       type: 3}
-    dropChance: 23
-  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+    dropChance: 48
+  - ammoPrefab: {fileID: 1584728826485307282, guid: a138e05834409054dade414bbf54160f,
       type: 3}
-    dropChance: 23
-  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+    dropChance: 25
+  - ammoPrefab: {fileID: 6022204153629739359, guid: 51fab48ef23865948a6a4a1a26257ab7,
       type: 3}
-    dropChance: 23
-  - ammoPrefab: {fileID: 5688617943505054283, guid: 6b7fa3e1ca10e7a4fa8284646668c8ec,
+    dropChance: 25
+  - ammoPrefab: {fileID: 8718867112130228052, guid: 8ad356d4d58acd54089c0ef1ae618b86,
       type: 3}
-    dropChance: 23
+    dropChance: 25
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}

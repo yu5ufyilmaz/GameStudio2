@@ -181,6 +181,8 @@ public class EnemyController : MonoBehaviour
 
     protected virtual void EnemyDieActions()
     {
+        CharacterController characterController = GetComponent<CharacterController>();
+        characterController.enabled = false;
         navMeshAgent.enabled = false;
         animator.SetLayerWeight(1, 0f);
     }

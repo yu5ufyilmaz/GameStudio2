@@ -712,6 +712,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: BackgroundMusicManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1626952743934830391, guid: 6cf6929f0c593d243821c7c917d40c3c,
+        type: 3}
+      propertyPath: defaultMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: ccfb9a638647e234980828ca10ffdf77, type: 3}
     - target: {fileID: 2362001626942220881, guid: 6cf6929f0c593d243821c7c917d40c3c,
         type: 3}
       propertyPath: m_LocalPosition.x

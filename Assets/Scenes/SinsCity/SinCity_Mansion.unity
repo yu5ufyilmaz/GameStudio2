@@ -1122,6 +1122,38 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &381468321
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 381468322}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &381468322
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 381468321}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.9777323, z: -0, w: 0.20985606}
+  m_LocalPosition: {x: 2.13, y: -0.19, z: 27.56}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2209237803064847671}
+  m_Father: {fileID: 695345238}
+  m_LocalEulerAnglesHint: {x: 0, y: -155.772, z: 0}
 --- !u!1 &419673091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1908,7 +1940,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2209237803064847671}
+  - {fileID: 381468322}
   - {fileID: 7588808187306364682}
   - {fileID: 853807124394883046}
   m_Father: {fileID: 7418224969265091770}
@@ -2503,7 +2535,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1182854705}
   - component: {fileID: 1182854706}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MansionSecondWall
   m_TagString: Room
   m_Icon: {fileID: 0}
@@ -3672,7 +3704,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1615907551}
   - component: {fileID: 1615907552}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MansionFirstWall
   m_TagString: Room
   m_Icon: {fileID: 0}
@@ -5156,12 +5188,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 923172566566827637}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000037748947, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.1292295, y: -0.19219542, z: 27.406979}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 695345238}
+  m_Father: {fileID: 381468322}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &2285309807464019630
 MeshRenderer:
@@ -6934,8 +6966,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.1554282, y: 5.65019, z: 0.6715165}
-  m_Center: {x: -1.0550998, y: 2.8275006, z: 0.0000002682209}
+  m_Size: {x: 2.155428, y: 5.650191, z: 0.21755883}
+  m_Center: {x: -1.0551002, y: 2.827501, z: 0.003334128}
 --- !u!114 &6446833183500561464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6948,7 +6980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38721d75cdf916341b320c235be335c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  door: {fileID: 2209237803064847671}
+  door: {fileID: 381468322}
   openAngle: 90
   openSpeed: 2
   openSound: {fileID: 0}
@@ -7693,13 +7725,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3502001221519106769}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000037748947, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.0000000041073664, y: 0.9940628, z: 0.000000037524874, w: 0.108808145}
   m_LocalPosition: {x: -2.1575384, y: -0.18395185, z: 27.406961}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 695345238}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 167.507, z: 0}
 --- !u!4 &7683484275993145200
 Transform:
   m_ObjectHideFlags: 0
@@ -8057,8 +8089,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6.0273685, y: 26.5782, z: 1.3781247}
-  m_Center: {x: 0.28201413, y: 2.4054842, z: -4.960266}
+  m_Size: {x: 6.0273685, y: 25.313648, z: 1.3781197}
+  m_Center: {x: 0.282039, y: 3.037765, z: -4.9602447}
 --- !u!65 &8088824773778783623
 BoxCollider:
   m_ObjectHideFlags: 0

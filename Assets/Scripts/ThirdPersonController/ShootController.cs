@@ -195,7 +195,7 @@ namespace DotGalacticos.Guns.Demo
                     float targetDistance = Mathf.Min(direction.magnitude, orbitRadius);
                     Vector3 targetPosition =
                         transform.position + direction.normalized * targetDistance;
-                    targetPosition.y = fixedAimHeight;
+                    targetPosition.y = fixedAimHeight + transform.position.y;
 
                     aimTargetInstance.transform.position = targetPosition;
                 }
@@ -267,10 +267,10 @@ namespace DotGalacticos.Guns.Demo
         private void OnAimPerformed(InputAction.CallbackContext context)
         {
             // Koşarken nişan almayı engelle
-            if (thirdPersonController._input.sprint)
+            /*if (thirdPersonController._input.sprint)
             {
                 return;
-            }
+            }*/
 
             isAiming = true;
             if (thirdPersonController != null)
@@ -285,6 +285,7 @@ namespace DotGalacticos.Guns.Demo
 
         private void OnAimCanceled(InputAction.CallbackContext context)
         {
+            // Koşarken nişan almayı engelle
             isAiming = false;
             if (thirdPersonController != null)
             {
