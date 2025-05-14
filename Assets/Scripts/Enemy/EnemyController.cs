@@ -106,6 +106,7 @@ public class EnemyController : MonoBehaviour
     protected Vector3 lastKnownPlayerPosition;
     protected bool playerVisible = false;
 
+    [SerializeField]
     protected float _animationBlend;
     public bool isDie = false;
 

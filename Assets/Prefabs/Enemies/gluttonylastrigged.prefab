@@ -2344,7 +2344,6 @@ MonoBehaviour:
   shootAudioVolume: 0.5
   isDie: 0
   sin: 4
-  bossHealth: 200
   canFight: 1
 --- !u!95 &4017047283814279367
 Animator:
@@ -2355,8 +2354,8 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3423233418116352544}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: d3ca002b1f77dbc4e81220ff48639d6a, type: 3}
+  m_Controller: {fileID: 9100000, guid: 0601a45d58c6b45448321012974a71d6, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

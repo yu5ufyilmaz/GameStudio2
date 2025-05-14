@@ -30,6 +30,7 @@ public class BossController : EnemyController
             }
             else
             {
+                UpdateAnimation();
                 // Sadece devriye davranışı, saldırıya geçmez
                 PatrolOnlyBehavior();
             }
@@ -57,6 +58,12 @@ public class BossController : EnemyController
         {
             ChangeState(EnemyState.Patrol);
         }
+    }
+
+    protected override void UpdateAnimation()
+    {
+        Debug.Log($"NAber BOSSS");
+        base.UpdateAnimation();
     }
 
     public void ApplyNerf()
