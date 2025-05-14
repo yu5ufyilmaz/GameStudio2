@@ -690,7 +690,7 @@ Transform:
   m_GameObject: {fileID: 378331976}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.75985575, y: 0, z: 0.14087911}
+  m_LocalPosition: {x: 0.7598558, y: 0, z: 0.14087911}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1338,13 +1338,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2003455658}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.24066801, y: 0.82899666, z: -0.4501098, w: -0.22857101}
-  m_LocalPosition: {x: 2.29, y: 1.88, z: 1.8}
+  m_LocalRotation: {x: 0.21834433, y: 0.82044613, z: -0.5265357, w: -0.044205997}
+  m_LocalPosition: {x: 2.318, y: 1.943, z: 1.903}
   m_LocalScale: {x: 0.45045042, y: 0.4504505, z: 0.4504505}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 800381147}
-  m_LocalEulerAnglesHint: {x: 140.487, y: 50.539, z: -128.377}
+  m_LocalEulerAnglesHint: {x: 122.362, y: 34.408005, z: -130.85901}
 --- !u!114 &2003455660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1579,7 +1579,7 @@ Transform:
   m_GameObject: {fileID: 2037916173}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 3.161, y: 2.144, z: -0.017}
+  m_LocalPosition: {x: 3.161, y: 2.402, z: -0.017}
   m_LocalScale: {x: 0.45045042, y: 0.4504505, z: 0.4504505}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1736,7 +1736,7 @@ Light:
   m_GameObject: {fileID: 2037916173}
   m_Enabled: 1
   serializedVersion: 11
-  m_Type: 0
+  m_Type: 3
   m_Color: {r: 1, g: 0.84313726, b: 0, a: 1}
   m_Intensity: 10000000
   m_Range: 20.43
@@ -1783,13 +1783,13 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 2830
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 3.4594e-41, y: 2.524355e-29, z: 0, w: 0}
-  m_UseBoundingSphereOverride: 0
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 20.783554}
+  m_UseBoundingSphereOverride: 1
   m_UseViewFrustumForShadowCasterCull: 0
   m_ForceVisible: 0
   m_ShadowRadius: 0.025
   m_ShadowAngle: 0
-  m_LightUnit: 1
+  m_LightUnit: 3
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
 --- !u!33 &323886754581224283
