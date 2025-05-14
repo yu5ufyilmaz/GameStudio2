@@ -62,7 +62,6 @@ public class BossController : EnemyController
 
     protected override void UpdateAnimation()
     {
-        Debug.Log($"NAber BOSSS");
         base.UpdateAnimation();
     }
 
