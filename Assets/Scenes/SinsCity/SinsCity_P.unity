@@ -2871,6 +2871,7 @@ MonoBehaviour:
   - {fileID: 1122706655}
   - {fileID: 2014638748}
   - {fileID: 698654751}
+  _sinCountText: {fileID: 0}
 --- !u!95 &1108769372
 Animator:
   serializedVersion: 7
@@ -5912,6 +5913,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicSlider: {fileID: 4235131455088676784}
   sfxSlider: {fileID: 5540737245981831871}
+  fullscreenToggle: {fileID: 0}
+  resolutionDropdown: {fileID: 0}
+  qualityDropdown: {fileID: 0}
 --- !u!114 &2610153659038413210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7310,6 +7314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3818ddbf05453dc48b60661d8897ab5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TutorialImage: {fileID: 0}
 --- !u!114 &6645142972084527594
 MonoBehaviour:
   m_ObjectHideFlags: 0
