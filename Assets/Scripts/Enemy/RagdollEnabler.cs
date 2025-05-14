@@ -5,6 +5,7 @@ public class RagdollEnabler : MonoBehaviour
 {
     private Animator Animator;
 
+    [SerializeField]
     private Transform RagdollRoot;
 
     private NavMeshAgent Agent;

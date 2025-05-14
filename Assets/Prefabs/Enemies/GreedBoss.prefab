@@ -4186,6 +4186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c549ff257b56e4b4980ac8c63ed48256, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RagdollRoot: {fileID: 7629529411021216731}
   StartRagdoll: 0
 --- !u!114 &219949549885657202
 MonoBehaviour:
