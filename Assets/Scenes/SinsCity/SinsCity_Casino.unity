@@ -314,6 +314,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -597,6 +602,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -746,6 +756,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a79cb60484fceba488450a27a4d25b70,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a79cb60484fceba488450a27a4d25b70,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -875,6 +890,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -954,6 +974,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -980,6 +1005,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -1060,6 +1090,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: casino_chair1 (16)
       objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 863275862565951351, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1134,6 +1169,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1207,6 +1247,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -1290,6 +1335,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -1366,6 +1416,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -1446,6 +1501,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1519,6 +1579,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -1598,6 +1663,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -1682,6 +1752,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 4427717024154303056, guid: 4f82df5b30ebfdc41a1c75e768377633,
         type: 3}
@@ -1918,6 +1993,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -2012,6 +2092,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -2038,6 +2123,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -2120,6 +2210,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -2196,6 +2291,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -2446,6 +2546,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -2477,6 +2582,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -2559,6 +2669,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -2635,6 +2750,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (18)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 863275862565951351, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -2724,6 +2844,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
         type: 3}
@@ -2856,6 +2981,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -2935,6 +3065,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -2961,6 +3096,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -3364,6 +3504,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -3543,6 +3688,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1669b4477529ffb43bfa30f377dd1fa9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1669b4477529ffb43bfa30f377dd1fa9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -3600,6 +3750,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -3724,6 +3879,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair2 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
@@ -4080,6 +4240,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -4229,6 +4394,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -4292,6 +4462,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -4506,6 +4681,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: casino_chair2 (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4652,6 +4832,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a79cb60484fceba488450a27a4d25b70,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a79cb60484fceba488450a27a4d25b70,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -4703,6 +4888,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -4909,6 +5099,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -5010,6 +5205,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: lottery_machine
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b7213bfe537284643bc9211454047ad1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b7213bfe537284643bc9211454047ad1,
         type: 3}
@@ -5470,6 +5670,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -5690,6 +5895,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 1669b4477529ffb43bfa30f377dd1fa9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1669b4477529ffb43bfa30f377dd1fa9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -5847,6 +6057,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: blackjack_table (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5923,6 +6138,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -5949,6 +6169,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -6269,6 +6494,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6342,6 +6572,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (15)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -6805,6 +7040,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: casino_chair1
       objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 863275862565951351, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6878,6 +7118,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (14)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -7008,6 +7253,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: blackjack_table
       objectReference: {fileID: 0}
+    - target: {fileID: 9150479518851699499, guid: 5eeee7cab6f2e6b4480be6d616a63be8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7031,6 +7281,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -7275,6 +7530,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -7359,6 +7619,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -7418,6 +7683,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -7497,6 +7767,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -7680,6 +7955,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
         type: 3}
@@ -8290,6 +8570,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -8713,6 +8998,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalScale.y
@@ -8791,6 +9081,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -8875,6 +9170,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -9001,6 +9301,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9075,6 +9380,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9148,6 +9458,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -9228,6 +9543,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk (12)
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalScale.y
@@ -9306,6 +9626,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (13)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -9445,6 +9770,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair2 (17)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
@@ -9697,6 +10027,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -9778,6 +10113,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -10019,6 +10359,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: roulette_table_steampunk (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
       propertyPath: m_LocalScale.y
@@ -10147,6 +10492,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair2 (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
@@ -10757,6 +11107,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -10783,6 +11138,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -10953,6 +11313,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table
+      objectReference: {fileID: 0}
+    - target: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 3907358112135962858, guid: 4f82df5b30ebfdc41a1c75e768377633,
         type: 3}
@@ -11157,6 +11522,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -11233,6 +11603,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -11327,6 +11702,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair1 (19)
+      objectReference: {fileID: 0}
+    - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 49865593076698573, guid: faaebeb145e1c7c4095d2c31c700d5f9,
         type: 3}
@@ -11461,6 +11841,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair2 (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
@@ -11730,6 +12115,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: roulette_table_steampunk (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5929099596475888035, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 6414168239943396121, guid: 7fa83da1d8eb3d048acf8d14c1b57874,
         type: 3}
@@ -12214,6 +12604,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
         type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -12290,6 +12685,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: casino_chair2 (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848392977322916203, guid: 8b55cb25474142c48a280a8eb4478943,
+        type: 3}
+      propertyPath: m_Layer
+      value: 16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
