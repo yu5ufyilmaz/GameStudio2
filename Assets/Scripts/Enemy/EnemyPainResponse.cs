@@ -8,6 +8,12 @@ public class EnemyPainResponse : MonoBehaviour
 
     private int painAnimationCount = 3;
 
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        health = GetComponent<EnemyHealth>();
+    }
+
     // Update is called once per frame
     public void HandlePain()
     {

@@ -10,13 +10,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     protected Transform playerTransform;
 
-    [SerializeField]
     protected Animator animator;
 
-    [SerializeField]
     protected NavMeshAgent navMeshAgent;
-
-    [SerializeField]
     protected Transform weaponMuzzle;
 
     [SerializeField]
@@ -105,8 +101,6 @@ public class EnemyController : MonoBehaviour
     protected float distanceToPlayer;
     protected Vector3 lastKnownPlayerPosition;
     protected bool playerVisible = false;
-
-    [SerializeField]
     protected float _animationBlend;
     public bool isDie = false;
 
@@ -134,6 +128,10 @@ public class EnemyController : MonoBehaviour
             animator = GetComponent<Animator>();
         }
 
+        if (weaponMuzzle == null)
+        {
+            weaponMuzzle = transform.Find("Muzzle");
+        }
         // Animator parametrelerini ayarla
         AssignAnimationIDs();
 

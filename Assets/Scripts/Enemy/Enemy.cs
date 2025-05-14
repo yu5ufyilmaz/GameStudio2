@@ -8,6 +8,18 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
+        if (health == null)
+        {
+            health = GetComponent<EnemyHealth>();
+        }
+        if (controller == null)
+        {
+            controller = GetComponent<EnemyController>();
+        }
+        if (painResponse == null)
+        {
+            painResponse = GetComponent<EnemyPainResponse>();
+        }
         health.OnDeath += Die;
         health.OnTakeDamage += HitResponse;
     }

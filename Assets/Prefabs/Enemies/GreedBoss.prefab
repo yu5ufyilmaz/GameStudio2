@@ -1772,7 +1772,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1868454848205811366}
   m_Layer: 0
-  m_Name: muszzzle
+  m_Name: Muzzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4018,9 +4018,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  animator: {fileID: 7583017328318960338}
-  navMeshAgent: {fileID: 339943049167978765}
-  weaponMuzzle: {fileID: 1868454848205811366}
   bulletPrefab: {fileID: 5671858156844636114, guid: 61503162f17f0cf479107f23771e97be,
     type: 3}
   Damage: 1
@@ -4060,7 +4057,6 @@ MonoBehaviour:
   shootAudioVolume: 0.5
   isDie: 0
   sin: 2
-  bossHealth: 50
   canFight: 0
 --- !u!95 &7583017328318960338
 Animator:
@@ -4174,7 +4170,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _MaxHealth: 100
   _Health: 0
-  ragdollEnabler: {fileID: 229471547241792574}
   fadeOutDelay: 10
   bloodParticlePrefab: {fileID: 3548588485384254792, guid: 2f9e7dc163581394da1e00b561eed65d,
     type: 3}
@@ -4191,9 +4186,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c549ff257b56e4b4980ac8c63ed48256, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 7583017328318960338}
-  RagdollRoot: {fileID: 2531052102619353990}
-  Agent: {fileID: 339943049167978765}
   StartRagdoll: 0
 --- !u!114 &219949549885657202
 MonoBehaviour:

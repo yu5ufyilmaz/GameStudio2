@@ -3,13 +3,10 @@ using UnityEngine.AI;
 
 public class RagdollEnabler : MonoBehaviour
 {
-    [SerializeField]
     private Animator Animator;
 
-    [SerializeField]
     private Transform RagdollRoot;
 
-    [SerializeField]
     private NavMeshAgent Agent;
 
     [SerializeField]
@@ -25,6 +22,8 @@ public class RagdollEnabler : MonoBehaviour
 
     private void Start()
     {
+        Animator = GetComponent<Animator>();
+        Agent = GetComponent<NavMeshAgent>();
         if (StartRagdoll)
         {
             EnableRagdoll();

@@ -17,8 +17,6 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         get => _MaxHealth;
         set => _MaxHealth = value;
     }
-
-    [SerializeField]
     private RagdollEnabler ragdollEnabler;
 
     [SerializeField]
@@ -33,6 +31,14 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     public event IDamageable.TakeDamageEvent OnTakeDamage;
     public event IDamageable.DeathEvent OnDeath;
+
+    void Start()
+    {
+        if (ragdollEnabler == null)
+        {
+            ragdollEnabler = GetComponent<RagdollEnabler>();
+        }
+    }
 
     private void OnEnable()
     {
