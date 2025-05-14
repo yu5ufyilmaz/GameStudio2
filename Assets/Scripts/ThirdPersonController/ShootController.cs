@@ -23,6 +23,9 @@ namespace DotGalacticos.Guns.Demo
         [SerializeField]
         private PlayerGunSelector GunSelector;
 
+        [SerializeField]
+        private LayerMask groundMask;
+
         [Range(0, 1f)]
         public float HandIKAmount = 1f;
 
@@ -138,77 +141,98 @@ namespace DotGalacticos.Guns.Demo
 
         public float _lastAimAngle;
 
+        private (bool success, Vector3 position) GetMousePosition()
+        {
+            var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out var hitInfo, Mathf.Infinity, groundMask))
+            {
+                // The Raycast hit something, return with the position.
+                return (success: true, position: hitInfo.point);
+            }
+            else
+            {
+                // The Raycast did not hit anything.
+                return (success: false, position: Vector3.zero);
+            }
+        }
+
         private void Aim()
         {
-            // İlk koşul: Koşarken nişan almaya çalışırsa
-            /*   if (thirdPersonController._input.sprint && !isAiming)
-               {
-                   return;
-               }*/
+            // Fare pozisyonunu doğrudan al
+            Vector2 mousePos = Mouse.current.position.ReadValue();
 
-            // İkinci koşul: Nişan almaya başladıysa ve daha sonra koşmaya çalışırsa
-            if (isAiming && thirdPersonController._input.sprint)
+            // Fareden bir ışın oluştur
+            Ray ray = mainCamera.ScreenPointToRay(mousePos);
+
+            // Dünya üzerinde bir düzlem tanımla (Y ekseni yönünde)
+            Plane groundPlane = new Plane(Vector3.up, Vector3.up * fixedAimHeight);
+
+            // Işının düzlemle kesişim noktasını bul
+            if (groundPlane.Raycast(ray, out float hitDistance))
             {
-                // Koşmayı engelle
-                thirdPersonController._input.sprint = false;
-            }
+                // Kesişim noktasını hesapla
+                Vector3 hitPoint = ray.GetPoint(hitDistance);
 
-            // Fare pozisyonunu al
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
+                // Debug ile kontrol et
+                Debug.DrawLine(mainCamera.transform.position, hitPoint, Color.red);
 
-            // UI hedef imajını güncelle
-            if (aimImage != null)
-            {
-                RectTransform rectTransform = aimImage.GetComponent<RectTransform>();
-                rectTransform.position = mousePosition;
-            }
-
-            // Ray oluştur ve düzlemle kesişim noktasını bul
-            Ray ray = mainCamera.ScreenPointToRay(mousePosition);
-            Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, fixedAimHeight, 0));
-
-            if (horizontalPlane.Raycast(ray, out float enter))
-            {
-                // İlk nişan alma durumu
-                /*if (!isAiming)
+                // UI hedef imajını fare pozisyonuna ayarla
+                if (aimImage != null)
                 {
-                    isAiming = true;
-                }*/
+                    aimImage.rectTransform.position = mousePos;
+                }
 
-                // Hedef noktayı hesapla
-                Vector3 hitPoint = ray.GetPoint(enter);
-                Vector3 direction = hitPoint - transform.position;
-                direction.y = 0;
+                // Karakterden hedef noktaya yön vektörü hesapla
+                Vector3 targetDirection = hitPoint - transform.position;
+                targetDirection.y = 0; // Y eksenini sıfırla (düz bakması için)
 
-                if (direction.sqrMagnitude < 0.001f)
-                    return;
+                if (targetDirection.magnitude < 0.1f)
+                    return; // Çok küçük değerler için işlem yapma
 
-                // Nişan açısını hesapla ve sakla
-                _lastAimAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+                // Nişan açısını hesapla
+                _lastAimAngle = Mathf.Atan2(targetDirection.x, targetDirection.z) * Mathf.Rad2Deg;
 
-                // Nişan hedefini yerleştir
-                if (aimTargetInstance != null)
+                // Karakter nişan alıyorsa ve koşmuyorsa
+                if (isAiming && !thirdPersonController._input.sprint)
                 {
-                    aimTargetInstance.SetActive(true);
+                    // Karakterin bakış yönünü güncelle (yumuşak dönüş için)
+                    transform.forward = Vector3.Lerp(
+                        transform.forward,
+                        targetDirection.normalized,
+                        Time.deltaTime * 10f
+                    );
 
-                    // Sabit mesafede hedef pozisyonu hesapla
-                    float targetDistance = Mathf.Min(direction.magnitude, orbitRadius);
-                    Vector3 targetPosition =
-                        transform.position + direction.normalized * targetDistance;
-                    targetPosition.y = fixedAimHeight + transform.position.y;
+                    // AimTarget nesnesini güncelle
+                    if (aimTargetInstance != null)
+                    {
+                        aimTargetInstance.SetActive(true);
 
-                    aimTargetInstance.transform.position = targetPosition;
+                        // Minimum mesafe tanımla (bu değeri ihtiyacınıza göre ayarlayabilirsiniz)
+                        float minDistance = 2.0f;
+
+                        // Hedef nesnesini konumlandır
+                        // Eğer hedef karaktere çok yakınsa, minimum mesafede konumlandır
+                        float actualDistance = targetDirection.magnitude;
+                        float useDistance =
+                            actualDistance < minDistance ? minDistance : actualDistance;
+
+                        // Hedef pozisyonunu hesapla - artık maksimum sınır yok
+                        Vector3 targetPos =
+                            transform.position + targetDirection.normalized * useDistance;
+                        targetPos.y = transform.position.y + fixedAimHeight; // Sabit yükseklik
+
+                        aimTargetInstance.transform.position = targetPos;
+
+                        // Kontrol için debug çizgisi
+                        Debug.DrawLine(transform.position, targetPos, Color.green);
+                    }
+                }
+                else if (aimTargetInstance != null)
+                {
+                    aimTargetInstance.SetActive(false);
                 }
             }
-            /* else
-             {
-                 // Nişan bırakıldığında
-                 isAiming = false;
-                 if (aimTargetInstance != null)
-                 {
-                     aimTargetInstance.SetActive(false);
-                 }
-             }*/
         }
 
         private bool ShouldAutoReload()
