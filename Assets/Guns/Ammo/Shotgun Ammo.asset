@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b02e84a177afae40afe6ec48fa17213, type: 3}
   m_Name: Shotgun Ammo
   m_EditorClassIdentifier: 
-  MaxAmmo: 60
-  ClipSize: 6
-  CurrentAmmo: 20
-  CurrentClipAmmo: 6
+  OriginalMaxAmmo: 90
+  OriginalClipSize: 5
+  MaxAmmo: 90
+  ClipSize: 5
+  CurrentAmmo: 90
+  CurrentClipAmmo: 5

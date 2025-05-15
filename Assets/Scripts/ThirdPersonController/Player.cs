@@ -24,6 +24,9 @@ namespace DotGalacticos
         private void Die(Vector3 Position)
         {
             painResponse.HandleDeath();
+            playerController.enabled = false;
+            playerShootController.enabled = false;
+            playerController.Die();
         }
     }
 }

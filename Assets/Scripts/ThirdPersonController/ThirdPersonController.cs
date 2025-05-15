@@ -714,9 +714,15 @@ namespace DotGalacticos
             }
         }
 
-        public void Dying(string sceneName)
+        //Ölüm actions burada oluyor.
+        public void Die()
         {
-            SceneManager.LoadScene(sceneName);
+            Invoke("Dying", 1f);
+        }
+
+        public void Dying()
+        {
+            SceneManager.LoadScene("StartMenu");
             Cursor.visible = true;
         }
     }

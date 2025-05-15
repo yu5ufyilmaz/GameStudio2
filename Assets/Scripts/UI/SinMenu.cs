@@ -2,9 +2,16 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class SinMenu : MonoBehaviour
 {
+    [SerializeField]
+    private VideoPlayer videoPlayer; // VideoPlayer bileşeni
+
+    [SerializeField]
+    private string creditsSceneName; // Credits sahnesinin adı
+
     [SerializeField]
     private bool isFront;
 
@@ -27,6 +34,7 @@ public class SinMenu : MonoBehaviour
             if (card != null)
                 card.SetActive(false);
         }
+        videoPlayer.gameObject.SetActive(false); // VideoPlayer nesnesini aktif yap
     }
 
     public void RevealCardForSin(Sin sin)
@@ -154,6 +162,26 @@ public class SinMenu : MonoBehaviour
         }
     }
 
+    private void PauseGameAndPlayVideo()
+    {
+        pauseGame.AimImage.SetActive(false);
+        pauseGame.TutorialImage.SetActive(false);
+
+        Cursor.visible = false;
+        // Oyunu durdur
+        // Video oynatmayı başlat
+        videoPlayer.gameObject.SetActive(true); // VideoPlayer nesnesini aktif yap
+        videoPlayer.Play();
+        // Video bittiğinde Credits sahnesine geç
+        videoPlayer.loopPointReached += OnVideoFinished;
+    }
+
+    private void OnVideoFinished(VideoPlayer vp)
+    {
+        // Credits sahnesine geçiş yap
+        UnityEngine.SceneManagement.SceneManager.LoadScene(creditsSceneName);
+    }
+
     public int GetActiveCardCount()
     {
         int activeCount = 0;
@@ -171,5 +199,10 @@ public class SinMenu : MonoBehaviour
     {
         int sinCount = GetActiveCardCount();
         _sinCountText.SetText($"{sinCount}/" + $"{6}");
+        // Eğer tüm kartlar toplandıysa
+        if (sinCount >= 6)
+        {
+            PauseGameAndPlayVideo();
+        }
     }
 }

@@ -22,7 +22,7 @@ MonoBehaviour:
   impactPrefab: {fileID: 3548588485384254792, guid: 5126c5aca5b9c7c47aa72914aa99a389,
     type: 3}
   SpawnPosition: {x: 3.73, y: 9.79, z: 6.08}
-  SpawnRotation: {x: 102, y: 0, z: 0}
+  SpawnRotation: {x: 90, y: 0, z: 0}
   SecondHandPositionOffset: {x: 0, y: 0, z: 0}
   SecondHandRotationOffset: {x: 0, y: 0, z: 0}
   DamageConfig: {fileID: 11400000, guid: 01d2690404fe55f4cadc70fb559a717b, type: 2}

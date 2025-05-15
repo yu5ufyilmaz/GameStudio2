@@ -4,6 +4,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [SerializeField]
     private int _MaxHealth = 100;
+    private RagdollEnabler ragdollEnabler;
 
     [SerializeField]
     private int _Health;
@@ -27,6 +28,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public event IDamageable.TakeDamageEvent OnTakeDamage;
     public event IDamageable.DeathEvent OnDeath;
 
+    void Start()
+    {
+        ragdollEnabler = GetComponent<RagdollEnabler>();
+    }
+
     private void OnEnable()
     {
         CurrentHealth = MaxHealth;
@@ -46,7 +52,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         if (CurrentHealth == 0 && damageTaken != 0)
         {
-            _animator.SetTrigger("Die");
+            ragdollEnabler.EnableRagdoll();
+            //_animator.SetTrigger("Die");
             OnDeath?.Invoke(transform.position);
             //Destroy(gameObject);
         }

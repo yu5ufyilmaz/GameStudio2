@@ -2,10 +2,9 @@ using UnityEngine;
 
 public class PauseGame : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject TutorialImage;
+    public GameObject TutorialImage;
 
-    private GameObject AimImage;
+    public GameObject AimImage;
     private GameObject pauseMenu; // Pause menüsünü tutan GameObject
     private Animator pauseMenuAnimator; // Pause menüsünün Animator bileşeni
     private Animator settingsMenuAnimator;

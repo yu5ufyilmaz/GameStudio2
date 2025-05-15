@@ -49,8 +49,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Gun: {fileID: 11400000, guid: 0e8f2aa8ade87594382fba24c05432be, type: 2}
-  currentClipAmmo: 6
-  currentAmmo: 60
+  currentClipAmmo: 0
+  currentAmmo: 0
 --- !u!65 &2378986210669597256
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -70,8 +70,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6158209, y: 0.18308544, z: 0.11245155}
-  m_Center: {x: 0.027441502, y: -0.011233926, z: 0.037386894}
+  m_Size: {x: 0.1546483, y: 0.18308544, z: 0.7375892}
+  m_Center: {x: -0.03516221, y: -0.011233926, z: -0.0031886995}
 --- !u!54 &4099973641983814996
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -116,7 +116,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5277580281249686984
 Transform:
   m_ObjectHideFlags: 0

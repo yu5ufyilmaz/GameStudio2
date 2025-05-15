@@ -840,10 +840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  animator: {fileID: 8518579675416431865}
-  navMeshAgent: {fileID: 2199741092781521748}
-  weaponMuzzle: {fileID: 3261042488501365894}
-  bulletPrefab: {fileID: 5671858156844636114, guid: 61503162f17f0cf479107f23771e97be,
+  bulletPrefab: {fileID: 3238607791281430393, guid: 8be4e3fe77ae2eb4ea535e94719937c2,
     type: 3}
   Damage: 1
   detectionRange: 15
@@ -1007,7 +1004,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _MaxHealth: 25
   _Health: 0
-  ragdollEnabler: {fileID: 2095970819190052728}
   fadeOutDelay: 10
   bloodParticlePrefab: {fileID: 3548588485384254792, guid: 2f9e7dc163581394da1e00b561eed65d,
     type: 3}
@@ -1038,9 +1034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c549ff257b56e4b4980ac8c63ed48256, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Animator: {fileID: 8518579675416431865}
   RagdollRoot: {fileID: 8312390226791216274}
-  Agent: {fileID: 2199741092781521748}
   StartRagdoll: 0
 --- !u!114 &7502262381464406350
 MonoBehaviour:

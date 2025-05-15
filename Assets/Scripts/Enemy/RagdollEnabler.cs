@@ -38,7 +38,8 @@ public class RagdollEnabler : MonoBehaviour
     public void EnableRagdoll()
     {
         Animator.enabled = false;
-        Agent.enabled = false;
+        if (Agent != null)
+            Agent.enabled = false;
         foreach (CharacterJoint joint in Joints)
         {
             joint.enableCollision = true;
@@ -65,7 +66,8 @@ public class RagdollEnabler : MonoBehaviour
     public void EnableAnimator()
     {
         Animator.enabled = true;
-        Agent.enabled = true;
+        if (Agent != null)
+            Agent.enabled = true;
         foreach (CharacterJoint joint in Joints)
         {
             joint.enableCollision = false;
