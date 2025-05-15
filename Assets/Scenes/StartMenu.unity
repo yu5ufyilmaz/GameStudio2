@@ -1682,7 +1682,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1846863058}
         m_TargetAssemblyTypeName: SceneManagerr, Assembly-CSharp
-        m_MethodName: LoadSceneAsync
+        m_MethodName: LoadScene
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2093,13 +2093,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfb74c2ba6b5768448c0b3c937095626, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadingScreenObject: {fileID: 280267367}
-  fillPentagramImage: {fileID: 432116335}
-  percentageText: {fileID: 0}
-  playCanvas: {fileID: 577292962}
-  minimumLoadingTime: 0.5
-  additionalDelayAfterLoading: 2
-  fillCompletionSpeed: 1
 --- !u!4 &1846863059
 Transform:
   m_ObjectHideFlags: 0
