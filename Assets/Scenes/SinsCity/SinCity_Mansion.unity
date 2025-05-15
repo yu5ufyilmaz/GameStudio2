@@ -1394,6 +1394,37 @@ Light:
   m_LightUnit: 3
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &441398190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 441398191}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &441398191
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 441398190}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.4552527, y: -0.008404373, z: -0.6319719, w: 0.6271252}
+  m_LocalPosition: {x: -1.1854798, y: 7.104943, z: -20.039661}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 695345238}
+  m_LocalEulerAnglesHint: {x: -35.565, y: 43.98, z: -105.201}
 --- !u!114 &476244285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2182,6 +2213,7 @@ Transform:
   m_Children:
   - {fileID: 381468322}
   - {fileID: 7588808187306364682}
+  - {fileID: 441398191}
   - {fileID: 853807124394883046}
   m_Father: {fileID: 7418224969265091770}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5486,13 +5518,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7280003357793779473}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000037748947, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.000000037742385, y: -0.018692372, z: -7.0561057e-10, w: 0.9998253}
   m_LocalPosition: {x: -1.1854553, y: 7.104943, z: -20.03964}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 695345238}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -2.142, z: 0}
 --- !u!1 &919132149252429462
 GameObject:
   m_ObjectHideFlags: 0
@@ -8370,7 +8402,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   door: {fileID: 853807124394883046}
-  openAngle: 90
+  openAngle: -90
   openSpeed: 2
   openSound: {fileID: 0}
 --- !u!65 &7473872975342495361

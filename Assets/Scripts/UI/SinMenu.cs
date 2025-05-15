@@ -13,6 +13,12 @@ public class SinMenu : MonoBehaviour
     private string creditsSceneName; // Credits sahnesinin adı
 
     [SerializeField]
+    private GameObject rawImage;
+
+    [SerializeField]
+    private GameObject credits;
+
+    [SerializeField]
     private bool isFront;
 
     [SerializeField]
@@ -35,6 +41,14 @@ public class SinMenu : MonoBehaviour
                 card.SetActive(false);
         }
         videoPlayer.gameObject.SetActive(false); // VideoPlayer nesnesini aktif yap
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            PauseGameAndPlayVideo();
+        }
     }
 
     public void RevealCardForSin(Sin sin)
@@ -164,10 +178,12 @@ public class SinMenu : MonoBehaviour
 
     private void PauseGameAndPlayVideo()
     {
+        Time.timeScale = 0f;
         pauseGame.AimImage.SetActive(false);
+
         pauseGame.TutorialImage.SetActive(false);
 
-        Cursor.visible = false;
+        rawImage.SetActive(true);
         // Oyunu durdur
         // Video oynatmayı başlat
         videoPlayer.gameObject.SetActive(true); // VideoPlayer nesnesini aktif yap
@@ -179,6 +195,7 @@ public class SinMenu : MonoBehaviour
     private void OnVideoFinished(VideoPlayer vp)
     {
         // Credits sahnesine geçiş yap
+        Cursor.visible = true;
         UnityEngine.SceneManagement.SceneManager.LoadScene(creditsSceneName);
     }
 

@@ -89,6 +89,7 @@ public class XRayWallEffect : MonoBehaviour
             if (hit.collider.gameObject != this.gameObject)
             {
                 isOccluded = true;
+                Debug.Log("Silüet olmama sebebi: " + hit.collider.gameObject.name); // Silüet olmama sebebini logla
             }
             else
             {

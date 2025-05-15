@@ -27,9 +27,9 @@ Transform:
   m_GameObject: {fileID: 1584728826485307282}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.048537612, y: 0.000000014901161, z: -0.6347915}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0.048537612, y: 0.697, z: -0.6347915}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3315338916196625809}
   - {fileID: 7069597581016972535}
@@ -54,8 +54,8 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.92
-  m_Center: {x: -0.09, y: 0, z: -0.25}
+  m_Radius: 1.3781242
+  m_Center: {x: -0.12926078, y: 0, z: -0.25000012}
 --- !u!114 &494685317653183295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Type: 1
-  AmmoAmount: 30
+  AmmoAmount: 60
   SpinDirection: {x: 0, y: 1, z: 0}
 --- !u!1 &2835811995809182439
 GameObject:

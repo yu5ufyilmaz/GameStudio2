@@ -37,10 +37,10 @@ public class BackgroundMusicManager : MonoBehaviour
         }
 
         // Start playing default music if assigned
-        if (defaultMusic != null)
+        /*if (defaultMusic != null)
         {
             PlayMusic(defaultMusic, true);
-        }
+        }*/
     }
 
     // Call this to play new background music with fade transition

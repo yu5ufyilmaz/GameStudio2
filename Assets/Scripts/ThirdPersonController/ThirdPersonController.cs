@@ -2,6 +2,8 @@
 using DotGalacticos.Guns.Demo;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.UI;
+using UnityEngine.Video;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -50,6 +52,15 @@ namespace DotGalacticos
 
         [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
         public float Gravity = -15.0f;
+
+        [Header("Death Video")]
+        [Tooltip("GameObject with VideoPlayer component for death sequence")]
+        public GameObject deathVideoObject;
+
+        [Tooltip("UI RawImage to display the death video (optional)")]
+        public UnityEngine.UI.RawImage deathVideoRawImage;
+
+        private VideoPlayer videoPlayer;
 
         [Space(10)]
         [Tooltip(
@@ -157,6 +168,7 @@ namespace DotGalacticos
         private const float _threshold = 0.01f;
 
         private bool _hasAnimator;
+        private bool _isDying = false;
 
         public bool IsAiming { get; set; }
 
@@ -195,6 +207,36 @@ namespace DotGalacticos
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
             _aimRig = GameObject.Find("Aim Rig").GetComponent<Rig>();
+
+            // Initialize VideoPlayer reference if deathVideoObject is assigned
+            if (deathVideoObject != null)
+            {
+                videoPlayer = deathVideoObject.GetComponent<VideoPlayer>();
+                if (videoPlayer != null)
+                {
+                    // Add completion event listener
+                    videoPlayer.loopPointReached += OnVideoFinished;
+
+                    // Initially make sure the video is not playing
+                    videoPlayer.Stop();
+
+                    // Configure the RawImage as the target texture display if available
+                    if (deathVideoRawImage != null)
+                    {
+                        // Set the video to render to the RawImage texture
+                        videoPlayer.targetTexture = new RenderTexture(
+                            (int)videoPlayer.clip.width,
+                            (int)videoPlayer.clip.height,
+                            24
+                        );
+                        deathVideoRawImage.texture = videoPlayer.targetTexture;
+
+                        // Hide RawImage initially
+                        deathVideoRawImage.gameObject.SetActive(false);
+                    }
+                }
+            }
+
 #if ENABLE_INPUT_SYSTEM
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -206,7 +248,7 @@ namespace DotGalacticos
             AssignAnimationIDs();
             Keyframe dodge_lastFrame = dodgeCurve[dodgeCurve.length - 1];
             dodgeTimer = dodge_lastFrame.time;
-            // re  set our timeouts on start
+            // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
 
@@ -215,6 +257,10 @@ namespace DotGalacticos
 
         private void Update()
         {
+            // Don't process movement if dying
+            if (_isDying)
+                return;
+
             _hasAnimator = TryGetComponent(out _animator);
 
             JumpAndGravity();
@@ -230,6 +276,10 @@ namespace DotGalacticos
 
         private void LateUpdate()
         {
+            // Don't process camera rotation if dying
+            if (_isDying)
+                return;
+
             CameraRotation();
         }
 
@@ -461,55 +511,6 @@ namespace DotGalacticos
             }
         }
 
-        /*
-                private void Dodge()
-                {
-                    if (Input.GetKeyDown(KeyCode.Space))
-                    {
-                        // Eğer karakter zaten dodging veya jumping durumundaysa, işlemi durdur
-                        if (isDodging || isJumpAway)
-                            return;
-        
-                        Vector3 localVelocity = transform.InverseTransformDirection(_controller.velocity);
-                        float currentHorizontalSpeed = localVelocity.z;
-                        float currentVerticalSpeed = localVelocity.x;
-        
-                        // Yana kayma işlemi
-                        if (currentVerticalSpeed > 1.9f)
-                            StartCoroutine(JumpAwayRoutine(true));
-                        else if (currentVerticalSpeed < -1.9f)
-                            StartCoroutine(JumpAwayRoutine(false));
-                    }
-                }
-        
-                IEnumerator DodgeRoutine()
-                {
-                    FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
-                    _shootController.DodgeIK(0f);
-                    _animator.SetTrigger("Dodge");
-                    isDodging = true;
-                    float timer = 0;
-                    AudioSource.PlayClipAtPoint(
-                        dodgeAuido,
-                        transform.TransformPoint(_controller.center),
-                        FootstepAudioVolume
-                    );
-                    _controller.center = new Vector3(0f, 0.49f, 0f);
-                    _controller.height = 0.9f;
-                    while (timer < dodgeTimer)
-                    {
-                        float speed = dodgeCurve.Evaluate(timer);
-                        Vector3 dir = (transform.forward * speed) + (Vector3.up * _verticalVelocity);
-                        _controller.Move(dir * Time.deltaTime);
-                        timer += Time.deltaTime;
-                        yield return null;
-                    }
-                    //_shootController.DodgeIK(1f);
-                    isDodging = false;
-                    _controller.center = new Vector3(0f, 0.9f, 0f);
-                    _controller.height = 1.8f;
-                }*/
-
         IEnumerator JumpAwayRoutine(bool isRight)
         {
             FootstepAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
@@ -714,16 +715,71 @@ namespace DotGalacticos
             }
         }
 
-        //Ölüm actions burada oluyor.
+        // Video bittiğinde çağrılacak metod
+        private void OnVideoFinished(VideoPlayer vp)
+        {
+            // Video tamamlandığında StartMenu sahnesine geç
+            if (_isDying)
+            {
+                // RawImage'i gizle (eğer kullanılıyorsa)
+                if (deathVideoRawImage != null)
+                {
+                    deathVideoRawImage.gameObject.SetActive(false);
+                }
+
+                SceneManager.LoadScene("StartMenu");
+                Cursor.visible = true;
+            }
+        }
+
+        // Ölüm actions burada oluyor.
         public void Die()
         {
+            // Video yoksa doğrudan Dying metodunu çağır
             Invoke("Dying", 1f);
         }
 
         public void Dying()
         {
-            SceneManager.LoadScene("StartMenu");
-            Cursor.visible = true;
+            // Eğer zaten ölüyorsa işlem yapma
+            if (_isDying)
+                return;
+
+            _isDying = true;
+
+            // Eğer video player varsa
+            if (videoPlayer != null)
+            {
+                // Input'u devre dışı bırak
+                if (_input != null)
+                {
+                    _input.enabled = false;
+                }
+
+                // Karakter kontrollerini devre dışı bırak
+                if (_controller != null)
+                {
+                    _controller.enabled = false;
+                }
+
+                // VideoPlayer'ı görünür ve aktif hale getir (gerekiyorsa)
+                if (deathVideoObject != null && !deathVideoObject.activeSelf)
+                {
+                    deathVideoObject.SetActive(true);
+                }
+
+                // RawImage'i etkinleştir (eğer kullanılıyorsa)
+                if (deathVideoRawImage != null)
+                {
+                    deathVideoRawImage.gameObject.SetActive(true);
+                }
+
+                // Videoyu oynat
+                videoPlayer.Play();
+
+                // Fare imlecini görünür yap
+                Cursor.visible = true;
+            }
         }
     }
 }

@@ -3,8 +3,11 @@ using UnityEngine.Video;
 
 public class VideoSkipper : MonoBehaviour
 {
-    [SerializeField] private VideoPlayer videoPlayer;
-    [SerializeField] private GameObject videoCanvas; // Atlama butonu
+    [SerializeField]
+    private VideoPlayer videoPlayer;
+
+    [SerializeField]
+    private GameObject videoCanvas; // Atlama butonu
 
     // Video oynatıldıktan sonra atlama için bayrak
     private bool videoStarted = false;
@@ -25,10 +28,16 @@ public class VideoSkipper : MonoBehaviour
         }
 
         // Video başladığında bayrağı ayarla
-        videoPlayer.started += (vp) => { videoStarted = true; };
+        videoPlayer.started += (vp) =>
+        {
+            videoStarted = true;
+        };
 
         // Video bittiğinde bayrağı sıfırla
-        videoPlayer.loopPointReached += (vp) => { videoStarted = false; };
+        videoPlayer.loopPointReached += (vp) =>
+        {
+            videoStarted = false;
+        };
     }
 
     void Update()
@@ -48,10 +57,12 @@ public class VideoSkipper : MonoBehaviour
         // Video oynatıcıyı devre dışı bırak veya gizle
         videoPlayer.gameObject.SetActive(false);
         videoCanvas.SetActive(false);
-        
+
         // Bayrağı sıfırla
         videoStarted = false;
+        BackgroundMusicManager.Instance.PlayMusic(
+            BackgroundMusicManager.Instance.defaultMusic,
+            true
+        );
     }
 }
-    
-    
