@@ -47,6 +47,14 @@ public class VideoSkipper : MonoBehaviour
         {
             SkipVideo();
         }
+        videoPlayer.loopPointReached += OnVideoFinished;
+    }
+
+    private void OnVideoFinished(VideoPlayer vp)
+    {
+        // Credits sahnesine geçiş yap
+        Cursor.visible = true;
+        SkipVideo();
     }
 
     void SkipVideo()

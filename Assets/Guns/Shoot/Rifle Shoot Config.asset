@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HitMask:
     serializedVersion: 2
-    m_Bits: 905
+    m_Bits: 897
   FireRate: 0.1
   RecoilRecoverySpeed: 1
   MaxSpreadTime: 10
   BulletPerShoot: 1
   ShakeIntensity: 0.5
   ShakeTime: 0.1
-  SpreadType: 2
+  SpreadType: 0
   Spread: {x: 0.1, y: 0.1, z: 0.1}
   MinSpread: {x: 0, y: 0, z: 0}
   SpreadMultiplier: 0.1

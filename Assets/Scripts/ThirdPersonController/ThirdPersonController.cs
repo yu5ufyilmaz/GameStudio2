@@ -374,18 +374,23 @@ namespace DotGalacticos
                 SmoothInputSpeed * Time.deltaTime
             );
 
-            // Hareket yönünü hesapla (Top-down kontroller - kamera bağımsız)
+            // Hareket yönünü hesapla (kamera bağımlı)
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
-            // İlerleme yönü kontrolü
             if (inputDirection.magnitude > 0)
             {
-                // Top-down hareket için kamera bağımsız - HATRED tarzı
-                Vector3 moveDirection = Vector3.zero;
+                // Kamera yönüne göre dönüş Quaternioni (sadece y ekseninde)
+                Vector3 cameraForward = _mainCamera.transform.forward;
+                cameraForward.y = 0;
+                cameraForward.Normalize();
 
-                // WASD her zaman aynı dünya yönlerini kontrol eder
-                moveDirection.x = _input.move.x; // A-D sağ-sol
-                moveDirection.z = _input.move.y; // W-S ileri-geri
+                Vector3 cameraRight = _mainCamera.transform.right;
+                cameraRight.y = 0;
+                cameraRight.Normalize();
+
+                // inputDirection'u kameranın yönüne göre dönüştür
+                Vector3 moveDirection =
+                    cameraForward * inputDirection.z + cameraRight * inputDirection.x;
                 moveDirection.Normalize();
 
                 // Hareket vektörünü hesapla
@@ -396,17 +401,27 @@ namespace DotGalacticos
                 _controller.Move(moveVector);
 
                 // Karakter dönüşünü yönet
-                float targetRotation = 0f;
+                float targetRotation;
 
-                if (_shootController.isAiming)
+                if (_shootController.isAiming && _shootController.aimTargetInstance != null)
                 {
-                    // Nişan alıyorsa nişan açısını kullan
-                    targetRotation = _shootController._lastAimAngle;
+                    Vector3 directionToAim =
+                        _shootController.aimTargetInstance.transform.position - transform.position;
+                    directionToAim.y = 0; // yatay düzlemde
+
+                    if (directionToAim.sqrMagnitude > 0.001f)
+                        targetRotation = Quaternion.LookRotation(directionToAim).eulerAngles.y;
+                    else
+                        targetRotation = transform.eulerAngles.y;
                 }
                 else
                 {
                     // Nişan almıyorsa hareket yönüne dön
-                    targetRotation = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+                    if (moveDirection.sqrMagnitude > 0.001f)
+                        targetRotation =
+                            Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+                    else
+                        targetRotation = transform.eulerAngles.y;
                 }
 
                 // Dönüş yumuşatma
@@ -417,7 +432,7 @@ namespace DotGalacticos
                     RotationSmoothTime
                 );
 
-                // Dönüşü uygula
+                // Dönüşü uygulama
                 transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
                 // Animator güncelleme
@@ -435,11 +450,22 @@ namespace DotGalacticos
             else
             {
                 // Hareket yoksa sadece yerinde dönüş yapabilir (nişan alırken)
-                if (_shootController.isAiming)
+                if (_shootController.isAiming && _shootController.aimTargetInstance != null)
                 {
+                    Vector3 directionToAim =
+                        _shootController.aimTargetInstance.transform.position - transform.position;
+                    directionToAim.y = 0;
+
+                    float targetRotation;
+
+                    if (directionToAim.sqrMagnitude > 0.001f)
+                        targetRotation = Quaternion.LookRotation(directionToAim).eulerAngles.y;
+                    else
+                        targetRotation = transform.eulerAngles.y;
+
                     float rotation = Mathf.SmoothDampAngle(
                         transform.eulerAngles.y,
-                        _shootController._lastAimAngle,
+                        targetRotation,
                         ref _rotationSmoothVelocity,
                         RotationSmoothTime * 0.5f // Yerinde dönüş için daha hızlı
                     );
@@ -496,10 +522,10 @@ namespace DotGalacticos
             }
 
             // Eğer bir kapı varsa ve E tuşuna basıldıysa
-            if (currentDoor != null && Input.GetKeyDown(KeyCode.E))
-            {
-                ToggleDoor(currentDoor); // Kapıyı aç/kapa
-            }
+            /* if (currentDoor != null && Input.GetKeyDown(KeyCode.E))
+             {
+                 ToggleDoor(currentDoor); // Kapıyı aç/kapa
+             }*/
         }
 
         private void ToggleDoor(Transform door)

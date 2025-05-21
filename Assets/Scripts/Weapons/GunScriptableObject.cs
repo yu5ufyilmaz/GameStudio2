@@ -142,7 +142,7 @@ namespace DotGalacticos.Guns
 
         private bool hasPlayedOutOfAmmoClip = false;
 
-        public void Shoot()
+        public void Shoot(Vector3? aimTargetPosition = null)
         {
             if (Time.time - LastShootTime - ShootConfig.FireRate > Time.deltaTime)
             {
@@ -151,11 +151,9 @@ namespace DotGalacticos.Guns
                     (StopShootingTime - InitialClickTime),
                     ShootConfig.MaxSpreadTime
                 );
-
                 float lerpTime =
                     (ShootConfig.RecoilRecoverySpeed - (Time.time - StopShootingTime))
                     / ShootConfig.RecoilRecoverySpeed;
-
                 InitialClickTime = Time.time - Mathf.Lerp(0, lastDuration, Mathf.Clamp01(lerpTime));
             }
             if (Time.time > ShootConfig.FireRate + LastShootTime)
@@ -169,44 +167,49 @@ namespace DotGalacticos.Guns
                     );
                     ShootSystem.Play();
                     AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
-
-                    // Nişan alma hedef pozisyonunu al
                     AmmoConfig.CurrentClipAmmo--;
                     hasPlayedOutOfAmmoClip = false;
-                    for (int i = 0; i < ShootConfig.BulletPerShoot; i++)
+                    Vector3 shootDirection;
+
+                    // Bullet Spread Type kontrolü
+                    if (
+                        ShootConfig.SpreadType == BulletSpreadType.None
+                        && aimTargetPosition.HasValue
+                    )
+                    {
+                        shootDirection = (aimTargetPosition.Value - GetRaycastOrigin()).normalized;
+                    }
+                    else
                     {
                         Vector3 spreadAmount = ShootConfig.GetSpread();
-
                         Model.transform.forward += Model.transform.TransformDirection(spreadAmount);
+                        shootDirection = -Model.transform.forward + spreadAmount;
+                    }
 
-                        Vector3 shootDirection = -Model.transform.forward + spreadAmount;
-
-                        // Raycast ile merminin gideceği yönü kontrol et
-                        if (
-                            Physics.Raycast(
-                                ShootSystem.transform.position,
-                                shootDirection,
-                                out RaycastHit hit,
-                                float.MaxValue,
-                                ShootConfig.HitMask
-                            )
+                    if (
+                        Physics.Raycast(
+                            ShootSystem.transform.position,
+                            shootDirection,
+                            out RaycastHit hit,
+                            float.MaxValue,
+                            ShootConfig.HitMask
                         )
-                        {
-                            ActiveMonoBehaviour.StartCoroutine(
-                                PlayTrail(ShootSystem.transform.position, hit.point, hit)
-                            );
-                        }
-                        else
-                        {
-                            ActiveMonoBehaviour.StartCoroutine(
-                                PlayTrail(
-                                    ShootSystem.transform.position,
-                                    ShootSystem.transform.position
-                                        + (shootDirection * TrailConfig.MissDistance),
-                                    new RaycastHit()
-                                )
-                            );
-                        }
+                    )
+                    {
+                        ActiveMonoBehaviour.StartCoroutine(
+                            PlayTrail(ShootSystem.transform.position, hit.point, hit)
+                        );
+                    }
+                    else
+                    {
+                        ActiveMonoBehaviour.StartCoroutine(
+                            PlayTrail(
+                                ShootSystem.transform.position,
+                                ShootSystem.transform.position
+                                    + (shootDirection * TrailConfig.MissDistance),
+                                new RaycastHit()
+                            )
+                        );
                     }
                 }
                 else
@@ -221,7 +224,7 @@ namespace DotGalacticos.Guns
             }
         }
 
-        public void Tick(bool WantsToShoot)
+        public void Tick(bool WantsToShoot, Transform targetTransform)
         {
             Model.transform.localRotation = Quaternion.Lerp(
                 Model.transform.localRotation,
@@ -231,7 +234,7 @@ namespace DotGalacticos.Guns
             if (WantsToShoot)
             {
                 LastFrameWantedToShoot = true;
-                Shoot();
+                Shoot(targetTransform.position);
             }
             if (LastFrameWantedToShoot)
             {

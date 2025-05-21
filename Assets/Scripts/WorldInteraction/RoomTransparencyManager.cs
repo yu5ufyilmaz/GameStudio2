@@ -54,13 +54,11 @@ public class RoomTransparencyManager : MonoBehaviour
         {
             if (currentRoom != null)
             {
-                Debug.Log($"Nssın");
                 SetRoomWallsOpaque(currentRoom);
             }
 
             if (newRoom != null)
             {
-                Debug.Log($"MÜdrü müdr müdür");
                 SetRoomWallsTransparent(newRoom);
             }
 

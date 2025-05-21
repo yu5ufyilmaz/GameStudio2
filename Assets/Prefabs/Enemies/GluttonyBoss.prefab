@@ -2470,7 +2470,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3108d788d29b2e468eb39805ae4a77a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _MaxHealth: 100
+  _MaxHealth: 1
   _Health: 0
   fadeOutDelay: 10
   bloodParticlePrefab: {fileID: 3548588485384254792, guid: 2f9e7dc163581394da1e00b561eed65d,

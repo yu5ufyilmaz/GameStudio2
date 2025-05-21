@@ -49,6 +49,7 @@ namespace DotGalacticos.Guns.Demo
 
         [SerializeField]
         public GunScriptableObject SecondHandBaseGun;
+        private ShootController shootController;
         private Rig rig2;
         private TwoBoneIKConstraint ik;
         private int activeGunIndex = 1;
@@ -85,7 +86,7 @@ namespace DotGalacticos.Guns.Demo
             rig2 = GameObject.Find("Left Hand Rig").GetComponent<Rig>();
             ik = rig2.GetComponentInChildren<TwoBoneIKConstraint>();
             animator = GetComponent<Animator>();
-
+            shootController = GetComponent<ShootController>();
             ActiveBaseGun = firstGun; // Başlangıçta aktif silahı birinci el silahı olarak ayarla
             SetOriginalAmmoValues();
             SetupGun(ActiveBaseGun);
@@ -116,6 +117,7 @@ namespace DotGalacticos.Guns.Demo
             {
                 gunUI.SetActive(gunUI.name == gun.name);
             }
+            shootController.isReloading = false;
             // Yeni silahın mermi durumunu ayarla
             ActiveGun.AmmoConfig.CurrentClipAmmo = gun.GetClipAmmo(gun.name);
             ActiveGun.AmmoConfig.CurrentAmmo = gun.GetTotalAmmo(gun.name);
@@ -206,16 +208,23 @@ namespace DotGalacticos.Guns.Demo
 
         private IEnumerator SwitchGunCoroutine(int gunNumber)
         {
+            // Silah değişimi animasyonunu başlat
             animator.SetTrigger("Switch");
+
+            // Aktif silahı ateş edemez hale getir
             if (ActiveGun != null)
                 ActiveGun.canShoot = false;
 
+            // UI değişimini hemen yap
+            SwitchGun(gunNumber); // Silahı değiştir ve UI'yı güncelle
+
+            // Animasyon süresi kadar bekle
             yield return new WaitForSeconds(1.1f);
 
+            // Animasyon tetikleyicisini sıfırla
             animator.ResetTrigger("Switch");
 
-            SwitchGun(gunNumber);
-
+            // Aktif silahı tekrar ateş edebilir hale getir
             if (ActiveGun != null)
                 ActiveGun.canShoot = true;
         }
