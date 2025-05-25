@@ -6,13 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="5050d127-b030-4236-bf8e-f88a1e258cbe" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.GameStudio2/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GameStudio2/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SinsCity_Tests/SinsCity_P_T.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SinsCity_Tests/SinsCity_P_T.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/StartMenu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/StartMenu.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Setting/SceneManagerr.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Setting/SceneManagerr.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_Casino.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_Casino.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_Casino/ReflectionProbe-0.exr" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_Casino/ReflectionProbe-0.exr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_Casino/ReflectionProbe-0.exr.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_Casino/ReflectionProbe-0.exr.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_P/SinsCity_P Baking Set.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SinsCity/SinsCity_P/SinsCity_P Baking Set.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/WorldInteraction/RoomTransparencyManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/WorldInteraction/RoomTransparencyManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/Packages/com.eflatun.scenereference/Settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Packages/com.eflatun.scenereference/Settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +39,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "YusufSync",
+    "git-widget-placeholder": "yusufD",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",

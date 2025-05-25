@@ -135,6 +135,7 @@ public class RoomTransparencyManager : MonoBehaviour
             SetWallOpacity(wallRenderer, transparencyAmount, "TransparentWalls");
         }
     }
+    
 
     private void SetWallOpacity(Renderer wallRenderer, float opacity, string transparentLayerName)
     {
@@ -178,6 +179,7 @@ public class RoomTransparencyManager : MonoBehaviour
         }
     }
 }
+
 
 [System.Serializable]
 public class Room
