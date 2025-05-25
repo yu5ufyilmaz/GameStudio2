@@ -176,18 +176,23 @@ public class SinMenu : MonoBehaviour
         }
     }
 
+    private IEnumerator PauseGameAndPlayVideoWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay); // Belirtilen süre kadar bekle
+        PauseGameAndPlayVideo(); // Ardından video oynatmayı başlat
+    }
+
     private void PauseGameAndPlayVideo()
     {
         Time.timeScale = 0f;
         pauseGame.AimImage.SetActive(false);
-
         pauseGame.TutorialImage.SetActive(false);
-
         rawImage.SetActive(true);
-        // Oyunu durdur
+
         // Video oynatmayı başlat
         videoPlayer.gameObject.SetActive(true); // VideoPlayer nesnesini aktif yap
         videoPlayer.Play();
+
         // Video bittiğinde Credits sahnesine geç
         videoPlayer.loopPointReached += OnVideoFinished;
     }
@@ -216,10 +221,11 @@ public class SinMenu : MonoBehaviour
     {
         int sinCount = GetActiveCardCount();
         _sinCountText.SetText($"{sinCount}/" + $"{6}");
+
         // Eğer tüm kartlar toplandıysa
         if (sinCount >= 6)
         {
-            PauseGameAndPlayVideo();
+            StartCoroutine(PauseGameAndPlayVideoWithDelay(2f)); // 2 saniye bekle
         }
     }
 }
