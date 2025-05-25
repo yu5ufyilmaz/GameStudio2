@@ -4,41 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class SceneManagerr : MonoBehaviour
 {
-    public GameObject LoadingScreen; // Yükleme ekranı
-    public UnityEngine.UI.Image LoadingBarFill; // Yükleme çubuğu
-
     public void LoadScene(string sceneName)
     {
-        StartCoroutine(LoadSceneAsync(sceneName));
-    }
-
-    private IEnumerator LoadSceneAsync(string sceneName)
-    {
-        // Yükleme ekranını aç
-        //LoadingScreen.SetActive(true);
-
-        // Asenkron sahne yükleme işlemi
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        operation.allowSceneActivation = false;
-
-        while (!operation.isDone)
-        {
-            // Yükleme ilerlemesini güncelle
-            float progress = Mathf.Clamp01(operation.progress / 0.9f);
-            //  LoadingBarFill.fillAmount = progress;
-
-            // Yükleme tamamlandığında sahne aktivasyonunu başlat
-            if (operation.progress >= 0.9f)
-            {
-                // LoadingBarFill.fillAmount = 1f;
-                operation.allowSceneActivation = true;
-            }
-
-            yield return null;
-        }
-
-        // Yükleme tamamlandı, loading ekranını gizle
-        //LoadingScreen.SetActive(false);
+        // Sahneyi yükle
+        SceneManager.LoadScene(sceneName);
     }
 
     // Bu metot, sahne geçişini belirli bir süre bekleyerek yapar

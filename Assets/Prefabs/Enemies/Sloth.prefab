@@ -1503,7 +1503,7 @@ MonoBehaviour:
   attackRange: 8
   fireRate: 1
   patrolSpeed: 2
-  chaseSpeed: 3
+  chaseSpeed: 6
   bulletSpeed: 20
   speedChangeRate: 10
   dropChanceOverall: 50

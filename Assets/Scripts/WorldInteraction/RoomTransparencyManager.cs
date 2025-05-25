@@ -33,17 +33,17 @@ public class RoomTransparencyManager : MonoBehaviour
 
     void Start()
     {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player").transform;
+        }
+
         FindRoomsAutomatically();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "SinsCity_P_T")
-        {
-            FindRoomsAutomatically();
-            player = GameObject.FindGameObjectWithTag("Player").transform;
-        }
+        FindRoomsAutomatically();
     }
 
     void Update()
