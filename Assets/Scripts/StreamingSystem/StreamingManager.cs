@@ -86,21 +86,14 @@ public class StreamingManager : MonoBehaviour
     void Update()
     {
         // process any pending unloads
-        foreach (var UnloadInfo in PendingUnloads)
+        for (int i = PendingUnloads.Count - 1; i >= 0; i--)
         {
+            var UnloadInfo = PendingUnloads[i];
             UnloadInfo.TimeRemaining -= Time.deltaTime;
-
             if (UnloadInfo.TimeRemaining <= 0)
             {
-                SceneManager
-                    .UnloadSceneAsync(
-                        UnloadInfo.ScenePath,
-                        UnloadSceneOptions.UnloadAllEmbeddedSceneObjects
-                    )
-                    .completed += (InUnloadOp) =>
-                {
-                    Resources.UnloadUnusedAssets();
-                };
+                StartCoroutine(UnloadSceneAsync(UnloadInfo.ScenePath));
+                PendingUnloads.RemoveAt(i);
             }
         }
 
@@ -129,6 +122,17 @@ public class StreamingManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private IEnumerator UnloadSceneAsync(string scenePath)
+    {
+        AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(
+            scenePath,
+            UnloadSceneOptions.UnloadAllEmbeddedSceneObjects
+        );
+        yield return unloadOperation;
+        // Optionally call Resources.UnloadUnusedAssets() here if needed
+        yield return Resources.UnloadUnusedAssets();
     }
 
     void Cleanup()
