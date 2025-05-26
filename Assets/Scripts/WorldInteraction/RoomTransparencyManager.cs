@@ -6,7 +6,7 @@ public class RoomTransparencyManager : MonoBehaviour
 {
     public static RoomTransparencyManager Instance { get; private set; }
     public Transform player;
-    public LayerMask buildingLayer; // Bina katmanı
+    public LayerMask buildingLayer;
     public string transparentLayerName = "TransparentWalls";
 
     [Range(0, 1)]
@@ -14,6 +14,11 @@ public class RoomTransparencyManager : MonoBehaviour
 
     public List<Room> rooms = new List<Room>();
     private Room currentRoom;
+    
+    // Chunk sistemi için yeni değişkenler
+    private float lastUpdateTime = 0f;
+    private float updateInterval = 0.5f; // 0.5 saniyede bir kontrol et
+    private bool needsRoomRefresh = false;
 
     void Awake()
     {
@@ -25,28 +30,93 @@ public class RoomTransparencyManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
 
-        // Sahne yüklendiğinde odaları bul
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void Start()
     {
+        InitializeSystem();
+    }
+
+    private void InitializeSystem()
+    {
+        // Player referansını bul
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.transform;
+            }
+        }
+        
+        // Streaming Manager ile entegrasyon
+        if (StreamingManager.Instance != null)
+        {
+            // Streaming events'i dinle (eğer StreamingManager'da public eventler varsa)
+            InvokeRepeating(nameof(CheckForNewRooms), 1f, 2f); // 2 saniyede bir yeni room'ları kontrol et
+        }
+        
         FindRoomsAutomatically();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+    }
+
+    private void CheckForNewRooms()
+    {
+        // Aktif olmayan room'ları temizle
+        rooms.RemoveAll(room => room.roomCollider == null || !room.roomCollider.gameObject.activeInHierarchy);
+        
+        // Yeni room'ları ekle
+        FindRoomsAutomatically();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "SinsCity_P_T")
         {
-            FindRoomsAutomatically();
-            player = GameObject.FindGameObjectWithTag("Player").transform;
+            needsRoomRefresh = true;
+            Invoke(nameof(RefreshAfterSceneLoad), 1f); // 1 saniye bekle
         }
     }
 
+    private void RefreshAfterSceneLoad()
+    {
+        InitializeSystem();
+        needsRoomRefresh = false;
+    }
+
     void Update()
+    {
+        // Player null kontrolü
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.transform;
+            }
+            return;
+        }
+
+        // Performans için sürekli güncellemek yerine aralıklarla güncelle
+        if (Time.time - lastUpdateTime > updateInterval)
+        {
+            lastUpdateTime = Time.time;
+            
+            // Room listesi boşsa veya yenileme gerekiyorsa
+            if (rooms.Count == 0 || needsRoomRefresh)
+            {
+                FindRoomsAutomatically();
+                needsRoomRefresh = false;
+            }
+            
+            CheckRoomTransition();
+        }
+    }
+
+    private void CheckRoomTransition()
     {
         Room newRoom = GetRoomContainingPlayer();
 
@@ -68,11 +138,18 @@ public class RoomTransparencyManager : MonoBehaviour
 
     private Room GetRoomContainingPlayer()
     {
+        if (player == null) return null;
+        
         foreach (Room room in rooms)
         {
-            if (room.IsPlayerInside(player.position))
+            // Null kontrolü ekle
+            if (room != null && room.roomCollider != null && 
+                room.roomCollider.gameObject.activeInHierarchy)
             {
-                return room;
+                if (room.IsPlayerInside(player.position))
+                {
+                    return room;
+                }
             }
         }
 
@@ -81,76 +158,126 @@ public class RoomTransparencyManager : MonoBehaviour
 
     public void FindRoomsAutomatically()
     {
-        rooms.Clear();
+        // Sadece aktif room'ları bul
         GameObject[] roomObjects = GameObject.FindGameObjectsWithTag("Room");
+        
+        // Mevcut aktif room'ları kontrol et
+        List<Room> existingActiveRooms = new List<Room>();
+        foreach (Room room in rooms)
+        {
+            if (room != null && room.roomCollider != null && 
+                room.roomCollider.gameObject.activeInHierarchy)
+            {
+                existingActiveRooms.Add(room);
+            }
+        }
 
         foreach (GameObject roomObj in roomObjects)
         {
+            // Sadece aktif olan room objelerini işle
+            if (!roomObj.activeInHierarchy) continue;
+            
+            // Bu room zaten listede var mı kontrol et
+            bool alreadyExists = false;
+            foreach (Room existingRoom in existingActiveRooms)
+            {
+                if (existingRoom.roomCollider != null && 
+                    existingRoom.roomCollider.gameObject == roomObj)
+                {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+            
+            if (alreadyExists) continue;
+
             Collider roomCollider = roomObj.GetComponent<Collider>();
             if (roomCollider != null)
             {
                 Room room = new Room();
                 room.roomName = roomObj.name;
                 room.roomCollider = roomCollider;
-                // Odanın altındaki tüm nesneleri kontrol et
                 FindWallsInChildren(roomObj.transform, room);
-                rooms.Add(room);
+                
+                // Sadece duvarları olan room'ları ekle
+                if (room.allWalls.Count > 0)
+                {
+                    existingActiveRooms.Add(room);
+                }
             }
         }
+        
+        rooms = existingActiveRooms;
     }
 
     private void FindWallsInChildren(Transform parent, Room room)
     {
         foreach (Transform child in parent)
         {
-            // Eğer çocuk nesne bir "Wall" ise, onu ekle
             if (child.CompareTag("Wall"))
             {
                 Renderer wallRenderer = child.GetComponent<Renderer>();
-                if (wallRenderer != null)
+                if (wallRenderer != null && wallRenderer.gameObject.activeInHierarchy)
                 {
-                    room.allWalls.Add(wallRenderer); // Tüm duvarları ekle
+                    room.allWalls.Add(wallRenderer);
                 }
             }
-            // Eğer çocuk nesne bir "Room" ise, onun altındaki duvarları da bul
+            
             if (child.CompareTag("Room"))
             {
-                FindWallsInChildren(child, room); // Rekürsif olarak alt odaları kontrol et
+                FindWallsInChildren(child, room);
+            }
+            else
+            {
+                // "Room" tag'i olmasa bile çocukları kontrol et
+                FindWallsInChildren(child, room);
             }
         }
     }
 
     private void SetRoomWallsOpaque(Room room)
     {
+        if (room?.allWalls == null) return;
+        
         foreach (Renderer wallRenderer in room.allWalls)
         {
-            SetWallOpacity(wallRenderer, 1.0f, "Obstacle");
+            if (wallRenderer != null && wallRenderer.gameObject.activeInHierarchy)
+            {
+                SetWallOpacity(wallRenderer, 1.0f, "Obstacle");
+            }
         }
     }
 
     private void SetRoomWallsTransparent(Room room)
     {
+        if (room?.allWalls == null) return;
+        
         foreach (Renderer wallRenderer in room.allWalls)
         {
-            SetWallOpacity(wallRenderer, transparencyAmount, "TransparentWalls");
+            if (wallRenderer != null && wallRenderer.gameObject.activeInHierarchy)
+            {
+                SetWallOpacity(wallRenderer, transparencyAmount, "TransparentWalls");
+            }
         }
     }
 
-    private void SetWallOpacity(Renderer wallRenderer, float opacity, string transparentLayerName)
+    private void SetWallOpacity(Renderer wallRenderer, float opacity, string targetLayerName)
     {
-        int layer = LayerMask.NameToLayer(transparentLayerName);
-
+        if (wallRenderer == null) return;
+        
+        int layer = LayerMask.NameToLayer(targetLayerName);
+        wallRenderer.gameObject.layer = layer;
+        
         Material[] materials = wallRenderer.materials;
-        int defLayer = LayerMask.NameToLayer(transparentLayerName);
-        if (wallRenderer.gameObject.layer == defLayer)
-            wallRenderer.gameObject.layer = layer;
-        else
-            wallRenderer.gameObject.layer = defLayer;
+        
         foreach (Material mat in materials)
         {
+            if (mat == null) continue;
+            
             if (opacity < 1.0f && mat.renderQueue < 3000)
             {
-                mat.SetFloat("_Mode", 3); // Saydam modke
+                // Transparent moda geç
+                mat.SetFloat("_Mode", 3);
                 mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                 mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 mat.SetInt("_ZWrite", 0);
@@ -161,7 +288,7 @@ public class RoomTransparencyManager : MonoBehaviour
             }
             else if (opacity >= 1.0f && mat.renderQueue >= 3000)
             {
-                // Opak modk
+                // Opaque moda geç
                 mat.SetFloat("_Mode", 0);
                 mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                 mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
@@ -177,6 +304,21 @@ public class RoomTransparencyManager : MonoBehaviour
             mat.color = color;
         }
     }
+
+    // Manuel refresh metodu - test için
+    [ContextMenu("Refresh Rooms")]
+    public void ManualRefresh()
+    {
+        rooms.Clear();
+        FindRoomsAutomatically();
+        Debug.Log($"Found {rooms.Count} rooms");
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        CancelInvoke();
+    }
 }
 
 [System.Serializable]
@@ -184,12 +326,12 @@ public class Room
 {
     public string roomName;
     public Collider roomCollider;
-    public List<Renderer> wallRenderers = new List<Renderer>(); // Duvarlar
-    public List<Renderer> allWalls = new List<Renderer>(); // Tüm duvarlar (katmanlı)
+    public List<Renderer> wallRenderers = new List<Renderer>();
+    public List<Renderer> allWalls = new List<Renderer>();
 
     public bool IsPlayerInside(Vector3 playerPosition)
     {
-        if (roomCollider != null)
+        if (roomCollider != null && roomCollider.gameObject.activeInHierarchy)
         {
             return roomCollider.bounds.Contains(playerPosition);
         }
@@ -198,10 +340,12 @@ public class Room
 
     public void SetWallsVisible(bool isVisible)
     {
-        // Odanın tüm duvarlarını görünür yap
         foreach (Renderer wallRenderer in allWalls)
         {
-            wallRenderer.enabled = isVisible;
+            if (wallRenderer != null)
+            {
+                wallRenderer.enabled = isVisible;
+            }
         }
     }
 }
@@ -211,9 +355,7 @@ public class Door
 {
     public Room room1;
     public Room room2;
-
     public bool isOpen = false;
-
     public Renderer doorRenderer;
     public Animator doorAnimator;
 
@@ -240,6 +382,11 @@ public class RoomBasedWallTransparencyEditor : UnityEditor.Editor
         if (GUILayout.Button("Find Colliders Automatically for Rooms"))
         {
             script.FindRoomsAutomatically();
+        }
+        
+        if (GUILayout.Button("Manual Refresh"))
+        {
+            script.ManualRefresh();
         }
     }
 }
