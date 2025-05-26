@@ -646,6 +646,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerFollowCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 962725960003888482, guid: 36a9f35fde1f7a84f818ad81665f55db,
+        type: 3}
+      propertyPath: m_Layer
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 1293135324592632032, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_FollowOffset.x
@@ -669,7 +674,7 @@ PrefabInstance:
     - target: {fileID: 5686157718454928320, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_AmplitudeGain
-      value: 1.33905
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5686157718454928320, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
@@ -733,11 +738,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 962725960003888482, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1494168063}
+      addedObject: {fileID: 1494168065}
     - targetCorrespondingSourceObject: {fileID: 962725960003888482, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1494168065}
+      addedObject: {fileID: 1494168066}
+    - targetCorrespondingSourceObject: {fileID: 962725960003888482, guid: 36a9f35fde1f7a84f818ad81665f55db,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1494168067}
   m_SourcePrefab: {fileID: 100100000, guid: 36a9f35fde1f7a84f818ad81665f55db, type: 3}
 --- !u!114 &740045798 stripped
 MonoBehaviour:
@@ -1769,23 +1778,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 740045797}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1494168063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1494168060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 729aad4491e915a41bda2b8325cf757a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FocusTracksTarget: 0
-  m_FocusTracking: 4
-  m_FocusTarget: {fileID: 0}
-  m_FocusOffset: 0
-  m_Profile: {fileID: 11400000, guid: 4df0c2ec7e3249e4bb5ff2dc73b7880f, type: 2}
 --- !u!114 &1494168065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1798,6 +1790,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a07799500cad53d4e97294bbabcf438c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1494168066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494168060}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 729aad4491e915a41bda2b8325cf757a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FocusTracksTarget: 0
+  m_FocusTracking: 0
+  m_FocusTarget: {fileID: 0}
+  m_FocusOffset: 0
+  m_Profile: {fileID: 11400000, guid: ccce07cce23a4ab438572495e5208925, type: 2}
+--- !u!114 &1494168067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494168060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 449ef5ebbe24720439ec31d15f7b6f3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FocusTracksTarget: 0
+  m_FocusTracking: 0
+  m_FocusTarget: {fileID: 0}
+  m_FocusOffset: 0
+  m_Profile: {fileID: 11400000, guid: a05e8947a281f5b4283f0494738e0ad0, type: 2}
 --- !u!1 &1516145284
 GameObject:
   m_ObjectHideFlags: 0
@@ -3869,7 +3895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b9742b8d652e4c4bad077036b3de77f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _MaxHealth: 25
+  _MaxHealth: 100
   _Health: 0
   healthBar: {fileID: 5554657358411162202}
   _animator: {fileID: 992088674929936402}
