@@ -1864,7 +1864,7 @@ Transform:
   m_GameObject: {fileID: 465091215}
   serializedVersion: 2
   m_LocalRotation: {x: 0.4855841, y: 0.5140118, z: -0.5140118, w: 0.4855841}
-  m_LocalPosition: {x: 6.41, y: 20.37, z: 0.88}
+  m_LocalPosition: {x: 6.41, y: 20.37, z: -1.43}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2023,7 +2023,7 @@ Light:
   serializedVersion: 11
   m_Type: 3
   m_Color: {r: 0.74509805, g: 0.31764707, b: 0.011764706, a: 1}
-  m_Intensity: 50000
+  m_Intensity: 90000
   m_Range: 14.06
   m_SpotAngle: 85.64741
   m_InnerSpotAngle: 21.80208
@@ -7320,7 +7320,7 @@ GameObject:
   - component: {fileID: 1772917516}
   - component: {fileID: 1772917515}
   m_Layer: 0
-  m_Name: Spot Light (3)
+  m_Name: AreaLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7494,7 +7494,7 @@ Light:
   serializedVersion: 11
   m_Type: 3
   m_Color: {r: 0.74509805, g: 0.31764707, b: 0.011764706, a: 1}
-  m_Intensity: 100000
+  m_Intensity: 500000
   m_Range: 20.43
   m_SpotAngle: 79.41958
   m_InnerSpotAngle: 21.80208

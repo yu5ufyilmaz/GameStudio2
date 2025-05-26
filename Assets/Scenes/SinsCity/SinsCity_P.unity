@@ -1686,7 +1686,7 @@ PrefabInstance:
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 316.61
+      value: 292.59
       objectReference: {fileID: 0}
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
@@ -1696,7 +1696,7 @@ PrefabInstance:
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 252.76999
+      value: 281.97
       objectReference: {fileID: 0}
     - target: {fileID: 8496096954529998218, guid: 36a9f35fde1f7a84f818ad81665f55db,
         type: 3}
@@ -2691,7 +2691,7 @@ PrefabInstance:
     - target: {fileID: 3777385560539239364, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 321.11
+      value: 297.09
       objectReference: {fileID: 0}
     - target: {fileID: 3777385560539239364, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
@@ -2701,7 +2701,7 @@ PrefabInstance:
     - target: {fileID: 3777385560539239364, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 260.77
+      value: 289.97
       objectReference: {fileID: 0}
     - target: {fileID: 3777385560539239364, guid: 48baa914034bc774685148412f9e1412,
         type: 3}
@@ -2862,6 +2862,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3f87435308ca5745b3f7aeacfe0f1bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  videoPlayer: {fileID: 0}
+  creditsSceneName: 
+  rawImage: {fileID: 0}
+  credits: {fileID: 0}
   isFront: 1
   isOpen: 0
   cards:
@@ -5245,7 +5249,7 @@ PrefabInstance:
     - target: {fileID: 7999375827312322011, guid: 24e389cd12d51c34e8fe7960df7ae923,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 316.61
+      value: 292.59
       objectReference: {fileID: 0}
     - target: {fileID: 7999375827312322011, guid: 24e389cd12d51c34e8fe7960df7ae923,
         type: 3}
@@ -5255,7 +5259,7 @@ PrefabInstance:
     - target: {fileID: 7999375827312322011, guid: 24e389cd12d51c34e8fe7960df7ae923,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 252.76999
+      value: 281.97
       objectReference: {fileID: 0}
     - target: {fileID: 7999375827312322011, guid: 24e389cd12d51c34e8fe7960df7ae923,
         type: 3}
@@ -7315,6 +7319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TutorialImage: {fileID: 0}
+  AimImage: {fileID: 0}
 --- !u!114 &6645142972084527594
 MonoBehaviour:
   m_ObjectHideFlags: 0
