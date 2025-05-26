@@ -536,7 +536,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 20
-  Damage: 10
+  Damage: 5
   LifeTime: 5
   ImpactEffect: {fileID: 0}
 --- !u!54 &6096893757011475513

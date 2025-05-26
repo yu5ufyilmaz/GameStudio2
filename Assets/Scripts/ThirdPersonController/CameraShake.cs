@@ -24,6 +24,7 @@ public class CameraShake : MonoBehaviour
         startingIntensity = intensity;
         shakeTimerTotal = time;
         shakeTimer = time;
+        VignetteController.Instance.SetVignetteIntensity(0.4f);
     }
 
     void Update()
@@ -44,5 +45,6 @@ public class CameraShake : MonoBehaviour
             0f,
             (1 - shakeTimer / shakeTimerTotal)
         );
+        VignetteController.Instance.ResetVignette();
     }
 }

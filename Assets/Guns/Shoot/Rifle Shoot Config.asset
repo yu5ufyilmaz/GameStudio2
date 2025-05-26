@@ -22,7 +22,7 @@ MonoBehaviour:
   ShakeIntensity: 0.5
   ShakeTime: 0.1
   SpreadType: 0
-  Spread: {x: 0.1, y: 0.1, z: 0.1}
-  MinSpread: {x: 0, y: 0, z: 0}
+  Spread: {x: 1, y: 1, z: 1}
+  MinSpread: {x: 1, y: 1, z: 1}
   SpreadMultiplier: 0.1
   SpreadTexture: {fileID: 2800000, guid: fde3769cd3cdb9143a1f779a6fd63cba, type: 3}

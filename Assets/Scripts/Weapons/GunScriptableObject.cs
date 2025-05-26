@@ -156,6 +156,7 @@ namespace DotGalacticos.Guns
                     / ShootConfig.RecoilRecoverySpeed;
                 InitialClickTime = Time.time - Mathf.Lerp(0, lastDuration, Mathf.Clamp01(lerpTime));
             }
+
             if (Time.time > ShootConfig.FireRate + LastShootTime)
             {
                 if (AmmoConfig.CurrentClipAmmo > 0 && canShoot == true)
@@ -169,56 +170,67 @@ namespace DotGalacticos.Guns
                     AudioConfig.PlayShotingClip(modelAudioSource, AmmoConfig.CurrentClipAmmo == 1);
                     AmmoConfig.CurrentClipAmmo--;
                     hasPlayedOutOfAmmoClip = false;
-                    Vector3 shootDirection;
 
                     // Bullet Spread Type kontrolü
-                    if (
-                        ShootConfig.SpreadType == BulletSpreadType.None
-                        && aimTargetPosition.HasValue
-                    )
+                    for (int i = 0; i < ShootConfig.BulletPerShoot; i++)
                     {
-                        shootDirection = (aimTargetPosition.Value - GetRaycastOrigin()).normalized;
-                    }
-                    else
-                    {
-                        Vector3 spreadAmount = ShootConfig.GetSpread();
-                        Model.transform.forward += Model.transform.TransformDirection(spreadAmount);
-                        shootDirection = -Model.transform.forward + spreadAmount;
-                    }
+                        Vector3 shootDirection;
 
-                    if (
-                        Physics.Raycast(
-                            ShootSystem.transform.position,
-                            shootDirection,
-                            out RaycastHit hit,
-                            float.MaxValue,
-                            ShootConfig.HitMask
-                        )
-                    )
-                    {
-                        ActiveMonoBehaviour.StartCoroutine(
-                            PlayTrail(ShootSystem.transform.position, hit.point, hit)
-                        );
-                    }
-                    else
-                    {
-                        ActiveMonoBehaviour.StartCoroutine(
-                            PlayTrail(
+                        if (aimTargetPosition.HasValue)
+                        {
+                            // AimTarget konumuna göre yön hesapla
+                            Vector3 baseDirection = (
+                                aimTargetPosition.Value - GetRaycastOrigin()
+                            ).normalized;
+
+                            // Spread miktarını hesapla
+                            Vector3 spreadAmount = ShootConfig.GetSpread();
+
+                            // Spread'i baseDirection vektörüne ekle
+                            // Burada spreadAmount kullanarak yönü değiştireceğiz
+                            shootDirection = baseDirection + spreadAmount; // Spread'i doğrudan ekle
+                        }
+                        else
+                        {
+                            // Eğer aimTargetPosition yoksa, ileri doğru ateş et
+                            shootDirection = Model.transform.forward; // Yönü doğrudan ileri al
+                        }
+
+                        // Mermiyi ateşle
+                        if (
+                            Physics.Raycast(
                                 ShootSystem.transform.position,
-                                ShootSystem.transform.position
-                                    + (shootDirection * TrailConfig.MissDistance),
-                                new RaycastHit()
+                                shootDirection,
+                                out RaycastHit hit,
+                                float.MaxValue,
+                                ShootConfig.HitMask
                             )
-                        );
+                        )
+                        {
+                            ActiveMonoBehaviour.StartCoroutine(
+                                PlayTrail(ShootSystem.transform.position, hit.point, hit)
+                            );
+                        }
+                        else
+                        {
+                            ActiveMonoBehaviour.StartCoroutine(
+                                PlayTrail(
+                                    ShootSystem.transform.position,
+                                    ShootSystem.transform.position
+                                        + (shootDirection * TrailConfig.MissDistance),
+                                    new RaycastHit()
+                                )
+                            );
+                        }
                     }
                 }
                 else
                 {
                     if (!hasPlayedOutOfAmmoClip)
                     {
-                        Debug.Log("Playing out of ammo clip."); // Debug mesajı
+                        Debug.Log("Playing out of ammo clip.");
                         AudioConfig.PlayOutOfAmmoClip(modelAudioSource);
-                        hasPlayedOutOfAmmoClip = true; // Ses çaldı, tekrar çalmaması için değişkeni güncelle
+                        hasPlayedOutOfAmmoClip = true;
                     }
                 }
             }
