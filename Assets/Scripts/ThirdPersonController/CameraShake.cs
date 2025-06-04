@@ -4,47 +4,17 @@ using UnityEngine;
 public class CameraShake : MonoBehaviour
 {
     public static CameraShake Instance { get; private set; }
-    private CinemachineVirtualCamera virtualCamera;
-    private float shakeTimer;
-    private float shakeTimerTotal;
-    private float startingIntensity;
+    public CinemachineImpulseSource impulseSource;
 
     void Awake()
     {
         Instance = this;
-        virtualCamera = GetComponent<CinemachineVirtualCamera>();
     }
 
-    public void ShakeCamera(float intensity, float time)
+    public void ShakeCamera(float intensity)
     {
-        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin =
-            virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        cinemachineBasicMultiChannelPerlin.m_FrequencyGain = intensity;
-        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = intensity;
-        startingIntensity = intensity;
-        shakeTimerTotal = time;
-        shakeTimer = time;
-        VignetteController.Instance.SetVignetteIntensity(0.4f);
-    }
-
-    void Update()
-    {
-        if (shakeTimer > 0)
-        {
-            shakeTimer -= Time.deltaTime;
-            StopShakeCamera();
-        }
-    }
-
-    public void StopShakeCamera()
-    {
-        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin =
-            virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = Mathf.Lerp(
-            startingIntensity,
-            0f,
-            (1 - shakeTimer / shakeTimerTotal)
-        );
-        VignetteController.Instance.ResetVignette();
+        var velocity = new Vector3(0, -05f, -1);
+        velocity.Normalize();
+        impulseSource.GenerateImpulse(velocity * intensity * 0.4f);
     }
 }

@@ -1,69 +1,84 @@
 using System.Collections;
 using Cinemachine;
-using Cinemachine.PostFX;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 public class VignetteController : MonoBehaviour
 {
-    public static VignetteController Instance { get; private set; }
+    static VignetteController Instance;
+    public CinemachineImpulseSource impulseSource;
+    public Material screenDamageMat;
+    private Coroutine screenDamageTask;
 
-    private CinemachineVirtualCamera virtualCamera;
-    private CinemachineVolumeSettings cinemachineVolumeSettings;
-    private Vignette vignette;
-
-    private void Awake()
+    void Awake()
     {
         Instance = this;
-        virtualCamera = GetComponent<CinemachineVirtualCamera>();
+    }
 
-        // Post-processing bileşenini al
-        cinemachineVolumeSettings = virtualCamera.GetComponent<CinemachineVolumeSettings>();
-        if (cinemachineVolumeSettings != null)
+    public void SetIntensity(float intensity)
+    {
+        if (screenDamageTask != null)
+            StopCoroutine(screenDamageTask);
+        StartCoroutine(screenDamage(intensity));
+    }
+
+    public void ShakeCamera(float intensity, float duration)
+    {
+        var velocity = new Vector3(0, -0.2f, -0.2f); // Düzeltme: -05f yerine -0.5f
+        velocity.Normalize();
+        impulseSource.GenerateImpulse(velocity * intensity * 0.2f);
+    }
+
+    private IEnumerator CameraShakeCoroutine(float intensity, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
         {
-            // Vignette bileşenini al
-            cinemachineVolumeSettings.m_Profile.TryGet<Vignette>(out vignette);
+            var velocity = new Vector3(0, -0.2f, -0.2f); // Düzeltme: -05f yerine -0.5f
+            velocity.Normalize();
+            impulseSource.GenerateImpulse(velocity * intensity * 0.2f);
+            elapsed += Time.deltaTime;
+            yield return null; // Her frame'de bir sarsıntı uygula
         }
     }
 
-    public void SetVignetteIntensity(float intensity)
+    private IEnumerator screenDamage(float intensity)
     {
-        if (vignette != null)
+        // Camera Shake
+        var velocity = new Vector3(0, -0.5f, -1); // Düzeltme: -05f yerine -0.5f
+        velocity.Normalize();
+        impulseSource.GenerateImpulse(velocity * intensity * 0.4f);
+        // Screen Effect
+        var targetRadius = Remap(intensity, 0, 1.2f, 0.35f, 0.2f);
+        var curRadius = 1.2f;
+        for (float t = 0; curRadius != targetRadius; t += Time.deltaTime * 3)
         {
-            vignette.intensity.value = intensity; // Vignette yoğunluğunu ayarlayın
-        }
-    }
-
-    public void ResetVignette()
-    {
-        if (vignette != null)
-        {
-            vignette.intensity.value = 0f; // Varsayılan yoğunluk
-        }
-    }
-
-    public void ShakeVignette(float intensity, float duration)
-    {
-        if (vignette != null)
-        {
-            StartCoroutine(ShakeVignetteCoroutine(intensity, duration));
-        }
-    }
-
-    private IEnumerator ShakeVignetteCoroutine(float intensity, float duration)
-    {
-        float timer = 0f;
-        float originalIntensity = vignette.intensity.value;
-
-        while (timer < duration)
-        {
-            float t = timer / duration;
-            vignette.intensity.value = Mathf.Lerp(originalIntensity, intensity, t);
-            timer += Time.deltaTime;
+            curRadius = Mathf.Lerp(1.2f, targetRadius, t);
+            screenDamageMat.SetFloat("_vignette_radius", curRadius);
             yield return null;
         }
+        for (float t = 0; curRadius < 1.2f; t += Time.deltaTime * 3)
+        {
+            curRadius = Mathf.Lerp(targetRadius, 1.2f, t);
+            screenDamageMat.SetFloat("_vignette_radius", curRadius);
+            yield return null;
+        }
+    }
 
-        vignette.intensity.value = originalIntensity; // Sarsıntı sonrası orijinal yoğunluğa döner
+    public float Remap(float value, float fromMin, float fromMax, float toMin, float toMax)
+    {
+        return Mathf.Lerp(toMin, toMax, Mathf.InverseLerp(fromMin, fromMax, value));
+    }
+
+    public static class SpecialEffects
+    {
+        public static void SetIntensity(float intensity)
+        {
+            Instance.SetIntensity(intensity);
+        }
+
+        public static void ShakeCamera(float intensity, float duration)
+        {
+            Instance.ShakeCamera(intensity, duration);
+        }
     }
 }

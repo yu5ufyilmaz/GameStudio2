@@ -66,12 +66,16 @@ public class EnemyController : MonoBehaviour
     [Header("Sesler")]
     public AudioClip[] FootstepAudioClips;
     public AudioClip[] DieAudioClips;
+    public AudioClip[] HurtAudioClips;
 
     [Range(0, 1)]
     public float FootstepAudioVolume = 0.5f;
 
     [Range(0, 1)]
     public float DieAudioVolume = 0.5f;
+
+    [Range(0, 1)]
+    public float HurtAudioVolume = 0.5f;
 
     [SerializeField]
     protected AudioClip shootSound;
@@ -199,6 +203,17 @@ public class EnemyController : MonoBehaviour
         {
             var index = Random.Range(0, DieAudioClips.Length);
             AudioSource.PlayClipAtPoint(DieAudioClips[index], transform.position, DieAudioVolume);
+        }
+    }
+
+    public virtual void OnHurtSound()
+    {
+        HurtAudioVolume = PlayerPrefs.GetFloat("SFXVolume");
+
+        if (HurtAudioClips.Length > 0)
+        {
+            var index = Random.Range(0, HurtAudioClips.Length);
+            AudioSource.PlayClipAtPoint(HurtAudioClips[index], transform.position, HurtAudioVolume);
         }
     }
 

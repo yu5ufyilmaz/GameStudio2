@@ -1526,8 +1526,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 85d368f6b43852942ab02ee01ba1c943, type: 3}
   - {fileID: 8300000, guid: 361d4ba8685213c47b32ca10233e1b00, type: 3}
   - {fileID: 8300000, guid: f20c852defd831543b6144565699436c, type: 3}
+  HurtAudioClips:
+  - {fileID: 8300000, guid: b4d2a6dc1e9d8c34ebc5cad299ac8de8, type: 3}
+  - {fileID: 8300000, guid: cfdb8f7599212fb468d480fc841ae9cb, type: 3}
+  - {fileID: 8300000, guid: 9b01c1e06837e1a4f854b2129ab1eb3d, type: 3}
   FootstepAudioVolume: 0.5
   DieAudioVolume: 0.5
+  HurtAudioVolume: 0.5
   shootSound: {fileID: 8300000, guid: 01f907a19fd90344dadd36f0529b35dc, type: 3}
   shootAudioVolume: 0.5
   isDie: 0

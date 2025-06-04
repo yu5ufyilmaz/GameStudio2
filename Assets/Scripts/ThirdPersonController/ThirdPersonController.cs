@@ -46,6 +46,9 @@ namespace DotGalacticos
         [Range(0, 1)]
         public float DieAudioVolume = 0.5f;
 
+        [Range(0, 1)]
+        public float HurtAudioVolume = 0.5f;
+
         [Space(10)]
         [Tooltip("The height the player can jump")]
         public float JumpHeight = 1.2f;
@@ -121,6 +124,9 @@ namespace DotGalacticos
 
         [SerializeField]
         AudioClip[] DieAudioClips;
+
+        [SerializeField]
+        AudioClip[] HurtAudioClips;
 
         // bool isDodging;
         bool isJumpAway;
@@ -723,6 +729,23 @@ namespace DotGalacticos
                         DieAudioClips[index],
                         transform.TransformPoint(_controller.center),
                         DieAudioVolume
+                    );
+                }
+            }
+        }
+
+        private void OnHurtSound(AnimationEvent animationEvent)
+        {
+            HurtAudioVolume = PlayerPrefs.GetFloat("SFXVolume") * 0.5f;
+            if (animationEvent.animatorClipInfo.weight > 0.5f)
+            {
+                if (HurtAudioClips.Length > 0)
+                {
+                    var index = Random.Range(0, HurtAudioClips.Length);
+                    AudioSource.PlayClipAtPoint(
+                        HurtAudioClips[index],
+                        transform.TransformPoint(_controller.center),
+                        HurtAudioVolume
                     );
                 }
             }
