@@ -1,19 +1,15 @@
 using System.Collections;
 using UnityEngine;
 
-// BackgroundMusicManager: Singleton that manages background music playback with smooth fade transitions.
+// BackgroundMusicManager: Singleton that manages background music playback without fade transitions.
 public class BackgroundMusicManager : MonoBehaviour
 {
     public static BackgroundMusicManager Instance;
 
     private AudioSource audioSource;
-    private Coroutine fadeCoroutine;
 
     [Tooltip("Optional default background music played when not inside any building.")]
     public AudioClip defaultMusic;
-
-    [Tooltip("Fade duration in seconds when switching music.")]
-    public float fadeDuration = 1.0f;
 
     void Awake()
     {
@@ -37,13 +33,13 @@ public class BackgroundMusicManager : MonoBehaviour
         }
 
         // Start playing default music if assigned
-        /*if (defaultMusic != null)
+        if (defaultMusic != null)
         {
             PlayMusic(defaultMusic, true);
-        }*/
+        }
     }
 
-    // Call this to play new background music with fade transition
+    // Call this to play new background music immediately
     public void PlayMusic(AudioClip musicClip, bool immediate = false)
     {
         if (musicClip == null || PlayerPrefs.GetFloat("MusicVolume") <= 0f)
@@ -52,84 +48,19 @@ public class BackgroundMusicManager : MonoBehaviour
         if (audioSource.clip == musicClip)
             return; // same music already playing
 
-        if (fadeCoroutine != null)
-        {
-            StopCoroutine(fadeCoroutine);
-        }
-
-        if (immediate || fadeDuration <= 0f)
-        {
-            audioSource.clip = musicClip;
-            audioSource.volume = PlayerPrefs.GetFloat("MusicVolume");
-            audioSource.Play();
-        }
-        else
-        {
-            fadeCoroutine = StartCoroutine(FadeMusicRoutine(musicClip));
-        }
-    }
-
-    // Fade out current music, then fade in new music
-    private IEnumerator FadeMusicRoutine(AudioClip newClip)
-    {
-        // Fade out
-        float startVolume = audioSource.volume;
-        float time = 0f;
-        while (time < fadeDuration)
-        {
-            time += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(startVolume, 0f, time / fadeDuration);
-            yield return null;
-        }
-
-        audioSource.Stop();
-        audioSource.clip = newClip;
-        audioSource.Play();
-
-        // Fade in
-        time = 0f;
-        while (time < fadeDuration)
-        {
-            time += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(
-                0f,
-                PlayerPrefs.GetFloat("MusicVolume"),
-                time / fadeDuration
-            );
-            yield return null;
-        }
-
+        audioSource.clip = musicClip;
         audioSource.volume = PlayerPrefs.GetFloat("MusicVolume");
-
-        fadeCoroutine = null;
+        audioSource.Play();
     }
 
-    // Optional: stop music or revert to default music with fade
+    // Optional: stop music immediately
     public void StopMusic()
     {
-        if (fadeCoroutine != null)
-        {
-            StopCoroutine(fadeCoroutine);
-        }
-        fadeCoroutine = StartCoroutine(FadeOutRoutine());
-    }
-
-    private IEnumerator FadeOutRoutine()
-    {
-        float startVolume = audioSource.volume;
-        float time = 0f;
-        while (time < fadeDuration)
-        {
-            time += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(startVolume, 0f, time / fadeDuration);
-            yield return null;
-        }
         audioSource.Stop();
         audioSource.clip = null;
-        fadeCoroutine = null;
     }
 
-    // Play default music with fade transition
+    // Play default music immediately
     public void PlayDefaultMusic()
     {
         PlayMusic(defaultMusic);

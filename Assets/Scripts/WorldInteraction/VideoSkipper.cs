@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
 public class VideoSkipper : MonoBehaviour
@@ -10,6 +11,7 @@ public class VideoSkipper : MonoBehaviour
     private GameObject videoCanvas; // Atlama butonu
 
     // Video oynatıldıktan sonra atlama için bayrak
+    [SerializeField]
     private bool videoStarted = false;
 
     void Start()
@@ -27,17 +29,30 @@ public class VideoSkipper : MonoBehaviour
             return;
         }
 
-        // Video başladığında bayrağı ayarla
-        videoPlayer.started += (vp) =>
+        // Oyunun ilk açılışını kontrol et
+        if (PlayerPrefs.GetInt("HasPlayedBefore", 0) == 0)
         {
-            videoStarted = true;
-        };
+            // Video başladığında bayrağı ayarla
+            videoPlayer.started += (vp) =>
+            {
+                videoStarted = true;
+            };
 
-        // Video bittiğinde bayrağı sıfırla
-        videoPlayer.loopPointReached += (vp) =>
+            // Video bittiğinde bayrağı sıfırla
+            videoPlayer.loopPointReached += (vp) =>
+            {
+                videoStarted = false;
+                OnVideoFinished(vp);
+            };
+
+            // Video oynat
+            videoPlayer.Play();
+        }
+        else
         {
-            videoStarted = false;
-        };
+            // Eğer daha önce oynatıldıysa, sahneye geç
+            // LoadNextScene();
+        }
     }
 
     void Update()
@@ -47,7 +62,6 @@ public class VideoSkipper : MonoBehaviour
         {
             SkipVideo();
         }
-        videoPlayer.loopPointReached += OnVideoFinished;
     }
 
     private void OnVideoFinished(VideoPlayer vp)
@@ -68,9 +82,18 @@ public class VideoSkipper : MonoBehaviour
 
         // Bayrağı sıfırla
         videoStarted = false;
-        BackgroundMusicManager.Instance.PlayMusic(
-            BackgroundMusicManager.Instance.defaultMusic,
-            true
-        );
+
+        // İlk açılış bayrağını ayarla
+        PlayerPrefs.SetInt("HasPlayedBefore", 1);
+        PlayerPrefs.Save();
+
+        // Sonraki sahneye geç
+        LoadNextScene();
+    }
+
+    private void LoadNextScene()
+    {
+        // Burada sahne adını değiştirin
+        SceneManager.LoadScene("StartMenu"); // "NextSceneName" yerine geçmek istediğiniz sahnenin adını yazın
     }
 }

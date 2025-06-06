@@ -7,6 +7,17 @@ public class SceneManagerr : MonoBehaviour
     public GameObject LoadingScreen; // Yükleme ekranı
     public UnityEngine.UI.Image LoadingBarFill; // Yükleme çubuğu
 
+    void Update()
+    {
+        if (SceneManager.GetActiveScene().name == "Settings")
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                LoadScene("StartMenu");
+            }
+        }
+    }
+
     public void LoadScene(string sceneName)
     {
         StartCoroutine(LoadSceneAsync(sceneName));
