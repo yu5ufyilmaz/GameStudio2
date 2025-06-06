@@ -5881,6 +5881,8 @@ GameObject:
   - component: {fileID: 8318650219317693759}
   - component: {fileID: 8318650219317693758}
   - component: {fileID: 8318650219317693757}
+  - component: {fileID: 8318650219317693762}
+  - component: {fileID: 8318650219317693761}
   m_Layer: 0
   m_Name: stairs_2
   m_TagString: Untagged
@@ -6943,8 +6945,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 37.58965, y: 7.6269884, z: 30.018194}
-  m_Center: {x: -0.3304862, y: 3.3326373, z: -2.965333}
+  m_Size: {x: 36.99658, y: 1.9752847, z: 0.5974767}
+  m_Center: {x: -0.03402606, y: 0.50678456, z: 11.97291}
 --- !u!65 &8318650219317693758
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7008,6 +7010,48 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 6.1980605, y: 1.5664186, z: 30.01253}
   m_Center: {x: 20.919907, y: -1.4545617, z: -2.9378104}
+--- !u!65 &8318650219317693761
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5985384731650270659}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.32293308, y: 3.73649, z: 29.966768}
+  m_Center: {x: -18.148884, y: 0.3695257, z: -2.9911425}
+--- !u!65 &8318650219317693762
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5985384731650270659}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.35660252, y: 4.4755416, z: 29.955305}
+  m_Center: {x: 18.07727, y: -0.00000029802325, z: -2.996738}
 --- !u!4 &8334624234062671263
 Transform:
   m_ObjectHideFlags: 0

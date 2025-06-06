@@ -13627,7 +13627,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &734219775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21547,7 +21547,7 @@ PrefabInstance:
     - target: {fileID: 5145826359347195392, guid: b115f3d4348dac94d829c19156c49e7a,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8221919342134697887, guid: b115f3d4348dac94d829c19156c49e7a,
         type: 3}
@@ -28848,9 +28848,30 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3035986369306883371, guid: 12de476e0ea7e9440bc5353b7a219ad4,
         type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: 9814ffbda5e78874299364e1e03c3929, type: 3}
+    - target: {fileID: 3035986369306883371, guid: 12de476e0ea7e9440bc5353b7a219ad4,
+        type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 1d7294c47198752458668930572c0116, type: 2}
+    - target: {fileID: 3035986369306883371, guid: 12de476e0ea7e9440bc5353b7a219ad4,
+        type: 3}
+      propertyPath: m_WarningMessage
+      value: "\nBinding warning: Some generic clip(s) animate transforms that are
+        already bound by a Humanoid avatar. These transforms can only be changed
+        by Humanoid clips.\n\tTransform 'root'\n\tTransform 'lowerarm_l'\n\tTransform
+        'root'\n\tTransform 'neck_01'\n\tTransform 'clavicle_l'\n\tTransform 'ring_02_l'\n\tTransform
+        'ball_l'\n\tTransform 'hand_l'\n\tTransform 'middle_01_l'\n\tTransform 'ring_01_r'\n\tand
+        more ...\n\tFrom animation clip 'mixamo.com'\n\tFrom animation clip 'mixamo.com'\n\tFrom
+        animation clip 'mixamo.com'"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3035986369306883371, guid: 12de476e0ea7e9440bc5353b7a219ad4,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6762877478121717222, guid: 12de476e0ea7e9440bc5353b7a219ad4,
         type: 3}
       propertyPath: m_LocalPosition.x
