@@ -630,7 +630,7 @@ GameObject:
   - component: {fileID: 668526275}
   - component: {fileID: 668526277}
   - component: {fileID: 668526276}
-  m_Layer: 2
+  m_Layer: 13
   m_Name: AbandonedArea
   m_TagString: Music Area
   m_Icon: {fileID: 0}
@@ -697,7 +697,7 @@ GameObject:
   - component: {fileID: 673622685}
   - component: {fileID: 673622687}
   - component: {fileID: 673622686}
-  m_Layer: 2
+  m_Layer: 13
   m_Name: MansionArea
   m_TagString: Music Area
   m_Icon: {fileID: 0}
@@ -1093,7 +1093,7 @@ GameObject:
   - component: {fileID: 1029078876}
   - component: {fileID: 1029078878}
   - component: {fileID: 1029078877}
-  m_Layer: 2
+  m_Layer: 13
   m_Name: LosPollosArea
   m_TagString: Music Area
   m_Icon: {fileID: 0}
@@ -1428,7 +1428,7 @@ GameObject:
   - component: {fileID: 1175102806}
   - component: {fileID: 1175102808}
   - component: {fileID: 1175102807}
-  m_Layer: 2
+  m_Layer: 13
   m_Name: BankArea
   m_TagString: Music Area
   m_Icon: {fileID: 0}
@@ -1558,7 +1558,7 @@ GameObject:
   - component: {fileID: 1210623917}
   - component: {fileID: 1210623919}
   - component: {fileID: 1210623918}
-  m_Layer: 2
+  m_Layer: 13
   m_Name: CasinoArea
   m_TagString: Music Area
   m_Icon: {fileID: 0}
@@ -2439,7 +2439,7 @@ GameObject:
   - component: {fileID: 1656885612}
   - component: {fileID: 1656885614}
   - component: {fileID: 1656885613}
-  m_Layer: 2
+  m_Layer: 13
   m_Name: TheatreArea
   m_TagString: Music Area
   m_Icon: {fileID: 0}

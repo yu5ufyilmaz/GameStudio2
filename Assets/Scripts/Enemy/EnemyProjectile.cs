@@ -37,7 +37,7 @@ namespace DotGalacticos.Enemy
             else
             {
                 // Mermiyi yok et
-                Debug.Log("Projectile not hit player");
+                Debug.Log($"Projectile hit {other.gameObject.name}");
             }
 
             // Mermiyi yok et

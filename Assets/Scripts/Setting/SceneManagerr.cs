@@ -9,7 +9,10 @@ public class SceneManagerr : MonoBehaviour
 
     void Update()
     {
-        if (SceneManager.GetActiveScene().name == "Settings")
+        if (
+            SceneManager.GetActiveScene().name == "Settings"
+            || SceneManager.GetActiveScene().name == "Credits"
+        )
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
