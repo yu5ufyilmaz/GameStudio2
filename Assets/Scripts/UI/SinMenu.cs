@@ -185,6 +185,7 @@ public class SinMenu : MonoBehaviour
     private void PauseGameAndPlayVideo()
     {
         Time.timeScale = 0f;
+        BackgroundMusicManager.Instance.StopMusic();
         pauseGame.AimImage.SetActive(false);
         pauseGame.TutorialImage.SetActive(false);
         rawImage.SetActive(true);
@@ -201,6 +202,7 @@ public class SinMenu : MonoBehaviour
     {
         // Credits sahnesine geçiş yap
         Cursor.visible = true;
+
         UnityEngine.SceneManagement.SceneManager.LoadScene(creditsSceneName);
     }
 
